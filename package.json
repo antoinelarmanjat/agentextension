@@ -10,6 +10,7 @@
     "Other"
   ],
   "activationEvents": [
+    "onStartupFinished",
     "onCommand:agentdesigner.helloWorld",
     "onCommand:agentdesigner.insertDateTime"
   ],
