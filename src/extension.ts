@@ -1,6 +1,6 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { agentScanner } from './agent-scanner-lib';
+import * as path from 'path';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -46,6 +46,20 @@ export function activate(context: vscode.ExtensionContext) {
     
     // And finally, show it in the status bar
     myStatusBarItem.show();
+
+    const scanCommand = vscode.commands.registerCommand('agentdesigner.scanDirectory', async () => {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders && workspaceFolders.length > 0) {
+            const rootPath = workspaceFolders[0].uri.fsPath;
+            const scanResult = await agentScanner.scanDirectory(rootPath);
+            const jsonOutput = JSON.stringify(scanResult, null, 2);
+            const document = await vscode.workspace.openTextDocument({ content: jsonOutput, language: 'json' });
+            await vscode.window.showTextDocument(document, vscode.ViewColumn.One);
+        } else {
+            vscode.window.showErrorMessage('No workspace folder found.');
+        }
+    });
+    context.subscriptions.push(scanCommand);
 }
 
 // This method is called when your extension is deactivated
