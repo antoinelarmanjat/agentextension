@@ -10,8 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:agentdesigner.helloWorld",
-    "onCommand:agentdesigner.insertDateTime"
+    "*"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -33,6 +32,9 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test"
+  },
+  "dependencies": {
+    "glob": "^10.3.10"
   },
   "devDependencies": {
     "@types/vscode": "^1.85.0",
