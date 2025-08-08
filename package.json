@@ -11,7 +11,8 @@
   ],
   "activationEvents": [
     "onCommand:agentdesigner.helloWorld",
-    "onCommand:agentdesigner.insertDateTime"
+    "onCommand:agentdesigner.insertDateTime",
+    "onCommand:agentdesigner.scanDirectory"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -23,6 +24,10 @@
       {
         "command": "agentdesigner.insertDateTime",
         "title": "Insert Date Time"
+      },
+      {
+        "command": "agentdesigner.scanDirectory",
+        "title": "Scan Directory for Agents"
       }
     ]
   },
