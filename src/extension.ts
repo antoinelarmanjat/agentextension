@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { scanDirectory, createHierarchicalStructure } from './agent-scanner-lib';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -46,6 +47,22 @@ export function activate(context: vscode.ExtensionContext) {
     
     // And finally, show it in the status bar
     myStatusBarItem.show();
+
+    // Kick off the agent scan on activation and print JSON to a terminal
+    (async () => {
+        try {
+            const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || process.cwd();
+            const scanResult = await scanDirectory(workspaceFolder);
+            const hierarchical = createHierarchicalStructure(scanResult);
+            const jsonOutput = JSON.stringify(hierarchical, null, 2);
+
+            const terminal = vscode.window.createTerminal({ name: 'Agent Scanner' });
+            terminal.show();
+            terminal.sendText("cat << 'JSON'\n" + jsonOutput + "\nJSON");
+        } catch (err) {
+            console.error('Agent scan failed on activation:', err);
+        }
+    })();
 }
 
 // This method is called when your extension is deactivated
