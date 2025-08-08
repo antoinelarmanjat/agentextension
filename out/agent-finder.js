@@ -1,0 +1,890 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.findAgentLineNumber = findAgentLineNumber;
+exports.findAgentWithContext = findAgentWithContext;
+exports.listAllAgents = listAllAgents;
+exports.listAllAgentsInFiles = listAllAgentsInFiles;
+exports.findToolLineNumber = findToolLineNumber;
+exports.findToolWithContext = findToolWithContext;
+exports.findAgentTools = findAgentTools;
+exports.findImportedTools = findImportedTools;
+exports.findToolLocation = findToolLocation;
+exports.findToolLineNumberCrossFile = findToolLineNumberCrossFile;
+exports.findToolWithContextCrossFile = findToolWithContextCrossFile;
+exports.findAgentToolsCrossFile = findAgentToolsCrossFile;
+exports.findAgentLocation = findAgentLocation;
+exports.findAgentLineNumberCrossFile = findAgentLineNumberCrossFile;
+exports.findAgentWithContextCrossFile = findAgentWithContextCrossFile;
+exports.findAnyAgentLocation = findAnyAgentLocation;
+exports.findSubAgentLocation = findSubAgentLocation;
+exports.listAllAgentsCrossFile = listAllAgentsCrossFile;
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+// Import the cross-file resolution functions from the scanner library
+const agent_scanner_lib_1 = require("./agent-scanner-lib");
+/**
+ * AGENT FINDER UTILITIES
+ *
+ * Main function to use: findAnyAgentLocation(fileName, agentName)
+ *
+ * This unified function handles all cases:
+ * - Root agents (defined in the same file)
+ * - Direct sub-agents (defined in the same file)
+ * - Nested sub-agents (defined in imported files)
+ *
+ * Examples:
+ * - findAnyAgentLocation('travel/travel_concierge/agent.py', 'root_agent') -> finds root agent
+ * - findAnyAgentLocation('travel/travel_concierge/agent.py', 'poi_agent') -> finds nested sub-agent
+ * - findAnyAgentLocation('agents/agent.py', 'get_the_task') -> finds direct sub-agent
+ */
+/**
+ * Finds the line number where a specific agent is defined in a Python file
+ * @param fileName - The name of the Python file to search in (e.g., "agent.py", "sequential.py")
+ * @param agentName - The name of the agent to find (e.g., "get_the_task", "root_agent")
+ * @returns The line number where the agent is defined, or 1 if not found
+ */
+function findAgentLineNumber(fileName, agentName) {
+    try {
+        const currentDir = process.cwd();
+        const filePath = path.join(currentDir, fileName);
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found at: ${filePath}`);
+            return 1;
+        }
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const lines = content.split('\n');
+        // Pattern to match agent definitions
+        // This will match patterns like:
+        // agentName = LlmAgent(
+        // agentName = SequentialAgent(
+        // agentName = LoopAgent(
+        // agentName = ParallelAgent(
+        // agentName = Agent(
+        const agentPattern = new RegExp(`^\\s*${agentName}\\s*=\\s*(LlmAgent|SequentialAgent|LoopAgent|ParallelAgent|Agent)\\s*\\(`, 'm');
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (agentPattern.test(line)) {
+                return i + 1; // Line numbers are 1-indexed
+            }
+        }
+        // If not found, return 1
+        return 1;
+    }
+    catch (error) {
+        console.error('Error finding agent line number:', error);
+        return 1;
+    }
+}
+/**
+ * Finds the line number where a specific agent is defined and returns additional context
+ * @param fileName - The name of the Python file to search in
+ * @param agentName - The name of the agent to find
+ * @returns Object with line number and context information
+ */
+function findAgentWithContext(fileName, agentName) {
+    try {
+        const currentDir = process.cwd();
+        const filePath = path.join(currentDir, fileName);
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found at: ${filePath}`);
+            return { lineNumber: 1, found: false };
+        }
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const lines = content.split('\n');
+        // Pattern to match agent definitions and capture the agent type
+        const agentPattern = new RegExp(`^\\s*${agentName}\\s*=\\s*(LlmAgent|SequentialAgent|LoopAgent|ParallelAgent|Agent)\\s*\\(`, 'm');
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const match = agentPattern.exec(line);
+            if (match) {
+                const agentType = match[1];
+                // Get some context (the line itself and a few lines before/after)
+                const startContext = Math.max(0, i - 2);
+                const endContext = Math.min(lines.length, i + 3);
+                const contextLines = lines.slice(startContext, endContext);
+                const context = contextLines.join('\n');
+                return {
+                    lineNumber: i + 1,
+                    found: true,
+                    context,
+                    agentType
+                };
+            }
+        }
+        // If not found, return default
+        return { lineNumber: 1, found: false };
+    }
+    catch (error) {
+        console.error('Error finding agent with context:', error);
+        return { lineNumber: 1, found: false };
+    }
+}
+/**
+ * Lists all agents found in a specific Python file with their line numbers
+ * @param fileName - The name of the Python file to search in
+ * @returns Array of agent information
+ */
+function listAllAgents(fileName) {
+    try {
+        const currentDir = process.cwd();
+        const filePath = path.join(currentDir, fileName);
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found at: ${filePath}`);
+            return [];
+        }
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const lines = content.split('\n');
+        const agents = [];
+        // Pattern to match all agent definitions
+        const agentPattern = /^\s*(\w+)\s*=\s*(LlmAgent|SequentialAgent|LoopAgent|ParallelAgent|Agent)\s*\(/m;
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const match = agentPattern.exec(line);
+            if (match) {
+                const agentName = match[1];
+                const agentType = match[2];
+                agents.push({
+                    name: agentName,
+                    lineNumber: i + 1,
+                    type: agentType
+                });
+            }
+        }
+        return agents;
+    }
+    catch (error) {
+        console.error('Error listing agents:', error);
+        return [];
+    }
+}
+/**
+ * Lists all agents found in multiple Python files with their line numbers
+ * @param fileNames - Array of Python file names to search in
+ * @returns Array of agent information with file information
+ */
+function listAllAgentsInFiles(fileNames) {
+    const allAgents = [];
+    for (const fileName of fileNames) {
+        const agents = listAllAgents(fileName);
+        for (const agent of agents) {
+            allAgents.push({
+                fileName,
+                ...agent
+            });
+        }
+    }
+    return allAgents;
+}
+/**
+ * Finds the line number where a specific tool function is defined in a Python file
+ * @param fileName - The name of the Python file to search in
+ * @param toolName - The name of the tool function to find (e.g., "exit_loop", "file_list")
+ * @returns The line number where the tool function is defined, or 1 if not found
+ */
+function findToolLineNumber(fileName, toolName) {
+    try {
+        const currentDir = process.cwd();
+        const filePath = path.join(currentDir, fileName);
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found at: ${filePath}`);
+            return 1;
+        }
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const lines = content.split('\n');
+        // Pattern to match function definitions
+        // This will match patterns like:
+        // def toolName(
+        // def toolName():
+        // def toolName(param1, param2):
+        // def toolName(param1: type, param2: type):
+        const functionPattern = new RegExp(`^\\s*def\\s+${toolName}\\s*\\(`, 'm');
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (functionPattern.test(line)) {
+                return i + 1; // Line numbers are 1-indexed
+            }
+        }
+        // If not found, return 1
+        return 1;
+    }
+    catch (error) {
+        console.error('Error finding tool line number:', error);
+        return 1;
+    }
+}
+/**
+ * Finds the line number where a specific tool function is defined and returns additional context
+ * @param fileName - The name of the Python file to search in
+ * @param toolName - The name of the tool function to find
+ * @returns Object with line number and context information
+ */
+function findToolWithContext(fileName, toolName) {
+    try {
+        const currentDir = process.cwd();
+        const filePath = path.join(currentDir, fileName);
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found at: ${filePath}`);
+            return { lineNumber: 1, found: false };
+        }
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const lines = content.split('\n');
+        // Pattern to match function definitions and capture the function signature
+        const functionPattern = new RegExp(`^\\s*def\\s+${toolName}\\s*\\(([^)]*)\\)`, 'm');
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const match = functionPattern.exec(line);
+            if (match) {
+                const functionSignature = match[1]; // Parameters part
+                // Get some context (the line itself and a few lines before/after)
+                const startContext = Math.max(0, i - 2);
+                const endContext = Math.min(lines.length, i + 5); // Get more lines for function context
+                const contextLines = lines.slice(startContext, endContext);
+                const context = contextLines.join('\n');
+                return {
+                    lineNumber: i + 1,
+                    found: true,
+                    context,
+                    functionSignature
+                };
+            }
+        }
+        // If not found, return default
+        return { lineNumber: 1, found: false };
+    }
+    catch (error) {
+        console.error('Error finding tool with context:', error);
+        return { lineNumber: 1, found: false };
+    }
+}
+/**
+ * Finds all tools used by a specific agent and their line numbers
+ * @param fileName - The name of the Python file to search in
+ * @param agentName - The name of the agent to find tools for
+ * @returns Array of tool information with line numbers
+ */
+function findAgentTools(fileName, agentName) {
+    try {
+        const currentDir = process.cwd();
+        const filePath = path.join(currentDir, fileName);
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found at: ${filePath}`);
+            return [];
+        }
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const lines = content.split('\n');
+        const tools = [];
+        // First, find the agent and extract its tools
+        const agentPattern = new RegExp(`^\\s*${agentName}\\s*=\\s*(LlmAgent|SequentialAgent|LoopAgent|ParallelAgent|Agent)\\s*\\(`, 'm');
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (agentPattern.test(line)) {
+                // Found the agent, now look for tools in the agent definition
+                let j = i;
+                while (j < lines.length && !lines[j].includes(')')) {
+                    const toolsMatch = lines[j].match(/tools\s*=\s*\[([^\]]+)\]/);
+                    if (toolsMatch) {
+                        const toolsStr = toolsMatch[1];
+                        const toolNames = toolsStr.split(',').map(tool => tool.trim()).filter(tool => tool.length > 0);
+                        // For each tool, find its function definition
+                        for (const toolName of toolNames) {
+                            const toolLineNumber = findToolLineNumber(fileName, toolName);
+                            const toolContext = findToolWithContext(fileName, toolName);
+                            tools.push({
+                                toolName,
+                                lineNumber: toolLineNumber,
+                                found: toolContext.found,
+                                context: toolContext.context
+                            });
+                        }
+                        break;
+                    }
+                    j++;
+                }
+                break;
+            }
+        }
+        return tools;
+    }
+    catch (error) {
+        console.error('Error finding agent tools:', error);
+        return [];
+    }
+}
+/**
+ * Finds imported tools in a Python file
+ * @param fileName - The name of the Python file to search in
+ * @returns Array of imported tool information
+ */
+function findImportedTools(fileName) {
+    try {
+        const currentDir = process.cwd();
+        const filePath = path.join(currentDir, fileName);
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found at: ${filePath}`);
+            return [];
+        }
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const lines = content.split('\n');
+        const importedTools = [];
+        // Pattern to match import statements for tools
+        // This will match patterns like:
+        // from travel_concierge.tools import custom_tool
+        // from utils.tools import helper_tool
+        const importPattern = /from\s+([\w.]+)\s+import\s+(\w+)/g;
+        for (const line of lines) {
+            let match;
+            while ((match = importPattern.exec(line)) !== null) {
+                const modulePath = match[1];
+                const importedName = match[2];
+                // Check if this looks like a tool import (contains 'tool' or 'utils')
+                if (modulePath.includes('tool') || modulePath.includes('utils') ||
+                    importedName.includes('tool') || importedName.includes('helper')) {
+                    // Try to resolve the actual file path
+                    const sourceFile = resolveImportPath(modulePath, fileName);
+                    importedTools.push({
+                        importedName,
+                        sourceFile,
+                        actualToolName: importedName, // Will be updated when we scan the source file
+                        importStatement: line.trim()
+                    });
+                }
+            }
+        }
+        return importedTools;
+    }
+    catch (error) {
+        console.error('Error finding imported tools:', error);
+        return [];
+    }
+}
+/**
+ * Resolves the file path for an import statement (reused from agent scanner)
+ * @param modulePath - The module path from the import statement
+ * @param currentFile - The current file being processed
+ * @returns The resolved file path
+ */
+function resolveImportPath(modulePath, currentFile) {
+    try {
+        const currentDir = process.cwd();
+        const currentFileDir = path.dirname(path.join(currentDir, currentFile));
+        // Handle relative imports
+        if (modulePath.startsWith('.')) {
+            const relativePath = modulePath.replace(/^\.+/, '');
+            return path.join(currentFileDir, relativePath + '.py');
+        }
+        // Handle absolute imports - resolve relative to the current file's directory
+        // For imports like "travel_concierge.sub_agents.planning.agent"
+        // We need to find the actual file in the project structure
+        const modulePathParts = modulePath.split('.');
+        const potentialPaths = [
+            // Try relative to current file directory
+            path.join(currentFileDir, modulePathParts.join('/') + '.py'),
+            // Try relative to project root
+            path.join(currentDir, modulePathParts.join('/') + '.py'),
+            // Try with travel/ prefix (common in this project)
+            path.join(currentDir, 'travel', modulePathParts.join('/') + '.py'),
+            // Try with travel/travel_concierge/ prefix
+            path.join(currentDir, 'travel', 'travel_concierge', modulePathParts.slice(1).join('/') + '.py')
+        ];
+        // Check if any of these paths exist
+        for (const potentialPath of potentialPaths) {
+            if (fs.existsSync(potentialPath)) {
+                // Return relative path from current directory
+                return path.relative(currentDir, potentialPath);
+            }
+        }
+        // If none found, return the most likely path
+        return modulePathParts.join('/') + '.py';
+    }
+    catch (error) {
+        console.error('Error resolving import path:', error);
+        return modulePath + '.py';
+    }
+}
+/**
+ * Finds the actual file location and line number where a tool function is defined,
+ * handling both local definitions and imported tools
+ * @param fileName - The name of the Python file to search in
+ * @param toolName - The name of the tool function to find
+ * @returns Object with actual file location and line number information
+ */
+function findToolLocation(fileName, toolName) {
+    try {
+        const currentDir = process.cwd();
+        const filePath = path.join(currentDir, fileName);
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found at: ${filePath}`);
+            return {
+                actualFileName: fileName,
+                lineNumber: 1,
+                found: false,
+                isImported: false
+            };
+        }
+        // First, check if the tool is defined locally in the file
+        const localResult = findToolWithContext(fileName, toolName);
+        if (localResult.found) {
+            return {
+                actualFileName: fileName,
+                lineNumber: localResult.lineNumber,
+                found: true,
+                isImported: false,
+                context: localResult.context,
+                functionSignature: localResult.functionSignature
+            };
+        }
+        // If not found locally, check if it's an imported tool
+        const importedTools = findImportedTools(fileName);
+        for (const importedTool of importedTools) {
+            if (importedTool.importedName === toolName) {
+                // Try to find the tool in the source file
+                const sourceFileResult = findToolWithContext(importedTool.sourceFile, importedTool.actualToolName);
+                if (sourceFileResult.found) {
+                    return {
+                        actualFileName: importedTool.sourceFile,
+                        lineNumber: sourceFileResult.lineNumber,
+                        found: true,
+                        isImported: true,
+                        importStatement: importedTool.importStatement,
+                        context: sourceFileResult.context,
+                        functionSignature: sourceFileResult.functionSignature
+                    };
+                }
+                else {
+                    // Tool is imported but not found in source file (might be external library)
+                    return {
+                        actualFileName: importedTool.sourceFile,
+                        lineNumber: 1,
+                        found: false,
+                        isImported: true,
+                        importStatement: importedTool.importStatement
+                    };
+                }
+            }
+        }
+        // Tool not found locally or as imported
+        return {
+            actualFileName: fileName,
+            lineNumber: 1,
+            found: false,
+            isImported: false
+        };
+    }
+    catch (error) {
+        console.error('Error finding tool location:', error);
+        return {
+            actualFileName: fileName,
+            lineNumber: 1,
+            found: false,
+            isImported: false
+        };
+    }
+}
+/**
+ * Enhanced version of findToolLineNumber that handles imported tools
+ * @param fileName - The name of the Python file to search in
+ * @param toolName - The name of the tool function to find
+ * @returns Object with file name and line number where tool is actually defined
+ */
+function findToolLineNumberCrossFile(fileName, toolName) {
+    const location = findToolLocation(fileName, toolName);
+    return {
+        fileName: location.actualFileName,
+        lineNumber: location.lineNumber,
+        found: location.found,
+        isImported: location.isImported
+    };
+}
+/**
+ * Enhanced version of findToolWithContext that handles imported tools
+ * @param fileName - The name of the Python file to search in
+ * @param toolName - The name of the tool function to find
+ * @returns Object with complete tool location and context information
+ */
+function findToolWithContextCrossFile(fileName, toolName) {
+    const location = findToolLocation(fileName, toolName);
+    return {
+        fileName: location.actualFileName,
+        lineNumber: location.lineNumber,
+        found: location.found,
+        isImported: location.isImported,
+        importStatement: location.importStatement,
+        context: location.context,
+        functionSignature: location.functionSignature
+    };
+}
+/**
+ * Enhanced version of findAgentTools that handles imported tools
+ * @param fileName - The name of the Python file to search in
+ * @param agentName - The name of the agent to find tools for
+ * @returns Array of tool information with actual file locations
+ */
+function findAgentToolsCrossFile(fileName, agentName) {
+    try {
+        const currentDir = process.cwd();
+        const filePath = path.join(currentDir, fileName);
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found at: ${filePath}`);
+            return [];
+        }
+        const content = fs.readFileSync(filePath, 'utf-8');
+        const lines = content.split('\n');
+        const tools = [];
+        // First, find the agent and extract its tools
+        const agentPattern = new RegExp(`^\\s*${agentName}\\s*=\\s*(LlmAgent|SequentialAgent|LoopAgent|ParallelAgent|Agent)\\s*\\(`, 'm');
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (agentPattern.test(line)) {
+                // Found the agent, now look for tools in the agent definition
+                let j = i;
+                while (j < lines.length && !lines[j].includes(')')) {
+                    const toolsMatch = lines[j].match(/tools\s*=\s*\[([^\]]+)\]/);
+                    if (toolsMatch) {
+                        const toolsStr = toolsMatch[1];
+                        const toolNames = toolsStr.split(',').map(tool => tool.trim()).filter(tool => tool.length > 0);
+                        // For each tool, find its actual location (local or imported)
+                        for (const toolName of toolNames) {
+                            const toolLocation = findToolLocation(fileName, toolName);
+                            tools.push({
+                                toolName,
+                                fileName: toolLocation.actualFileName,
+                                lineNumber: toolLocation.lineNumber,
+                                found: toolLocation.found,
+                                isImported: toolLocation.isImported,
+                                importStatement: toolLocation.importStatement,
+                                context: toolLocation.context,
+                                functionSignature: toolLocation.functionSignature
+                            });
+                        }
+                        break;
+                    }
+                    j++;
+                }
+                break;
+            }
+        }
+        return tools;
+    }
+    catch (error) {
+        console.error('Error finding agent tools cross-file:', error);
+        return [];
+    }
+}
+/**
+ * Finds the actual file location and line number where an agent is defined,
+ * handling both local definitions and imported agents
+ * @param fileName - The name of the Python file to search in
+ * @param agentName - The name of the agent to find
+ * @returns Object with actual file location and line number information
+ */
+function findAgentLocation(fileName, agentName) {
+    try {
+        const currentDir = process.cwd();
+        const filePath = path.join(currentDir, fileName);
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found at: ${filePath}`);
+            return {
+                actualFileName: fileName,
+                lineNumber: 1,
+                found: false,
+                isImported: false
+            };
+        }
+        // First, check if the agent is defined locally in the file
+        const localResult = findAgentWithContext(fileName, agentName);
+        if (localResult.found) {
+            return {
+                actualFileName: fileName,
+                lineNumber: localResult.lineNumber,
+                found: true,
+                isImported: false,
+                context: localResult.context,
+                agentType: localResult.agentType
+            };
+        }
+        // If not found locally, check if it's an imported agent
+        const importedAgents = (0, agent_scanner_lib_1.findImportedAgents)(fileName);
+        for (const importedAgent of importedAgents) {
+            if (importedAgent.importedName === agentName) {
+                // Try to find the agent in the source file
+                const sourceFileResult = findAgentWithContext(importedAgent.sourceFile, importedAgent.actualAgentName);
+                if (sourceFileResult.found) {
+                    return {
+                        actualFileName: importedAgent.sourceFile,
+                        lineNumber: sourceFileResult.lineNumber,
+                        found: true,
+                        isImported: true,
+                        importStatement: importedAgent.importStatement,
+                        context: sourceFileResult.context,
+                        agentType: sourceFileResult.agentType
+                    };
+                }
+                else {
+                    // Agent is imported but not found in source file (might be external library)
+                    return {
+                        actualFileName: importedAgent.sourceFile,
+                        lineNumber: 1,
+                        found: false,
+                        isImported: true,
+                        importStatement: importedAgent.importStatement
+                    };
+                }
+            }
+        }
+        // Agent not found locally or as imported
+        return {
+            actualFileName: fileName,
+            lineNumber: 1,
+            found: false,
+            isImported: false
+        };
+    }
+    catch (error) {
+        console.error('Error finding agent location:', error);
+        return {
+            actualFileName: fileName,
+            lineNumber: 1,
+            found: false,
+            isImported: false
+        };
+    }
+}
+/**
+ * Enhanced version of findAgentLineNumber that handles imported agents
+ * @param fileName - The name of the Python file to search in
+ * @param agentName - The name of the agent to find
+ * @returns Object with file name and line number where agent is actually defined
+ */
+function findAgentLineNumberCrossFile(fileName, agentName) {
+    const location = findAgentLocation(fileName, agentName);
+    return {
+        fileName: location.actualFileName,
+        lineNumber: location.lineNumber,
+        found: location.found,
+        isImported: location.isImported
+    };
+}
+/**
+ * Enhanced version of findAgentWithContext that handles imported agents
+ * @param fileName - The name of the Python file to search in
+ * @param agentName - The name of the agent to find
+ * @returns Object with complete agent location and context information
+ */
+function findAgentWithContextCrossFile(fileName, agentName) {
+    const location = findAgentLocation(fileName, agentName);
+    return {
+        fileName: location.actualFileName,
+        lineNumber: location.lineNumber,
+        found: location.found,
+        isImported: location.isImported,
+        importStatement: location.importStatement,
+        context: location.context,
+        agentType: location.agentType
+    };
+}
+/**
+ * Unified function to find any agent (root agent, direct sub-agent, or nested sub-agent) by searching through the hierarchical structure
+ * @param rootFileName - The file containing the root agent
+ * @param agentName - The name of the agent to find (can be root agent, direct sub-agent, or nested sub-agent)
+ * @returns Object with the actual file name and line number where the agent is defined
+ */
+function findAnyAgentLocation(rootFileName, agentName) {
+    try {
+        // First, try to find the agent directly in the root file (handles root agents and direct sub-agents)
+        const directResult = findAgentLocation(rootFileName, agentName);
+        if (directResult.found) {
+            return directResult;
+        }
+        // If not found directly, get all imported agents from the root file
+        const importedAgents = (0, agent_scanner_lib_1.findImportedAgents)(rootFileName);
+        // For each imported agent, check if it contains the sub-agent
+        for (const importedAgent of importedAgents) {
+            const sourceFileResult = findAgentWithContext(importedAgent.sourceFile, agentName);
+            if (sourceFileResult.found) {
+                return {
+                    actualFileName: importedAgent.sourceFile,
+                    lineNumber: sourceFileResult.lineNumber,
+                    found: true,
+                    isImported: true,
+                    importStatement: importedAgent.importStatement,
+                    context: sourceFileResult.context,
+                    agentType: sourceFileResult.agentType
+                };
+            }
+        }
+        // If still not found, return not found
+        return {
+            actualFileName: rootFileName,
+            lineNumber: 1,
+            found: false,
+            isImported: false
+        };
+    }
+    catch (error) {
+        console.error('Error finding agent location:', error);
+        return {
+            actualFileName: rootFileName,
+            lineNumber: 1,
+            found: false,
+            isImported: false
+        };
+    }
+}
+/**
+ * @deprecated Use findAnyAgentLocation instead. This function is kept for backward compatibility.
+ * Finds the location of a sub-agent by searching through the hierarchical structure
+ * @param rootFileName - The file containing the root agent
+ * @param subAgentName - The name of the sub-agent to find
+ * @returns Object with the actual file name and line number where the sub-agent is defined
+ */
+function findSubAgentLocation(rootFileName, subAgentName) {
+    return findAnyAgentLocation(rootFileName, subAgentName);
+}
+/**
+ * Lists all agents found in a file, including imported agents with their actual locations
+ * @param fileName - The name of the Python file to search in
+ * @returns Array of agent information with actual file locations
+ */
+function listAllAgentsCrossFile(fileName) {
+    try {
+        const currentDir = process.cwd();
+        const filePath = path.join(currentDir, fileName);
+        if (!fs.existsSync(filePath)) {
+            console.error(`File not found at: ${filePath}`);
+            return [];
+        }
+        const agents = [];
+        // First, get all local agents
+        const localAgents = listAllAgents(fileName);
+        for (const agent of localAgents) {
+            agents.push({
+                name: agent.name,
+                fileName: fileName,
+                lineNumber: agent.lineNumber,
+                type: agent.type,
+                isImported: false
+            });
+        }
+        // Then, get all imported agents
+        const importedAgents = (0, agent_scanner_lib_1.findImportedAgents)(fileName);
+        for (const importedAgent of importedAgents) {
+            // Try to find the actual agent in the source file
+            const sourceFileResult = findAgentWithContext(importedAgent.sourceFile, importedAgent.actualAgentName);
+            agents.push({
+                name: importedAgent.importedName,
+                fileName: importedAgent.sourceFile,
+                lineNumber: sourceFileResult.found ? sourceFileResult.lineNumber : 1,
+                type: sourceFileResult.agentType || 'Unknown',
+                isImported: true,
+                importStatement: importedAgent.importStatement
+            });
+        }
+        return agents;
+    }
+    catch (error) {
+        console.error('Error listing agents cross-file:', error);
+        return [];
+    }
+}
+// Example usage and testing
+if (require.main === module) {
+    // Test with some example files and agent names
+    const testCases = [
+        { fileName: 'agents/agent.py', agentName: 'get_the_task' },
+        { fileName: 'agents/agent.py', agentName: 'root_agent' },
+        { fileName: 'agents/agent.py', agentName: 'update_files' },
+        { fileName: 'sequential.py', agentName: 'content_pipeline' },
+        { fileName: 'agents/agent.py', agentName: 'nonexistent_agent' },
+        { fileName: 'nonexistent.py', agentName: 'some_agent' }
+    ];
+    // Test tool finding
+    const toolTestCases = [
+        { fileName: 'agents/agent.py', toolName: 'exit_loop' },
+        { fileName: 'agents/agent.py', toolName: 'file_list' },
+        { fileName: 'agents/agent.py', toolName: 'file_content' },
+        { fileName: 'agents/agent.py', toolName: 'file_store' },
+        { fileName: 'agents/agent.py', toolName: 'nonexistent_tool' }
+    ];
+    console.log('Testing agent finder:');
+    console.log('=====================');
+    for (const testCase of testCases) {
+        const lineNumber = findAgentLineNumber(testCase.fileName, testCase.agentName);
+        const context = findAgentWithContext(testCase.fileName, testCase.agentName);
+        console.log(`\nFile: ${testCase.fileName}, Agent: ${testCase.agentName}`);
+        console.log(`Line number: ${lineNumber}`);
+        console.log(`Found: ${context.found}`);
+        if (context.found) {
+            console.log(`Type: ${context.agentType}`);
+            console.log(`Context:\n${context.context}`);
+        }
+    }
+    console.log('\n\nTesting tool finder:');
+    console.log('==================');
+    for (const testCase of toolTestCases) {
+        const toolLineNumber = findToolLineNumber(testCase.fileName, testCase.toolName);
+        const toolContext = findToolWithContext(testCase.fileName, testCase.toolName);
+        console.log(`\nFile: ${testCase.fileName}, Tool: ${testCase.toolName}`);
+        console.log(`Line number: ${toolLineNumber}`);
+        console.log(`Found: ${toolContext.found}`);
+        if (toolContext.found) {
+            console.log(`Function signature: ${toolContext.functionSignature || 'N/A'}`);
+            console.log(`Context:\n${toolContext.context}`);
+        }
+    }
+    console.log('\n\nTesting agent tools finder:');
+    console.log('==========================');
+    const agentToolsTestCases = [
+        { fileName: 'agents/agent.py', agentName: 'list_of_files_to_user' },
+        { fileName: 'agents/agent.py', agentName: 'list_of_files_in_repository' },
+        { fileName: 'agents/agent.py', agentName: 'identify_file_to_modify' },
+        { fileName: 'agents/agent.py', agentName: 'perform_action_on_file' }
+    ];
+    for (const testCase of agentToolsTestCases) {
+        const tools = findAgentTools(testCase.fileName, testCase.agentName);
+        console.log(`\nFile: ${testCase.fileName}, Agent: ${testCase.agentName}`);
+        console.log(`Tools found: ${tools.length}`);
+        for (const tool of tools) {
+            console.log(`  - ${tool.toolName}: Line ${tool.lineNumber} (Found: ${tool.found})`);
+        }
+    }
+    console.log('\n\nAll agents in files:');
+    console.log('==================');
+    const allAgents = listAllAgentsInFiles(['agents/agent.py', 'sequential.py']);
+    for (const agent of allAgents) {
+        console.log(`${agent.fileName}: ${agent.name} (${agent.type}) - Line ${agent.lineNumber}`);
+    }
+}
+//# sourceMappingURL=agent-finder.js.map
