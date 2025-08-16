@@ -251,23 +251,23 @@ function findToolLineNumber(fileName, toolName) {
  * @param toolName - The name of the tool function to find
  * @returns Object with line number and context information
  */
-function findToolWithContext(fileName, toolName) {
+function findToolWithContext(fileName, toolName, rootPath) {
     try {
-        const currentDir = process.cwd();
-        const filePath = path.join(currentDir, fileName);
+        const filePath = path.isAbsolute(fileName) ? fileName : path.join(rootPath, fileName);
         if (!fs.existsSync(filePath)) {
             console.error(`File not found at: ${filePath}`);
             return { lineNumber: 1, found: false };
         }
         const content = fs.readFileSync(filePath, 'utf-8');
         const lines = content.split('\n');
-        // Pattern to match function definitions and capture the function signature
-        const functionPattern = new RegExp(`^\\s*def\\s+${toolName}\\s*\\(([^)]*)\\)`, 'm');
+        // Pattern to match tool definitions, either as a function or a variable assignment.
+        const toolPattern = new RegExp(`^\\s*(def\\s+${toolName}\\s*\\(|${toolName}\\s*=)`, 'm');
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
-            const match = functionPattern.exec(line);
+            const match = toolPattern.exec(line);
             if (match) {
-                const functionSignature = match[1]; // Parameters part
+                const signatureMatch = line.match(new RegExp(`^\\s*def\\s+${toolName}\\s*\\(([^)]*)\\)`));
+                const functionSignature = signatureMatch ? signatureMatch[1] : undefined;
                 // Get some context (the line itself and a few lines before/after)
                 const startContext = Math.max(0, i - 2);
                 const endContext = Math.min(lines.length, i + 5); // Get more lines for function context
@@ -321,7 +321,7 @@ function findAgentTools(fileName, agentName) {
                         // For each tool, find its function definition
                         for (const toolName of toolNames) {
                             const toolLineNumber = findToolLineNumber(fileName, toolName);
-                            const toolContext = findToolWithContext(fileName, toolName);
+                            const toolContext = findToolWithContext(fileName, toolName, process.cwd());
                             tools.push({
                                 toolName,
                                 lineNumber: toolLineNumber,
@@ -348,10 +348,9 @@ function findAgentTools(fileName, agentName) {
  * @param fileName - The name of the Python file to search in
  * @returns Array of imported tool information
  */
-function findImportedTools(fileName) {
+function findImportedTools(fileName, rootPath) {
     try {
-        const currentDir = process.cwd();
-        const filePath = path.join(currentDir, fileName);
+        const filePath = path.isAbsolute(fileName) ? fileName : path.join(rootPath, fileName);
         if (!fs.existsSync(filePath)) {
             console.error(`File not found at: ${filePath}`);
             return [];
@@ -373,7 +372,7 @@ function findImportedTools(fileName) {
                 if (modulePath.includes('tool') || modulePath.includes('utils') ||
                     importedName.includes('tool') || importedName.includes('helper')) {
                     // Try to resolve the actual file path
-                    const sourceFile = resolveImportPath(modulePath, fileName);
+                    const sourceFile = resolveImportPath(modulePath, fileName, rootPath);
                     importedTools.push({
                         importedName,
                         sourceFile,
@@ -396,55 +395,66 @@ function findImportedTools(fileName) {
  * @param currentFile - The current file being processed
  * @returns The resolved file path
  */
-function resolveImportPath(modulePath, currentFile) {
+function resolveImportPath(modulePath, currentFile, rootPath) {
     try {
-        const currentDir = process.cwd();
-        const currentFileDir = path.dirname(path.join(currentDir, currentFile));
-        // Handle relative imports
+        const currentFileDir = path.dirname(currentFile);
+        // Handle relative imports from the current file's directory
         if (modulePath.startsWith('.')) {
-            const relativePath = modulePath.replace(/^\.+/, '');
-            return path.join(currentFileDir, relativePath + '.py');
-        }
-        // Handle absolute imports - resolve relative to the current file's directory
-        // For imports like "travel_concierge.sub_agents.planning.agent"
-        // We need to find the actual file in the project structure
-        const modulePathParts = modulePath.split('.');
-        const potentialPaths = [
-            // Try relative to current file directory
-            path.join(currentFileDir, modulePathParts.join('/') + '.py'),
-            // Try relative to project root
-            path.join(currentDir, modulePathParts.join('/') + '.py'),
-            // Try with travel/ prefix (common in this project)
-            path.join(currentDir, 'travel', modulePathParts.join('/') + '.py'),
-            // Try with travel/travel_concierge/ prefix
-            path.join(currentDir, 'travel', 'travel_concierge', modulePathParts.slice(1).join('/') + '.py')
-        ];
-        // Check if any of these paths exist
-        for (const potentialPath of potentialPaths) {
-            if (fs.existsSync(potentialPath)) {
-                // Return relative path from current directory
-                return path.relative(currentDir, potentialPath);
+            const resolvedPath = path.resolve(currentFileDir, modulePath.replace(/\./g, path.sep));
+            if (fs.existsSync(resolvedPath + '.py')) {
+                return resolvedPath + '.py';
+            }
+            if (fs.existsSync(path.join(resolvedPath, '__init__.py'))) {
+                return path.join(resolvedPath, '__init__.py');
             }
         }
-        // If none found, return the most likely path
-        return modulePathParts.join('/') + '.py';
+        // Handle absolute imports from the root of the project
+        const modulePathAsFilePath = modulePath.replace(/\./g, path.sep);
+        // Strategy 1: Search upwards from the current file to find the root of the module path
+        let currentPath = currentFileDir;
+        while (currentPath.startsWith(rootPath)) {
+            const potentialRoot = currentPath.substring(0, currentPath.indexOf(modulePathAsFilePath.split(path.sep)[0]));
+            const potentialPath = path.join(potentialRoot, modulePathAsFilePath) + '.py';
+            if (fs.existsSync(potentialPath)) {
+                return potentialPath;
+            }
+            const potentialPackagePath = path.join(potentialRoot, modulePathAsFilePath, 'agent.py');
+            if (fs.existsSync(potentialPackagePath)) {
+                return potentialPackagePath;
+            }
+            currentPath = path.dirname(currentPath);
+        }
+        // Strategy 2: Default to resolving from the workspace root
+        const absolutePath = path.join(rootPath, modulePathAsFilePath) + '.py';
+        if (fs.existsSync(absolutePath)) {
+            return absolutePath;
+        }
+        const packagePath = path.join(rootPath, modulePathAsFilePath, 'agent.py');
+        if (fs.existsSync(packagePath)) {
+            return packagePath;
+        }
+        // Fallback for common project structures if direct resolution fails
+        const travelConciergePath = path.join(rootPath, 'travel_concierge', modulePathAsFilePath) + '.py';
+        if (fs.existsSync(travelConciergePath)) {
+            return travelConciergePath;
+        }
+        return modulePath.replace(/\./g, path.sep) + '.py'; // Fallback
     }
     catch (error) {
         console.error('Error resolving import path:', error);
-        return modulePath + '.py';
+        return modulePath.replace(/\./g, path.sep) + '.py';
     }
 }
 /**
  * Finds the actual file location and line number where a tool function is defined,
  * handling both local definitions and imported tools
  * @param fileName - The name of the Python file to search in
- * @param toolName - The name of the tool function to find
+  * @param toolName - The name of the tool function to find
  * @returns Object with actual file location and line number information
  */
-function findToolLocation(fileName, toolName) {
+function findToolLocation(fileName, toolName, rootPath) {
     try {
-        const currentDir = process.cwd();
-        const filePath = path.join(currentDir, fileName);
+        const filePath = path.isAbsolute(fileName) ? fileName : path.join(rootPath, fileName);
         if (!fs.existsSync(filePath)) {
             console.error(`File not found at: ${filePath}`);
             return {
@@ -455,7 +465,7 @@ function findToolLocation(fileName, toolName) {
             };
         }
         // First, check if the tool is defined locally in the file
-        const localResult = findToolWithContext(fileName, toolName);
+        const localResult = findToolWithContext(fileName, toolName, rootPath);
         if (localResult.found) {
             return {
                 actualFileName: fileName,
@@ -467,11 +477,11 @@ function findToolLocation(fileName, toolName) {
             };
         }
         // If not found locally, check if it's an imported tool
-        const importedTools = findImportedTools(fileName);
+        const importedTools = findImportedTools(fileName, rootPath);
         for (const importedTool of importedTools) {
             if (importedTool.importedName === toolName) {
                 // Try to find the tool in the source file
-                const sourceFileResult = findToolWithContext(importedTool.sourceFile, importedTool.actualToolName);
+                const sourceFileResult = findToolWithContext(importedTool.sourceFile, importedTool.actualToolName, rootPath);
                 if (sourceFileResult.found) {
                     return {
                         actualFileName: importedTool.sourceFile,
@@ -520,7 +530,7 @@ function findToolLocation(fileName, toolName) {
  * @returns Object with file name and line number where tool is actually defined
  */
 function findToolLineNumberCrossFile(fileName, toolName) {
-    const location = findToolLocation(fileName, toolName);
+    const location = findToolLocation(fileName, toolName, process.cwd());
     return {
         fileName: location.actualFileName,
         lineNumber: location.lineNumber,
@@ -535,7 +545,7 @@ function findToolLineNumberCrossFile(fileName, toolName) {
  * @returns Object with complete tool location and context information
  */
 function findToolWithContextCrossFile(fileName, toolName) {
-    const location = findToolLocation(fileName, toolName);
+    const location = findToolLocation(fileName, toolName, process.cwd());
     return {
         fileName: location.actualFileName,
         lineNumber: location.lineNumber,
@@ -577,7 +587,7 @@ function findAgentToolsCrossFile(fileName, agentName) {
                         const toolNames = toolsStr.split(',').map(tool => tool.trim()).filter(tool => tool.length > 0);
                         // For each tool, find its actual location (local or imported)
                         for (const toolName of toolNames) {
-                            const toolLocation = findToolLocation(fileName, toolName);
+                            const toolLocation = findToolLocation(fileName, toolName, process.cwd());
                             tools.push({
                                 toolName,
                                 fileName: toolLocation.actualFileName,
@@ -855,7 +865,7 @@ if (require.main === module) {
     console.log('==================');
     for (const testCase of toolTestCases) {
         const toolLineNumber = findToolLineNumber(testCase.fileName, testCase.toolName);
-        const toolContext = findToolWithContext(testCase.fileName, testCase.toolName);
+        const toolContext = findToolWithContext(testCase.fileName, testCase.toolName, process.cwd());
         console.log(`\nFile: ${testCase.fileName}, Tool: ${testCase.toolName}`);
         console.log(`Line number: ${toolLineNumber}`);
         console.log(`Found: ${toolContext.found}`);

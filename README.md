@@ -1,72 +1,50 @@
-Antoine
-# agentdesigner README
+# Agent Inspector Extension
 
-This is the README for your extension "agentdesigner". After writing up a brief description, we recommend including the following sections.
+An extension for designing and managing ADK (Agent Development Kit) agents in Visual Studio Code.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+This extension provides tools for working with ADK agents:
 
-For example if there is an image subfolder under your extension project workspace:
+- **Agent Tree View**: Browse and inspect agent definitions in your workspace
+- **ADK Web Button**: Launch ADK web interface with proper environment setup
+- **ADK Terminal Button**: Open a terminal with ADK environment variables and run `adk run travel_concierge`
+- **Agent Management**: Add sub-agents, tools, and agent tools to your agent definitions
+- **Agent Scanner**: Scan directories for agent files and definitions
 
-\!\[feature X\]\(images/feature-x.png\)
+## Usage
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+### Status Bar Buttons
+
+- **Insert Time**: Inserts current date and time at cursor position
+- **ADK Web**: Launches ADK web interface in a webview panel
+- **ADK Terminal**: Opens a new terminal with ADK environment variables and runs the travel concierge agent
+
+### Commands
+
+- `Agent Inspector: Scan Directory for Agents`: Refresh the agent tree view
+- `Agent Inspector: Find Agent`: Locate specific agents in files
+- `Agent Inspector: Add Sub Agent`: Add a new sub-agent to an existing agent
+- `Agent Inspector: Add Tool`: Add a tool to an agent
+- `Agent Inspector: Add Agent Tool`: Add an agent tool definition
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Python 3.12 (specifically at `/Library/Frameworks/Python.framework/Versions/3.12/bin`)
+- ADK (Agent Development Kit) installed
+- Google API Key for agent functionality
 
-## Extension Settings
+## Installation
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
+1. Install the extension from VSIX file
+2. Reload VS Code window
+3. The extension will activate automatically when working with agent files
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Initial release with core agent management features:
+- Agent tree view
+- Terminal and web interface integration
+- Basic agent file manipulation tools

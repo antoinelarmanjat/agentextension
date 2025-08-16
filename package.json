@@ -1,8 +1,13 @@
 {
-  "name": "agentdesigner",
-  "displayName": "AgentDesigner",
+  "name": "agent-inspector",
+  "displayName": "AgentExtension",
   "description": "An extension to design ADK agents",
   "version": "0.0.1",
+  "publisher": "agentdesigner",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -10,44 +15,129 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:agentdesigner.helloWorld",
-    "onCommand:agentdesigner.insertDateTime",
-    "onCommand:agentdesigner.scanDirectory"
+    "onStartupFinished"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "agentdesigner.helloWorld",
+        "command": "agent-inspector.helloWorld",
         "title": "Hello World"
       },
       {
-        "command": "agentdesigner.insertDateTime",
+        "command": "agent-inspector.insertDateTime",
         "title": "Insert Date Time"
       },
       {
-        "command": "agentdesigner.scanDirectory",
+        "command": "agent-inspector.scanDirectory",
         "title": "Scan Directory for Agents"
+      },
+      {
+        "command": "agent-inspector.findAgent",
+        "title": "Find Agent"
+      },
+      {
+        "command": "agent-inspector.runAdkWebTopBar",
+        "title": "Run ADK Web"
+      },
+      {
+        "command": "agent-inspector.runAdkTerminal",
+        "title": "Run ADK Terminal"
+      },
+      {
+        "command": "agent-inspector.addTool",
+        "title": "Add Tool"
+      },
+      {
+        "command": "agent-inspector.addAgentTool",
+        "title": "Add Agent"
+      },
+      {
+        "command": "agent-inspector.sayHello",
+        "title": "Say Hello"
+      },
+      {
+        "command": "agent-inspector.refreshTree",
+        "title": "Refresh Agent Definitions",
+        "category": "Agent Inspector",
+        "icon": "$(refresh)"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "agent-inspector.agentTree",
+          "name": "Agent Definitions"
+        }
+      ]
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "agent-inspector.runAdkWebTopBar",
+          "when": "editorFocus"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "agent-inspector.runAdkWebTopBar",
+          "group": "navigation"
+        },
+        {
+          "command": "agent-inspector.runAdkTerminal",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "agent-inspector.refreshTree",
+          "when": "view == agent-inspector.agentTree",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "agent-inspector.addTool",
+          "when": "view == agent-inspector.agentTree && (viewItem == 'tools' || viewItem == 'agentItem')",
+          "group": "inline"
+        },
+        {
+          "command": "agent-inspector.addAgentTool",
+          "when": "view == agent-inspector.agentTree && (viewItem == 'agent_tools' || viewItem == 'agentItem')",
+          "group": "inline"
+        }
+      ]
+    }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "webpack --mode production",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "vsce package",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.85.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
+    "@types/node-fetch": "^2.6.13",
+    "@types/vscode": "^1.85.0",
     "@typescript-eslint/eslint-plugin": "^8.39.0",
     "@typescript-eslint/parser": "^8.39.0",
-    "eslint": "^9.32.0",
-    "typescript": "^5.9.2",
     "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2"
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^2.29.0",
+    "eslint": "^9.32.0",
+    "glob": "^11.0.3",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.39.0",
+    "webpack": "^5.101.2",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0"
   }
 }

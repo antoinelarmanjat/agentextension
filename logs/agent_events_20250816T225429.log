@@ -1,0 +1,754 @@
+[2025-08-17 00:54:32.306] 
+[2025-08-17 00:54:32.306] +-----------------------------------------------------------------------------+
+[2025-08-17 00:54:32.306] | ADK Web Server started                                                      |
+[2025-08-17 00:54:32.306] |                                                                             |
+[2025-08-17 00:54:32.306] | For local testing, access at http://localhost:5000.                         |
+[2025-08-17 00:54:32.306] +-----------------------------------------------------------------------------+
+[2025-08-17 00:54:32.306] 
+[2025-08-17 00:54:34.880] INFO:     127.0.0.1:50851 - "GET / HTTP/1.1" 307 Temporary Redirect
+[2025-08-17 00:54:35.156] INFO:     127.0.0.1:50851 - "GET /list-apps?relative_path=./ HTTP/1.1" 200 OK
+[2025-08-17 00:54:39.765] INFO:     127.0.0.1:50851 - "POST /apps/travel_concierge/users/user/sessions HTTP/1.1" 200 OK
+[2025-08-17 00:54:39.788] INFO:     127.0.0.1:50852 - "GET /apps/travel_concierge/eval_results HTTP/1.1" 200 OK
+[2025-08-17 00:54:39.788] INFO:     127.0.0.1:50851 - "GET /apps/travel_concierge/eval_sets HTTP/1.1" 200 OK
+[2025-08-17 00:54:39.813] INFO:     127.0.0.1:50851 - "GET /apps/travel_concierge/users/user/sessions HTTP/1.1" 200 OK
+[2025-08-17 00:54:40.291] INFO:     127.0.0.1:50851 - "GET /apps/travel_concierge/users/user/sessions HTTP/1.1" 200 OK
+[2025-08-17 00:54:43.746] INFO:     127.0.0.1:50851 - "POST /run_sse HTTP/1.1" 200 OK
+[2025-08-17 00:54:45.213] 
+[2025-08-17 00:54:45.213] Loading Initial State: {'state': {'user_profile': {'passport_nationality': 'US Citizen', 'seat_preference': 'window', 'food_preference': 'vegan', 'allergies': [], 'likes': [], 'dislikes': [], 'price_sensitivity': [], 'home': {'event_type': 'home', 'address': '6420 Sequence Dr #400, San Diego, CA 92121, United States', 'local_prefer_mode': 'drive'}}, 'itinerary': {}, 'origin': '', 'destination': '', 'start_date': '', 'end_date': '', 'outbound_flight_selection': '', 'outbound_seat_number': '', 'return_flight_selection': '', 'return_seat_number': '', 'hotel_selection': '', 'room_selection': '', 'poi': '', 'itinerary_datetime': '', 'itinerary_start_date': '', 'itinerary_end_date': ''}}
+[2025-08-17 00:54:45.213] 
+[2025-08-17 00:54:45.213] INFO:     127.0.0.1:50851 - "GET /apps/travel_concierge/users/user/sessions/d5e98ec4-14be-4385-9df6-2eb86aca1e31 HTTP/1.1" 200 OK
+[2025-08-17 00:54:45.214] INFO:     127.0.0.1:50860 - "GET /debug/trace/session/d5e98ec4-14be-4385-9df6-2eb86aca1e31 HTTP/1.1" 200 OK
+[2025-08-17 00:56:11.594] INFO:     127.0.0.1:50909 - "GET / HTTP/1.1" 307 Temporary Redirect
+[2025-08-17 00:56:11.832] INFO:     127.0.0.1:50909 - "GET /list-apps?relative_path=./ HTTP/1.1" 200 OK
+[2025-08-17 00:56:16.891] INFO:     127.0.0.1:50910 - "POST /apps/travel_concierge/users/user/sessions HTTP/1.1" 200 OK
+[2025-08-17 00:56:16.920] INFO:     127.0.0.1:50910 - "GET /apps/travel_concierge/eval_sets HTTP/1.1" 200 OK
+[2025-08-17 00:56:16.921] INFO:     127.0.0.1:50912 - "GET /apps/travel_concierge/eval_results HTTP/1.1" 200 OK
+[2025-08-17 00:56:16.954] INFO:     127.0.0.1:50912 - "GET /apps/travel_concierge/users/user/sessions HTTP/1.1" 200 OK
+[2025-08-17 00:56:17.421] INFO:     127.0.0.1:50912 - "GET /apps/travel_concierge/users/user/sessions HTTP/1.1" 200 OK
+[2025-08-17 00:56:24.000] INFO:     127.0.0.1:50913 - "POST /run_sse HTTP/1.1" 200 OK
+[2025-08-17 00:56:34.632] 
+[2025-08-17 00:56:34.632] Loading Initial State: {'state': {'user_profile': {'passport_nationality': 'US Citizen', 'seat_preference': 'window', 'food_preference': 'vegan', 'allergies': [], 'likes': [], 'dislikes': [], 'price_sensitivity': [], 'home': {'event_type': 'home', 'address': '6420 Sequence Dr #400, San Diego, CA 92121, United States', 'local_prefer_mode': 'drive'}}, 'itinerary': {}, 'origin': '', 'destination': '', 'start_date': '', 'end_date': '', 'outbound_flight_selection': '', 'outbound_seat_number': '', 'return_flight_selection': '', 'return_seat_number': '', 'hotel_selection': '', 'room_selection': '', 'poi': '', 'itinerary_datetime': '', 'itinerary_start_date': '', 'itinerary_end_date': ''}}
+[2025-08-17 00:56:34.632] 
+[2025-08-17 00:56:34.632] INFO:     127.0.0.1:50913 - "GET /apps/travel_concierge/users/user/sessions/07b20006-2407-48e6-b4cc-3af331c46be5 HTTP/1.1" 200 OK
+[2025-08-17 00:56:34.634] INFO:     127.0.0.1:50940 - "GET /debug/trace/session/07b20006-2407-48e6-b4cc-3af331c46be5 HTTP/1.1" 200 OK
+-17 00:54:43.809][E] - If the user asks about finding flight deals, making seat selection, or lodging, transfer to the agent `planning_agent`
+[2025-08-17 00:54:43.809][E] - If the user is ready to make the flight booking or process payments, transfer to the agent `booking_agent`
+[2025-08-17 00:54:43.809][E] - Please use the context info below for any user preferences
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] Current user:
+[2025-08-17 00:54:43.809][E] <user_profile>
+[2025-08-17 00:54:43.809][E] {'passport_nationality': 'US Citizen', 'seat_preference': 'window', 'food_preference': 'vegan', 'allergies': [], 'likes': [], 'dislikes': [], 'price_sensitivity': [], 'home': {'event_type': 'home', 'address': '6420 Sequence Dr #400, San Diego, CA 92121, United States', 'local_prefer_mode': 'drive'}}
+[2025-08-17 00:54:43.809][E] </user_profile>
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] Current time: 2025-08-17 00:54:43.767976
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] Trip phases:
+[2025-08-17 00:54:43.809][E] If we have a non-empty itinerary, follow the following logic to deteermine a Trip phase:
+[2025-08-17 00:54:43.809][E] - First focus on the start_date "" and the end_date "" of the itinerary.
+[2025-08-17 00:54:43.809][E] - if "" is before the start date "" of the trip, we are in the "pre_trip" phase.
+[2025-08-17 00:54:43.809][E] - if "" is between the start date "" and end date "" of the trip, we are in the "in_trip" phase.
+[2025-08-17 00:54:43.809][E] - When we are in the "in_trip" phase, the "" dictates if we have "day_of" matters to handle.
+[2025-08-17 00:54:43.809][E] - if "" is after the end date of the trip, we are in the "post_trip" phase.
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] <itinerary>
+[2025-08-17 00:54:43.809][E] {}
+[2025-08-17 00:54:43.809][E] </itinerary>
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] Upon knowing the trip phase, delegate the control of the dialog to the respective agents accordingly:
+[2025-08-17 00:54:43.809][E] pre_trip, in_trip, post_trip.
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] You are an agent. Your internal name is "root_agent".
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] The description about you is "A Travel Conceirge using the services of multiple sub-agents"
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] You have a list of other agents to transfer to:
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] Agent name: inspiration_agent
+[2025-08-17 00:54:43.809][E] Agent description: A travel inspiration agent who inspire users, and discover their next vacations; Provide information about places, activities, interests,
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] Agent name: planning_agent
+[2025-08-17 00:54:43.809][E] Agent description: Helps users with travel planning, complete a full itinerary for their vacation, finding best deals for flights and hotels.
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] Agent name: booking_agent
+[2025-08-17 00:54:43.809][E] Agent description: Given an itinerary, complete the bookings of items by handling payment choices and processing.
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] Agent name: pre_trip_agent
+[2025-08-17 00:54:43.809][E] Agent description: Given an itinerary, this agent keeps up to date and provides relevant travel information to the user before the trip.
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] Agent name: in_trip_agent
+[2025-08-17 00:54:43.809][E] Agent description: Provide information about what the users need as part of the tour.
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] Agent name: post_trip_agent
+[2025-08-17 00:54:43.809][E] Agent description: A follow up agent to learn from user's experience; In turn improves the user's future trips planning and in-trip experience.
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] If you are the best to answer the question according to your description, you
+[2025-08-17 00:54:43.809][E] can answer it.
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] If another agent is better for answering the question according to its
+[2025-08-17 00:54:43.809][E] description, call `transfer_to_agent` function to transfer the
+[2025-08-17 00:54:43.809][E] question to that agent. When transferring, do not generate any text other than
+[2025-08-17 00:54:43.809][E] the function call.
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] -----------------------------------------------------------
+[2025-08-17 00:54:43.809][E] Contents:
+[2025-08-17 00:54:43.809][E] {"parts":[{"text":"hello"}],"role":"user"}
+[2025-08-17 00:54:43.809][E] -----------------------------------------------------------
+[2025-08-17 00:54:43.809][E] Functions:
+[2025-08-17 00:54:43.809][E] transfer_to_agent: {'agent_name': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:54:43.809][E] -----------------------------------------------------------
+[2025-08-17 00:54:43.809][E] 
+[2025-08-17 00:54:43.809][E] 2025-08-17 00:54:43,809 - INFO - models.py:7422 - AFC is enabled with max remote calls: 10.
+[2025-08-17 00:54:43.810][E] 2025-08-17 00:54:43,810 - DEBUG - _trace.py:87 - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+[2025-08-17 00:54:43.894][E] 2025-08-17 00:54:43,894 - DEBUG - _trace.py:87 - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x14ab042f0>
+[2025-08-17 00:54:43.894][E] 2025-08-17 00:54:43,894 - DEBUG - _trace.py:87 - start_tls.started ssl_context=<ssl.SSLContext object at 0x14afa2950> server_hostname='generativelanguage.googleapis.com' timeout=None
+[2025-08-17 00:54:43.971][E] 2025-08-17 00:54:43,971 - DEBUG - _trace.py:87 - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x14acc36b0>
+[2025-08-17 00:54:43.971][E] 2025-08-17 00:54:43,971 - DEBUG - _trace.py:87 - send_request_headers.started request=<Request [b'POST']>
+[2025-08-17 00:54:43.971][E] 2025-08-17 00:54:43,971 - DEBUG - _trace.py:87 - send_request_headers.complete
+[2025-08-17 00:54:43.971][E] 2025-08-17 00:54:43,971 - DEBUG - _trace.py:87 - send_request_body.started request=<Request [b'POST']>
+[2025-08-17 00:54:43.972][E] 2025-08-17 00:54:43,971 - DEBUG - _trace.py:87 - send_request_body.complete
+[2025-08-17 00:54:43.972][E] 2025-08-17 00:54:43,972 - DEBUG - _trace.py:87 - receive_response_headers.started request=<Request [b'POST']>
+[2025-08-17 00:54:45.186][E] 2025-08-17 00:54:45,186 - DEBUG - _trace.py:87 - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=UTF-8'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sat, 16 Aug 2025 22:54:45 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=1127'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+[2025-08-17 00:54:45.187][E] 2025-08-17 00:54:45,187 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+[2025-08-17 00:54:45.187][E] 2025-08-17 00:54:45,187 - DEBUG - _trace.py:87 - receive_response_body.started request=<Request [b'POST']>
+[2025-08-17 00:54:45.193][E] 2025-08-17 00:54:45,193 - DEBUG - _trace.py:87 - receive_response_body.complete
+[2025-08-17 00:54:45.194][E] 2025-08-17 00:54:45,193 - DEBUG - _trace.py:87 - response_closed.started
+[2025-08-17 00:54:45.194][E] 2025-08-17 00:54:45,194 - DEBUG - _trace.py:87 - response_closed.complete
+[2025-08-17 00:54:45.194][E] 2025-08-17 00:54:45,194 - INFO - google_llm.py:203 - Response received from the model.
+[2025-08-17 00:54:45.194][E] 2025-08-17 00:54:45,194 - WARNING - types.py:5176 - Warning: there are non-text parts in the response: ['thought_signature'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+[2025-08-17 00:54:45.194][E] 2025-08-17 00:54:45,194 - DEBUG - google_llm.py:204 -
+[2025-08-17 00:54:45.194][E] LLM Response:
+[2025-08-17 00:54:45.194][E] -----------------------------------------------------------
+[2025-08-17 00:54:45.194][E] Text:
+[2025-08-17 00:54:45.194][E] Hello! I'm your travel concierge. How may I assist you today?
+[2025-08-17 00:54:45.195][E] -----------------------------------------------------------
+[2025-08-17 00:54:45.195][E] Function calls:
+[2025-08-17 00:54:45.195][E] 
+[2025-08-17 00:54:45.195][E] -----------------------------------------------------------
+[2025-08-17 00:54:45.195][E] Raw response:
+[2025-08-17 00:54:45.195][E] {"sdk_http_response":{"headers":{"content-type":"application/json; charset=UTF-8","vary":"Origin, X-Origin, Referer","content-encoding":"gzip","date":"Sat, 16 Aug 2025 22:54:45 GMT","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=1127","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000","transfer-encoding":"chunked"}},"candidates":[{"content":{"parts":[{"thought_signature":"Cu0EAVSoXO6ya951Sag8SXznAbkrtqHO8h1cMAwh0Ackk6nVz3TXoAQ0PbL8YgIdRywbtaWB1Mozc4YVyxg1qAPEXGtBz4FIhoe-gTgsT91e0cqz6bWtnL0UrJlkklh4zTHTfRBhY3XwsV13b3WoaeyOcOv7ePDm7b3F0eWRWULHqklYrIpoHfH8KJU5stRgQYy0HJT4a4XXGUkKDhJFm-jng6xws611GgnaMXeBQg7XXrBuNVkwfj7tBZg_X65gU1XL9lneECiAS8cX51-OAocQUkfxJThO9otg6ikhcw4vSvgw9jopneL3RH1dhBMdugidzL89c-vF7esBOBt5p3hQPCC3xX7bqeg4QSVbvCrL4phOx_G8mY6CZYc2IyeuaVi9dFbzjEaYPe3wjVwmG9UhycRnuD40-WAGhXszeeFePhKqVd1YPV_5b3c45MydZCGcenehUbLps73S1mrsDJl9FFnCXTDVMVdntX1s2IWf8fI3oZ8TR-WsDJ0x97WoYuGbuJBVJ0ZyIzA_b7DW56HKG2101lYBzhVT_T9l4ndzNLjwr3GClOQKXZ17VK1PvRSHql5zgfv30ELJAOr2smB6-5OwkSRg8U8jiGDOkWI2P0aceIhKChtkIELKzi1zAfkZ0ggkAytm2lA4LNmjqx3B-8c2W6oLfxQHSSIQ2pxVdrF8xej9__Mw4qYAy-ZpkjZjMhiA4m3i9E4000zYF3iD6425XFpFgJhzYl6eXi6lRzDJsdWp-4tQDb_OfkHIADyZ8Q3Nld_XVSfcp-1leN1oC4KdQlb8W3wsjUft9bd5EJazZEXqq3qibEfWWW3Y","text":"Hello! I'm your travel concierge. How may I assist you today?"}],"role":"model"},"finish_reason":"STOP","index":0}],"model_version":"gemini-2.5-flash","usage_metadata":{"candidates_token_count":16,"prompt_token_count":939,"prompt_tokens_details":[{"modality":"TEXT","token_count":939}],"thoughts_token_count":136,"total_token_count":1091},"automatic_function_calling_history":[]}
+[2025-08-17 00:54:45.195][E] -----------------------------------------------------------
+[2025-08-17 00:54:45.195][E] 
+[2025-08-17 00:54:45.195][E] 2025-08-17 00:54:45,195 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"thoughtSignature":"Cu0EAVSoXO6ya951Sag8SXznAbkrtqHO8h1cMAwh0Ackk6nVz3TXoAQ0PbL8YgIdRywbtaWB1Mozc4YVyxg1qAPEXGtBz4FIhoe-gTgsT91e0cqz6bWtnL0UrJlkklh4zTHTfRBhY3XwsV13b3WoaeyOcOv7ePDm7b3F0eWRWULHqklYrIpoHfH8KJU5stRgQYy0HJT4a4XXGUkKDhJFm-jng6xws611GgnaMXeBQg7XXrBuNVkwfj7tBZg_X65gU1XL9lneECiAS8cX51-OAocQUkfxJThO9otg6ikhcw4vSvgw9jopneL3RH1dhBMdugidzL89c-vF7esBOBt5p3hQPCC3xX7bqeg4QSVbvCrL4phOx_G8mY6CZYc2IyeuaVi9dFbzjEaYPe3wjVwmG9UhycRnuD40-WAGhXszeeFePhKqVd1YPV_5b3c45MydZCGcenehUbLps73S1mrsDJl9FFnCXTDVMVdntX1s2IWf8fI3oZ8TR-WsDJ0x97WoYuGbuJBVJ0ZyIzA_b7DW56HKG2101lYBzhVT_T9l4ndzNLjwr3GClOQKXZ17VK1PvRSHql5zgfv30ELJAOr2smB6-5OwkSRg8U8jiGDOkWI2P0aceIhKChtkIELKzi1zAfkZ0ggkAytm2lA4LNmjqx3B-8c2W6oLfxQHSSIQ2pxVdrF8xej9__Mw4qYAy-ZpkjZjMhiA4m3i9E4000zYF3iD6425XFpFgJhzYl6eXi6lRzDJsdWp-4tQDb_OfkHIADyZ8Q3Nld_XVSfcp-1leN1oC4KdQlb8W3wsjUft9bd5EJazZEXqq3qibEfWWW3Y","text":"Hello! I'm your travel concierge. How may I assist you today?"}],"role":"model"},"usageMetadata":{"candidatesTokenCount":16,"promptTokenCount":939,"promptTokensDetails":[{"modality":"TEXT","tokenCount":939}],"thoughtsTokenCount":136,"totalTokenCount":1091},"invocationId":"e-62670079-aad0-4e7c-8b3a-9eec6d7f1f9e","author":"root_agent","actions":{"stateDelta":{},"artifactDelta":{},"requestedAuthConfigs":{}},"id":"6c8e1164-0d08-4ea8-b072-6ab81219d070","timestamp":1755384883.768535}
+[2025-08-17 00:54:45.197][E] 2025-08-17 00:54:45,197 - DEBUG - _trace.py:87 - close.started
+[2025-08-17 00:54:45.197][E] 2025-08-17 00:54:45,197 - DEBUG - _trace.py:87 - close.complete
+[2025-08-17 00:56:16.891][E] 2025-08-17 00:56:16,891 - INFO - adk_web_server.py:453 - New session created
+[2025-08-17 00:56:24.000][E] 2025-08-17 00:56:24,000 - INFO - envs.py:54 - No .env file found for travel_concierge
+[2025-08-17 00:56:24.003][E] 2025-08-17 00:56:24,003 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"invocationId":"e-4183a70a-54c5-41e8-91f9-92698f093981","author":"root_agent","actions":{"stateDelta":{"_time":"2025-08-17 00:56:24.002809","_itin_initialized":true,"user_profile":{"passport_nationality":"US Citizen","seat_preference":"window","food_preference":"vegan","allergies":[],"likes":[],"dislikes":[],"price_sensitivity":[],"home":{"event_type":"home","address":"6420 Sequence Dr #400, San Diego, CA 92121, United States","local_prefer_mode":"drive"}},"itinerary":{},"origin":"","destination":"","start_date":"","end_date":"","outbound_flight_selection":"","outbound_seat_number":"","return_flight_selection":"","return_seat_number":"","hotel_selection":"","room_selection":"","poi":"","itinerary_datetime":"","itinerary_start_date":"","itinerary_end_date":""},"artifactDelta":{},"requestedAuthConfigs":{}},"id":"fa1c013f-ae0b-49f4-9c51-2cb8f5b8d2f9","timestamp":1755384984.002874}
+[2025-08-17 00:56:24.051][E] 2025-08-17 00:56:24,051 - INFO - google_llm.py:111 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+[2025-08-17 00:56:24.051][E] 2025-08-17 00:56:24,051 - DEBUG - google_llm.py:117 -
+[2025-08-17 00:56:24.052][E] LLM Request:
+[2025-08-17 00:56:24.052][E] -----------------------------------------------------------
+[2025-08-17 00:56:24.052][E] System Instruction:
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] - You are a exclusive travel conceirge agent
+[2025-08-17 00:56:24.052][E] - You help users to discover their dream vacation, planning for the vacation, book flights and hotels
+[2025-08-17 00:56:24.052][E] - You want to gather a minimal information to help the user
+[2025-08-17 00:56:24.052][E] - After every tool call, pretend you're showing the result to the user and keep your response limited to a phrase.
+[2025-08-17 00:56:24.052][E] - Please use only the agents and tools to fulfill all user rquest
+[2025-08-17 00:56:24.052][E] - If the user asks about general knowledge, vacation inspiration or things to do, transfer to the agent `inspiration_agent`
+[2025-08-17 00:56:24.052][E] - If the user asks about finding flight deals, making seat selection, or lodging, transfer to the agent `planning_agent`
+[2025-08-17 00:56:24.052][E] - If the user is ready to make the flight booking or process payments, transfer to the agent `booking_agent`
+[2025-08-17 00:56:24.052][E] - Please use the context info below for any user preferences
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] Current user:
+[2025-08-17 00:56:24.052][E] <user_profile>
+[2025-08-17 00:56:24.052][E] {'passport_nationality': 'US Citizen', 'seat_preference': 'window', 'food_preference': 'vegan', 'allergies': [], 'likes': [], 'dislikes': [], 'price_sensitivity': [], 'home': {'event_type': 'home', 'address': '6420 Sequence Dr #400, San Diego, CA 92121, United States', 'local_prefer_mode': 'drive'}}
+[2025-08-17 00:56:24.052][E] </user_profile>
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] Current time: 2025-08-17 00:56:24.002809
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] Trip phases:
+[2025-08-17 00:56:24.052][E] If we have a non-empty itinerary, follow the following logic to deteermine a Trip phase:
+[2025-08-17 00:56:24.052][E] - First focus on the start_date "" and the end_date "" of the itinerary.
+[2025-08-17 00:56:24.052][E] - if "" is before the start date "" of the trip, we are in the "pre_trip" phase.
+[2025-08-17 00:56:24.052][E] - if "" is between the start date "" and end date "" of the trip, we are in the "in_trip" phase.
+[2025-08-17 00:56:24.052][E] - When we are in the "in_trip" phase, the "" dictates if we have "day_of" matters to handle.
+[2025-08-17 00:56:24.052][E] - if "" is after the end date of the trip, we are in the "post_trip" phase.
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] <itinerary>
+[2025-08-17 00:56:24.052][E] {}
+[2025-08-17 00:56:24.052][E] </itinerary>
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] Upon knowing the trip phase, delegate the control of the dialog to the respective agents accordingly:
+[2025-08-17 00:56:24.052][E] pre_trip, in_trip, post_trip.
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] You are an agent. Your internal name is "root_agent".
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] The description about you is "A Travel Conceirge using the services of multiple sub-agents"
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] You have a list of other agents to transfer to:
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] Agent name: inspiration_agent
+[2025-08-17 00:56:24.052][E] Agent description: A travel inspiration agent who inspire users, and discover their next vacations; Provide information about places, activities, interests,
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] Agent name: planning_agent
+[2025-08-17 00:56:24.052][E] Agent description: Helps users with travel planning, complete a full itinerary for their vacation, finding best deals for flights and hotels.
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] Agent name: booking_agent
+[2025-08-17 00:56:24.052][E] Agent description: Given an itinerary, complete the bookings of items by handling payment choices and processing.
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] Agent name: pre_trip_agent
+[2025-08-17 00:56:24.052][E] Agent description: Given an itinerary, this agent keeps up to date and provides relevant travel information to the user before the trip.
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] Agent name: in_trip_agent
+[2025-08-17 00:56:24.052][E] Agent description: Provide information about what the users need as part of the tour.
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] Agent name: post_trip_agent
+[2025-08-17 00:56:24.052][E] Agent description: A follow up agent to learn from user's experience; In turn improves the user's future trips planning and in-trip experience.
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] If you are the best to answer the question according to your description, you
+[2025-08-17 00:56:24.052][E] can answer it.
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] If another agent is better for answering the question according to its
+[2025-08-17 00:56:24.052][E] description, call `transfer_to_agent` function to transfer the
+[2025-08-17 00:56:24.052][E] question to that agent. When transferring, do not generate any text other than
+[2025-08-17 00:56:24.052][E] the function call.
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] -----------------------------------------------------------
+[2025-08-17 00:56:24.052][E] Contents:
+[2025-08-17 00:56:24.052][E] {"parts":[{"text":"I want to go to Barcelona"}],"role":"user"}
+[2025-08-17 00:56:24.052][E] -----------------------------------------------------------
+[2025-08-17 00:56:24.052][E] Functions:
+[2025-08-17 00:56:24.052][E] transfer_to_agent: {'agent_name': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:24.052][E] -----------------------------------------------------------
+[2025-08-17 00:56:24.052][E] 
+[2025-08-17 00:56:24.052][E] 2025-08-17 00:56:24,052 - INFO - models.py:7422 - AFC is enabled with max remote calls: 10.
+[2025-08-17 00:56:24.054][E] 2025-08-17 00:56:24,054 - DEBUG - _trace.py:87 - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+[2025-08-17 00:56:24.135][E] 2025-08-17 00:56:24,135 - DEBUG - _trace.py:87 - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x14aff0e00>
+[2025-08-17 00:56:24.136][E] 2025-08-17 00:56:24,135 - DEBUG - _trace.py:87 - start_tls.started ssl_context=<ssl.SSLContext object at 0x14afd7bd0> server_hostname='generativelanguage.googleapis.com' timeout=None
+[2025-08-17 00:56:24.161][E] 2025-08-17 00:56:24,161 - DEBUG - _trace.py:87 - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x14afc39b0>
+[2025-08-17 00:56:24.162][E] 2025-08-17 00:56:24,161 - DEBUG - _trace.py:87 - send_request_headers.started request=<Request [b'POST']>
+[2025-08-17 00:56:24.162][E] 2025-08-17 00:56:24,162 - DEBUG - _trace.py:87 - send_request_headers.complete
+[2025-08-17 00:56:24.162][E] 2025-08-17 00:56:24,162 - DEBUG - _trace.py:87 - send_request_body.started request=<Request [b'POST']>
+[2025-08-17 00:56:24.163][E] 2025-08-17 00:56:24,163 - DEBUG - _trace.py:87 - send_request_body.complete
+[2025-08-17 00:56:24.163][E] 2025-08-17 00:56:24,163 - DEBUG - _trace.py:87 - receive_response_headers.started request=<Request [b'POST']>
+[2025-08-17 00:56:25.124][E] 2025-08-17 00:56:25,124 - DEBUG - _trace.py:87 - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=UTF-8'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sat, 16 Aug 2025 22:56:25 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=841'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+[2025-08-17 00:56:25.124][E] 2025-08-17 00:56:25,124 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+[2025-08-17 00:56:25.125][E] 2025-08-17 00:56:25,125 - DEBUG - _trace.py:87 - receive_response_body.started request=<Request [b'POST']>
+[2025-08-17 00:56:25.125][E] 2025-08-17 00:56:25,125 - DEBUG - _trace.py:87 - receive_response_body.complete
+[2025-08-17 00:56:25.125][E] 2025-08-17 00:56:25,125 - DEBUG - _trace.py:87 - response_closed.started
+[2025-08-17 00:56:25.126][E] 2025-08-17 00:56:25,125 - DEBUG - _trace.py:87 - response_closed.complete
+[2025-08-17 00:56:25.127][E] 2025-08-17 00:56:25,127 - INFO - google_llm.py:203 - Response received from the model.
+[2025-08-17 00:56:25.127][E] 2025-08-17 00:56:25,127 - WARNING - types.py:5176 - Warning: there are non-text parts in the response: ['thought_signature', 'function_call'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+[2025-08-17 00:56:25.127][E] 2025-08-17 00:56:25,127 - DEBUG - google_llm.py:204 -
+[2025-08-17 00:56:25.127][E] LLM Response:
+[2025-08-17 00:56:25.127][E] -----------------------------------------------------------
+[2025-08-17 00:56:25.127][E] Text:
+[2025-08-17 00:56:25.127][E] None
+[2025-08-17 00:56:25.127][E] -----------------------------------------------------------
+[2025-08-17 00:56:25.127][E] Function calls:
+[2025-08-17 00:56:25.127][E] name: transfer_to_agent, args: {'agent_name': 'inspiration_agent'}
+[2025-08-17 00:56:25.127][E] -----------------------------------------------------------
+[2025-08-17 00:56:25.127][E] Raw response:
+[2025-08-17 00:56:25.127][E] {"sdk_http_response":{"headers":{"content-type":"application/json; charset=UTF-8","vary":"Origin, X-Origin, Referer","content-encoding":"gzip","date":"Sat, 16 Aug 2025 22:56:25 GMT","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=841","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000","transfer-encoding":"chunked"}},"candidates":[{"content":{"parts":[{"thought_signature":"CoEFAVSoXO7aqhrFAUGAH-A8G3Vunf-xuklXcy0yIA-UtkfgVzT2nrc3vrm45uGWepKjugeSoYiUw5tE1Wb185zLPoqaYuUi_iJ6q6wKNX_V8f_KgUnXrNoADqkzz4qzUaam9DJoAl6oBWI-PI4gIXbhcwnTXVE9hrpooCiZj_7ac2H_dIa4uEHx-Q8qzxyQmr_CFHPBoi-LTwWDCU7vwPrre7YUPa3pZYUrGE3pqh9zagZfAGKpYu9IHFfLyP4ybSbxiWbXvoO4FuzkeIktRznJVXo2njw8KCSNMYJo3AswHxD6iOrrKPsWFGQb8FsywC7bCk8kiZmBe734OUF0SmsNTsioZU29Rsuyc4tkKpXLQzjdX2QSE23S9QiNq5TQRgiIIbHJA-RxDSDsAP3Y68SLnWsBwbeOUhKVEtwXCsG8fw4ILpfQibJYjDvfD0_twsWEhogVzaMUWi4iPARFSRGwE-ayFLLLO36HLUxH-nagMiynbnHvlFXPcyLCiTgQdcLB8ibGQas5D8AJHDc47rP3DbICUN1VPdh5b7uI6isbOE2LA6_hXPFhwq4u0YLrYZGKANyKy_F3lIIonkcoBYzimv7GXaDNFrDXo9UqOZl0wkVOYskDVGDQiMXda6NvJKNe33PRhHYNwYKcXX81D4fDPnKMPZT5bJJ652BAG0--uqwFKl18Fvs5Pp3EaElvg2i5etTJq_u5dpQBGJDjrqf-L1_CnmFiuCfxISoN-_fHgouoefbJy717dXOS8-lrz8SNQQIT2v9yW5OSHp4b_cRlAFhylbBTq-2hGWMTRGnZnMPjYHZdy12eF5rc5Nre6RBgQ05M31V4AiTKnn5jfCK54JA=","function_call":{"args":{"agent_name":"inspiration_agent"},"name":"transfer_to_agent"}}],"role":"model"},"finish_reason":"STOP","index":0}],"model_version":"gemini-2.5-flash","usage_metadata":{"candidates_token_count":21,"prompt_token_count":944,"prompt_tokens_details":[{"modality":"TEXT","token_count":944}],"thoughts_token_count":123,"total_token_count":1088},"automatic_function_calling_history":[]}
+[2025-08-17 00:56:25.127][E] -----------------------------------------------------------
+[2025-08-17 00:56:25.127][E] 
+[2025-08-17 00:56:25.128][E] 2025-08-17 00:56:25,128 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"thoughtSignature":"CoEFAVSoXO7aqhrFAUGAH-A8G3Vunf-xuklXcy0yIA-UtkfgVzT2nrc3vrm45uGWepKjugeSoYiUw5tE1Wb185zLPoqaYuUi_iJ6q6wKNX_V8f_KgUnXrNoADqkzz4qzUaam9DJoAl6oBWI-PI4gIXbhcwnTXVE9hrpooCiZj_7ac2H_dIa4uEHx-Q8qzxyQmr_CFHPBoi-LTwWDCU7vwPrre7YUPa3pZYUrGE3pqh9zagZfAGKpYu9IHFfLyP4ybSbxiWbXvoO4FuzkeIktRznJVXo2njw8KCSNMYJo3AswHxD6iOrrKPsWFGQb8FsywC7bCk8kiZmBe734OUF0SmsNTsioZU29Rsuyc4tkKpXLQzjdX2QSE23S9QiNq5TQRgiIIbHJA-RxDSDsAP3Y68SLnWsBwbeOUhKVEtwXCsG8fw4ILpfQibJYjDvfD0_twsWEhogVzaMUWi4iPARFSRGwE-ayFLLLO36HLUxH-nagMiynbnHvlFXPcyLCiTgQdcLB8ibGQas5D8AJHDc47rP3DbICUN1VPdh5b7uI6isbOE2LA6_hXPFhwq4u0YLrYZGKANyKy_F3lIIonkcoBYzimv7GXaDNFrDXo9UqOZl0wkVOYskDVGDQiMXda6NvJKNe33PRhHYNwYKcXX81D4fDPnKMPZT5bJJ652BAG0--uqwFKl18Fvs5Pp3EaElvg2i5etTJq_u5dpQBGJDjrqf-L1_CnmFiuCfxISoN-_fHgouoefbJy717dXOS8-lrz8SNQQIT2v9yW5OSHp4b_cRlAFhylbBTq-2hGWMTRGnZnMPjYHZdy12eF5rc5Nre6RBgQ05M31V4AiTKnn5jfCK54JA=","functionCall":{"id":"adk-4e65081b-6d76-4c47-938d-87b231a86d37","args":{"agent_name":"inspiration_agent"},"name":"transfer_to_agent"}}],"role":"model"},"usageMetadata":{"candidatesTokenCount":21,"promptTokenCount":944,"promptTokensDetails":[{"modality":"TEXT","tokenCount":944}],"thoughtsTokenCount":123,"totalTokenCount":1088},"invocationId":"e-4183a70a-54c5-41e8-91f9-92698f093981","author":"root_agent","actions":{"stateDelta":{},"artifactDelta":{},"requestedAuthConfigs":{}},"longRunningToolIds":[],"id":"124afac1-fa37-478e-854e-bbf8ffefd5ea","timestamp":1755384984.004177}
+[2025-08-17 00:56:25.129][E] 2025-08-17 00:56:25,129 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"functionResponse":{"id":"adk-4e65081b-6d76-4c47-938d-87b231a86d37","name":"transfer_to_agent","response":{"result":null}}}],"role":"user"},"invocationId":"e-4183a70a-54c5-41e8-91f9-92698f093981","author":"root_agent","actions":{"stateDelta":{},"artifactDelta":{},"transferToAgent":"inspiration_agent","requestedAuthConfigs":{}},"id":"f21500e7-95df-4508-86ea-d6b968c46a8e","timestamp":1755384985.129133}
+[2025-08-17 00:56:25.177][E] 2025-08-17 00:56:25,177 - INFO - google_llm.py:111 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+[2025-08-17 00:56:25.177][E] 2025-08-17 00:56:25,177 - DEBUG - google_llm.py:117 -
+[2025-08-17 00:56:25.177][E] LLM Request:
+[2025-08-17 00:56:25.177][E] -----------------------------------------------------------
+[2025-08-17 00:56:25.177][E] System Instruction:
+[2025-08-17 00:56:25.177][E] 
+[2025-08-17 00:56:25.177][E] You are travel inspiration agent who help users find their next big dream vacation destinations.
+[2025-08-17 00:56:25.177][E] Your role and goal is to help the user identify a destination and a few activities at the destination the user is interested in.
+[2025-08-17 00:56:25.177][E] 
+[2025-08-17 00:56:25.177][E] As part of that, user may ask you for general history or knowledge about a destination, in that scenario, answer briefly in the best of your ability, but focus on the goal by relating your answer back to destinations and activities the user may in turn like.
+[2025-08-17 00:56:25.177][E] - You will call the two agent tool `place_agent(inspiration query)` and `poi_agent(destination)` when appropriate:
+[2025-08-17 00:56:25.177][E] - Use `place_agent` to recommend general vacation destinations given vague ideas, be it a city, a region, a country.
+[2025-08-17 00:56:25.177][E] - Use `poi_agent` to provide points of interests and acitivities suggestions, once the user has a specific city or region in mind.
+[2025-08-17 00:56:25.177][E] - Everytime after `poi_agent` is invoked, call `map_tool` with the key being `poi` to verify the latitude and longitudes.
+[2025-08-17 00:56:25.177][E] - Avoid asking too many questions. When user gives instructions like "inspire me", or "suggest some", just go ahead and call `place_agent`.
+[2025-08-17 00:56:25.177][E] - As follow up, you may gather a few information from the user to future their vacation inspirations.
+[2025-08-17 00:56:25.177][E] - Once the user selects their destination, then you help them by providing granular insights by being their personal local travel guide
+[2025-08-17 00:56:25.177][E] 
+[2025-08-17 00:56:25.177][E] - Here's the optimal flow:
+[2025-08-17 00:56:25.177][E] - inspire user for a dream vacation
+[2025-08-17 00:56:25.177][E] - show them interesting things to do for the selected location
+[2025-08-17 00:56:25.177][E] 
+[2025-08-17 00:56:25.177][E] - Your role is only to identify possible destinations and acitivites.
+[2025-08-17 00:56:25.177][E] - Do not attempt to assume the role of `place_agent` and `poi_agent`, use them instead.
+[2025-08-17 00:56:25.177][E] - Do not attempt to plan an itinerary for the user with start dates and details, leave that to the planning_agent.
+[2025-08-17 00:56:25.177][E] - Transfer the user to planning_agent once the user wants to:
+[2025-08-17 00:56:25.177][E] - Enumerate a more detailed full itinerary,
+[2025-08-17 00:56:25.177][E] - Looking for flights and hotels deals.
+[2025-08-17 00:56:25.177][E] 
+[2025-08-17 00:56:25.177][E] - Please use the context info below for any user preferences:
+[2025-08-17 00:56:25.177][E] Current user:
+[2025-08-17 00:56:25.177][E] <user_profile>
+[2025-08-17 00:56:25.177][E] {'passport_nationality': 'US Citizen', 'seat_preference': 'window', 'food_preference': 'vegan', 'allergies': [], 'likes': [], 'dislikes': [], 'price_sensitivity': [], 'home': {'event_type': 'home', 'address': '6420 Sequence Dr #400, San Diego, CA 92121, United States', 'local_prefer_mode': 'drive'}}
+[2025-08-17 00:56:25.177][E] </user_profile>
+[2025-08-17 00:56:25.177][E] 
+[2025-08-17 00:56:25.177][E] Current time: 2025-08-17 00:56:24.002809
+[2025-08-17 00:56:25.177][E] 
+[2025-08-17 00:56:25.177][E] 
+[2025-08-17 00:56:25.177][E] You are an agent. Your internal name is "inspiration_agent".
+[2025-08-17 00:56:25.177][E] 
+[2025-08-17 00:56:25.177][E] The description about you is "A travel inspiration agent who inspire users, and discover their next vacations; Provide information about places, activities, interests,"
+[2025-08-17 00:56:25.177][E] 
+[2025-08-17 00:56:25.177][E] 
+[2025-08-17 00:56:25.177][E] You have a list of other agents to transfer to:
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] Agent name: root_agent
+[2025-08-17 00:56:25.178][E] Agent description: A Travel Conceirge using the services of multiple sub-agents
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] Agent name: planning_agent
+[2025-08-17 00:56:25.178][E] Agent description: Helps users with travel planning, complete a full itinerary for their vacation, finding best deals for flights and hotels.
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] Agent name: booking_agent
+[2025-08-17 00:56:25.178][E] Agent description: Given an itinerary, complete the bookings of items by handling payment choices and processing.
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] Agent name: pre_trip_agent
+[2025-08-17 00:56:25.178][E] Agent description: Given an itinerary, this agent keeps up to date and provides relevant travel information to the user before the trip.
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] Agent name: in_trip_agent
+[2025-08-17 00:56:25.178][E] Agent description: Provide information about what the users need as part of the tour.
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] Agent name: post_trip_agent
+[2025-08-17 00:56:25.178][E] Agent description: A follow up agent to learn from user's experience; In turn improves the user's future trips planning and in-trip experience.
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] If you are the best to answer the question according to your description, you
+[2025-08-17 00:56:25.178][E] can answer it.
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] If another agent is better for answering the question according to its
+[2025-08-17 00:56:25.178][E] description, call `transfer_to_agent` function to transfer the
+[2025-08-17 00:56:25.178][E] question to that agent. When transferring, do not generate any text other than
+[2025-08-17 00:56:25.178][E] the function call.
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] Your parent agent is root_agent. If neither the other agents nor
+[2025-08-17 00:56:25.178][E] you are best for answering the question according to the descriptions, transfer
+[2025-08-17 00:56:25.178][E] to your parent agent.
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] -----------------------------------------------------------
+[2025-08-17 00:56:25.178][E] Contents:
+[2025-08-17 00:56:25.178][E] {"parts":[{"text":"I want to go to Barcelona"}],"role":"user"}
+[2025-08-17 00:56:25.178][E] {"parts":[{"text":"For context:"},{"text":"[root_agent] called tool `transfer_to_agent` with parameters: {'agent_name': 'inspiration_agent'}"}],"role":"user"}
+[2025-08-17 00:56:25.178][E] {"parts":[{"text":"For context:"},{"text":"[root_agent] `transfer_to_agent` tool returned result: {'result': None}"}],"role":"user"}
+[2025-08-17 00:56:25.178][E] -----------------------------------------------------------
+[2025-08-17 00:56:25.178][E] Functions:
+[2025-08-17 00:56:25.178][E] transfer_to_agent: {'agent_name': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:25.178][E] place_agent: {'request': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:25.178][E] poi_agent: {'request': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:25.178][E] map_tool: {'key': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:25.178][E] -----------------------------------------------------------
+[2025-08-17 00:56:25.178][E] 
+[2025-08-17 00:56:25.178][E] 2025-08-17 00:56:25,177 - INFO - models.py:7422 - AFC is enabled with max remote calls: 10.
+[2025-08-17 00:56:25.178][E] 2025-08-17 00:56:25,178 - DEBUG - _trace.py:87 - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+[2025-08-17 00:56:25.218][E] 2025-08-17 00:56:25,218 - DEBUG - _trace.py:87 - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x14b963590>
+[2025-08-17 00:56:25.218][E] 2025-08-17 00:56:25,218 - DEBUG - _trace.py:87 - start_tls.started ssl_context=<ssl.SSLContext object at 0x14b979150> server_hostname='generativelanguage.googleapis.com' timeout=None
+[2025-08-17 00:56:25.249][E] 2025-08-17 00:56:25,249 - DEBUG - _trace.py:87 - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x14b9634d0>
+[2025-08-17 00:56:25.249][E] 2025-08-17 00:56:25,249 - DEBUG - _trace.py:87 - send_request_headers.started request=<Request [b'POST']>
+[2025-08-17 00:56:25.249][E] 2025-08-17 00:56:25,249 - DEBUG - _trace.py:87 - send_request_headers.complete
+[2025-08-17 00:56:25.249][E] 2025-08-17 00:56:25,249 - DEBUG - _trace.py:87 - send_request_body.started request=<Request [b'POST']>
+[2025-08-17 00:56:25.249][E] 2025-08-17 00:56:25,249 - DEBUG - _trace.py:87 - send_request_body.complete
+[2025-08-17 00:56:25.249][E] 2025-08-17 00:56:25,249 - DEBUG - _trace.py:87 - receive_response_headers.started request=<Request [b'POST']>
+[2025-08-17 00:56:26.324][E] 2025-08-17 00:56:26,323 - DEBUG - _trace.py:87 - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=UTF-8'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sat, 16 Aug 2025 22:56:26 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=1058'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+[2025-08-17 00:56:26.324][E] 2025-08-17 00:56:26,324 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+[2025-08-17 00:56:26.325][E] 2025-08-17 00:56:26,324 - DEBUG - _trace.py:87 - receive_response_body.started request=<Request [b'POST']>
+[2025-08-17 00:56:26.338][E] 2025-08-17 00:56:26,338 - DEBUG - _trace.py:87 - receive_response_body.complete
+[2025-08-17 00:56:26.338][E] 2025-08-17 00:56:26,338 - DEBUG - _trace.py:87 - response_closed.started
+[2025-08-17 00:56:26.339][E] 2025-08-17 00:56:26,338 - DEBUG - _trace.py:87 - response_closed.complete
+[2025-08-17 00:56:26.341][E] 2025-08-17 00:56:26,341 - INFO - google_llm.py:203 - Response received from the model.
+[2025-08-17 00:56:26.341][E] 2025-08-17 00:56:26,341 - WARNING - types.py:5176 - Warning: there are non-text parts in the response: ['thought_signature', 'function_call'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+[2025-08-17 00:56:26.341][E] 2025-08-17 00:56:26,341 - DEBUG - google_llm.py:204 -
+[2025-08-17 00:56:26.341][E] LLM Response:
+[2025-08-17 00:56:26.341][E] -----------------------------------------------------------
+[2025-08-17 00:56:26.341][E] Text:
+[2025-08-17 00:56:26.341][E] None
+[2025-08-17 00:56:26.341][E] -----------------------------------------------------------
+[2025-08-17 00:56:26.341][E] Function calls:
+[2025-08-17 00:56:26.341][E] name: poi_agent, args: {'request': 'Barcelona'}
+[2025-08-17 00:56:26.341][E] -----------------------------------------------------------
+[2025-08-17 00:56:26.341][E] Raw response:
+[2025-08-17 00:56:26.341][E] {"sdk_http_response":{"headers":{"content-type":"application/json; charset=UTF-8","vary":"Origin, X-Origin, Referer","content-encoding":"gzip","date":"Sat, 16 Aug 2025 22:56:26 GMT","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=1058","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000","transfer-encoding":"chunked"}},"candidates":[{"content":{"parts":[{"thought_signature":"CvEDAVSoXO7TwKeR1kHl1ZpOZtYbiabyxOkftFaNnFbu2fAFKV7YbnaafAhImqsztaDlW1XlXDLDnM5Hh_F3rK2rJPRDzIIkGKBc3GZtCHih9vQZz30rKOU481JasD9fmz_FpiTpsVpXca3LaM1GDD-wvwfYCApDotMojfqcw6Aa2Zom-Pn3qBzFF6vTEcASdEIt5R9GhAqL8JDwbmCCdhD4o-YMCn3_n2eL_48GZqb16GsVjhCYmTDdy8TZuUqpFV3pBznGhnU6ze_QwGvpgWEPAj2OWcpSQdv4h4108oMEgztYJPCiGhU5D3HUCUiLtI_fd4AGpK4g43vXvYrJi5zDNifC7lFVzFBO7FMZ0jv12FFiifk8MQ6CHrc2PDLXKyXcukq-T2HvqX_2FFlRXr_AIEInuftQ8afVhjvXWMnoKuZwUmLSzA_Bv0hBFqMJPP5SY4KymV3nSiiCl9hbIOETE0Z2NFABMk0L6UApzslRQD82lWLP2ad_ic855CSjS4aD1AKvgBTwjO6Q074YiSU1LPoWQjL-T5tyolZbjVbhKfKPGEgvNIKkW-MI2JnY4JpIVItu3Dbj5UUUBMTetrLEzb-lqtmk8wZh8Ce2Zm4UECu4pMepf0Rjb5tP0K0J8W_3zejzK2TEKqVwVrRjj9YVzmg=","function_call":{"args":{"request":"Barcelona"},"name":"poi_agent"}}],"role":"model"},"finish_reason":"STOP","index":0}],"model_version":"gemini-2.5-flash","usage_metadata":{"candidates_token_count":15,"prompt_token_count":1319,"prompt_tokens_details":[{"modality":"TEXT","token_count":1319}],"thoughts_token_count":111,"total_token_count":1445},"automatic_function_calling_history":[]}
+[2025-08-17 00:56:26.341][E] -----------------------------------------------------------
+[2025-08-17 00:56:26.341][E] 
+[2025-08-17 00:56:26.342][E] 2025-08-17 00:56:26,342 - DEBUG - llm_agent.py:447 - Skipping output save for agent root_agent: event authored by inspiration_agent
+[2025-08-17 00:56:26.342][E] 2025-08-17 00:56:26,342 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"thoughtSignature":"CvEDAVSoXO7TwKeR1kHl1ZpOZtYbiabyxOkftFaNnFbu2fAFKV7YbnaafAhImqsztaDlW1XlXDLDnM5Hh_F3rK2rJPRDzIIkGKBc3GZtCHih9vQZz30rKOU481JasD9fmz_FpiTpsVpXca3LaM1GDD-wvwfYCApDotMojfqcw6Aa2Zom-Pn3qBzFF6vTEcASdEIt5R9GhAqL8JDwbmCCdhD4o-YMCn3_n2eL_48GZqb16GsVjhCYmTDdy8TZuUqpFV3pBznGhnU6ze_QwGvpgWEPAj2OWcpSQdv4h4108oMEgztYJPCiGhU5D3HUCUiLtI_fd4AGpK4g43vXvYrJi5zDNifC7lFVzFBO7FMZ0jv12FFiifk8MQ6CHrc2PDLXKyXcukq-T2HvqX_2FFlRXr_AIEInuftQ8afVhjvXWMnoKuZwUmLSzA_Bv0hBFqMJPP5SY4KymV3nSiiCl9hbIOETE0Z2NFABMk0L6UApzslRQD82lWLP2ad_ic855CSjS4aD1AKvgBTwjO6Q074YiSU1LPoWQjL-T5tyolZbjVbhKfKPGEgvNIKkW-MI2JnY4JpIVItu3Dbj5UUUBMTetrLEzb-lqtmk8wZh8Ce2Zm4UECu4pMepf0Rjb5tP0K0J8W_3zejzK2TEKqVwVrRjj9YVzmg=","functionCall":{"id":"adk-236505e4-4ef2-42a2-9864-be4efe2adfd3","args":{"request":"Barcelona"},"name":"poi_agent"}}],"role":"model"},"usageMetadata":{"candidatesTokenCount":15,"promptTokenCount":1319,"promptTokensDetails":[{"modality":"TEXT","tokenCount":1319}],"thoughtsTokenCount":111,"totalTokenCount":1445},"invocationId":"e-4183a70a-54c5-41e8-91f9-92698f093981","author":"inspiration_agent","actions":{"stateDelta":{},"artifactDelta":{},"requestedAuthConfigs":{}},"longRunningToolIds":[],"id":"593408f6-cf6e-499d-8a10-73b14c303d1a","timestamp":1755384985.130934}
+[2025-08-17 00:56:26.390][E] 2025-08-17 00:56:26,390 - INFO - google_llm.py:111 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+[2025-08-17 00:56:26.390][E] 2025-08-17 00:56:26,390 - DEBUG - google_llm.py:117 -
+[2025-08-17 00:56:26.390][E] LLM Request:
+[2025-08-17 00:56:26.390][E] -----------------------------------------------------------
+[2025-08-17 00:56:26.390][E] System Instruction:
+[2025-08-17 00:56:26.390][E] 
+[2025-08-17 00:56:26.390][E] You are responsible for providing a list of point of interests, things to do recommendations based on the user's destination choice. Limit the choices to 5 results.
+[2025-08-17 00:56:26.390][E] 
+[2025-08-17 00:56:26.390][E] Return the response as a JSON object:
+[2025-08-17 00:56:26.390][E] {{
+[2025-08-17 00:56:26.390][E] "places": [
+[2025-08-17 00:56:26.390][E] {{
+[2025-08-17 00:56:26.390][E] "place_name": "Name of the attraction",
+[2025-08-17 00:56:26.390][E] "address": "An address or sufficient information to geocode for a Lat/Lon".
+[2025-08-17 00:56:26.390][E] "lat": "Numerical representation of Latitude of the location (e.g., 20.6843)",
+[2025-08-17 00:56:26.390][E] "long": "Numerical representation of Latitude of the location (e.g., -88.5678)",
+[2025-08-17 00:56:26.390][E] "review_ratings": "Numerical representation of rating (e.g. 4.8 , 3.0 , 1.0 etc),
+[2025-08-17 00:56:26.390][E] "highlights": "Short description highlighting key features",
+[2025-08-17 00:56:26.390][E] "image_url": "verified URL to an image of the destination",
+[2025-08-17 00:56:26.390][E] "map_url":  "Placeholder - Leave this as empty string."
+[2025-08-17 00:56:26.390][E] "place_id": "Placeholder - Leave this as empty string."
+[2025-08-17 00:56:26.390][E] }}
+[2025-08-17 00:56:26.390][E] ]
+[2025-08-17 00:56:26.390][E] }}
+[2025-08-17 00:56:26.390][E] 
+[2025-08-17 00:56:26.390][E] 
+[2025-08-17 00:56:26.390][E] You are an agent. Your internal name is "poi_agent".
+[2025-08-17 00:56:26.390][E] 
+[2025-08-17 00:56:26.390][E] The description about you is "This agent suggests a few activities and points of interests given a destination"
+[2025-08-17 00:56:26.390][E] -----------------------------------------------------------
+[2025-08-17 00:56:26.390][E] Contents:
+[2025-08-17 00:56:26.390][E] {"parts":[{"text":"Barcelona"}],"role":"user"}
+[2025-08-17 00:56:26.390][E] -----------------------------------------------------------
+[2025-08-17 00:56:26.390][E] Functions:
+[2025-08-17 00:56:26.390][E] 
+[2025-08-17 00:56:26.390][E] -----------------------------------------------------------
+[2025-08-17 00:56:26.390][E] 
+[2025-08-17 00:56:26.390][E] 2025-08-17 00:56:26,390 - INFO - models.py:7422 - AFC is enabled with max remote calls: 10.
+[2025-08-17 00:56:26.392][E] 2025-08-17 00:56:26,392 - DEBUG - _trace.py:87 - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+[2025-08-17 00:56:26.457][E] 2025-08-17 00:56:26,457 - DEBUG - _trace.py:87 - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x14b99cb00>
+[2025-08-17 00:56:26.458][E] 2025-08-17 00:56:26,457 - DEBUG - _trace.py:87 - start_tls.started ssl_context=<ssl.SSLContext object at 0x14b97a550> server_hostname='generativelanguage.googleapis.com' timeout=None
+[2025-08-17 00:56:26.501][E] 2025-08-17 00:56:26,501 - DEBUG - _trace.py:87 - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x14b99cb60>
+[2025-08-17 00:56:26.501][E] 2025-08-17 00:56:26,501 - DEBUG - _trace.py:87 - send_request_headers.started request=<Request [b'POST']>
+[2025-08-17 00:56:26.502][E] 2025-08-17 00:56:26,502 - DEBUG - _trace.py:87 - send_request_headers.complete
+[2025-08-17 00:56:26.502][E] 2025-08-17 00:56:26,502 - DEBUG - _trace.py:87 - send_request_body.started request=<Request [b'POST']>
+[2025-08-17 00:56:26.502][E] 2025-08-17 00:56:26,502 - DEBUG - _trace.py:87 - send_request_body.complete
+[2025-08-17 00:56:26.502][E] 2025-08-17 00:56:26,502 - DEBUG - _trace.py:87 - receive_response_headers.started request=<Request [b'POST']>
+[2025-08-17 00:56:30.691][E] 2025-08-17 00:56:30,690 - DEBUG - _trace.py:87 - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=UTF-8'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sat, 16 Aug 2025 22:56:30 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=4135'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+[2025-08-17 00:56:30.691][E] 2025-08-17 00:56:30,691 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+[2025-08-17 00:56:30.691][E] 2025-08-17 00:56:30,691 - DEBUG - _trace.py:87 - receive_response_body.started request=<Request [b'POST']>
+[2025-08-17 00:56:30.692][E] 2025-08-17 00:56:30,692 - DEBUG - _trace.py:87 - receive_response_body.complete
+[2025-08-17 00:56:30.693][E] 2025-08-17 00:56:30,692 - DEBUG - _trace.py:87 - response_closed.started
+[2025-08-17 00:56:30.693][E] 2025-08-17 00:56:30,693 - DEBUG - _trace.py:87 - response_closed.complete
+[2025-08-17 00:56:30.694][E] 2025-08-17 00:56:30,694 - INFO - google_llm.py:203 - Response received from the model.
+[2025-08-17 00:56:30.695][E] 2025-08-17 00:56:30,695 - DEBUG - google_llm.py:204 -
+[2025-08-17 00:56:30.695][E] LLM Response:
+[2025-08-17 00:56:30.695][E] -----------------------------------------------------------
+[2025-08-17 00:56:30.695][E] Text:
+[2025-08-17 00:56:30.695][E] {"places": [{"place_name": "Sagrada Familia", "address": "Carrer de Mallorca, 401, 08013 Barcelona, Spain", "lat": "41.4036", "long": "2.1743", "review_ratings": "4.8", "highlights": "Antoni Gaudí's unfinished masterpiece, a stunning basilica with unique architectural style and rich history.", "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg/800px-Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg", "map_url": "", "place_id": ""}, {"place_name": "Park Güell", "address": "Gràcia, 08024 Barcelona, Spain", "lat": "41.4137", "long": "2.1525", "review_ratings": "4.7", "highlights": "A vibrant public park designed by Antoni Gaudí, featuring unique mosaic art, whimsical structures, and panoramic city views.", "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Park_Guell_Barcelona.jpg/800px-Park_Guell_Barcelona.jpg", "map_url": "", "place_id": ""}, {"place_name": "Gothic Quarter (Barri Gòtic)", "address": "Ciutat Vella, 08002 Barcelona, Spain", "lat": "41.3828", "long": "2.1769", "review_ratings": "4.7", "highlights": "The oldest part of Barcelona, known for its narrow medieval streets, historic buildings, charming squares, and Barcelona Cathedral.", "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Barri_Gotic%2C_Barcelona.jpg/800px-Barri_Gotic%2C_Barcelona.jpg", "map_url": "", "place_id": ""}, {"place_name": "La Rambla", "address": "La Rambla, Barcelona, Spain", "lat": "41.3819", "long": "2.1724", "review_ratings": "4.3", "highlights": "A famous tree-lined pedestrian street stretching from Plaça de Catalunya to Port Vell, bustling with street performers, flower stalls, and cafes.", "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/La_Rambla_Barcelona_Spain.jpg/800px-La_Rambla_Barcelona_Spain.jpg", "map_url": "", "place_id": ""}, {"place_name": "Casa Batlló", "address": "Passeig de Gràcia, 43, 08007 Barcelona, Spain", "lat": "41.3916", "long": "2.1649", "review_ratings": "4.7", "highlights": "Another of Gaudí's masterpieces, a stunning example of Modernisme architecture with a fantastical facade and innovative design.", "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Casa_Batllo_Barcelona.jpg/800px-Casa_Batllo_Barcelona.jpg", "map_url": "", "place_id": ""}]}
+[2025-08-17 00:56:30.695][E] -----------------------------------------------------------
+[2025-08-17 00:56:30.695][E] Function calls:
+[2025-08-17 00:56:30.695][E] 
+[2025-08-17 00:56:30.695][E] -----------------------------------------------------------
+[2025-08-17 00:56:30.695][E] Raw response:
+[2025-08-17 00:56:30.695][E] {"sdk_http_response":{"headers":{"content-type":"application/json; charset=UTF-8","vary":"Origin, X-Origin, Referer","content-encoding":"gzip","date":"Sat, 16 Aug 2025 22:56:30 GMT","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=4135","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000","transfer-encoding":"chunked"}},"candidates":[{"content":{"parts":[{"text":"{\"places\": [{\"place_name\": \"Sagrada Familia\", \"address\": \"Carrer de Mallorca, 401, 08013 Barcelona, Spain\", \"lat\": \"41.4036\", \"long\": \"2.1743\", \"review_ratings\": \"4.8\", \"highlights\": \"Antoni Gaudí's unfinished masterpiece, a stunning basilica with unique architectural style and rich history.\", \"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg/800px-Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg\", \"map_url\": \"\", \"place_id\": \"\"}, {\"place_name\": \"Park Güell\", \"address\": \"Gràcia, 08024 Barcelona, Spain\", \"lat\": \"41.4137\", \"long\": \"2.1525\", \"review_ratings\": \"4.7\", \"highlights\": \"A vibrant public park designed by Antoni Gaudí, featuring unique mosaic art, whimsical structures, and panoramic city views.\", \"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Park_Guell_Barcelona.jpg/800px-Park_Guell_Barcelona.jpg\", \"map_url\": \"\", \"place_id\": \"\"}, {\"place_name\": \"Gothic Quarter (Barri Gòtic)\", \"address\": \"Ciutat Vella, 08002 Barcelona, Spain\", \"lat\": \"41.3828\", \"long\": \"2.1769\", \"review_ratings\": \"4.7\", \"highlights\": \"The oldest part of Barcelona, known for its narrow medieval streets, historic buildings, charming squares, and Barcelona Cathedral.\", \"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Barri_Gotic%2C_Barcelona.jpg/800px-Barri_Gotic%2C_Barcelona.jpg\", \"map_url\": \"\", \"place_id\": \"\"}, {\"place_name\": \"La Rambla\", \"address\": \"La Rambla, Barcelona, Spain\", \"lat\": \"41.3819\", \"long\": \"2.1724\", \"review_ratings\": \"4.3\", \"highlights\": \"A famous tree-lined pedestrian street stretching from Plaça de Catalunya to Port Vell, bustling with street performers, flower stalls, and cafes.\", \"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/La_Rambla_Barcelona_Spain.jpg/800px-La_Rambla_Barcelona_Spain.jpg\", \"map_url\": \"\", \"place_id\": \"\"}, {\"place_name\": \"Casa Batlló\", \"address\": \"Passeig de Gràcia, 43, 08007 Barcelona, Spain\", \"lat\": \"41.3916\", \"long\": \"2.1649\", \"review_ratings\": \"4.7\", \"highlights\": \"Another of Gaudí's masterpieces, a stunning example of Modernisme architecture with a fantastical facade and innovative design.\", \"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Casa_Batllo_Barcelona.jpg/800px-Casa_Batllo_Barcelona.jpg\", \"map_url\": \"\", \"place_id\": \"\"}]}"}],"role":"model"},"finish_reason":"STOP","index":0}],"model_version":"gemini-2.5-flash","usage_metadata":{"candidates_token_count":810,"prompt_token_count":283,"prompt_tokens_details":[{"modality":"TEXT","token_count":283}],"thoughts_token_count":72,"total_token_count":1165},"automatic_function_calling_history":[],"parsed":{"places":[{"place_name":"Sagrada Familia","address":"Carrer de Mallorca, 401, 08013 Barcelona, Spain","lat":"41.4036","long":"2.1743","review_ratings":"4.8","highlights":"Antoni Gaudí's unfinished masterpiece, a stunning basilica with unique architectural style and rich history.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg/800px-Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg","map_url":"","place_id":""},{"place_name":"Park Güell","address":"Gràcia, 08024 Barcelona, Spain","lat":"41.4137","long":"2.1525","review_ratings":"4.7","highlights":"A vibrant public park designed by Antoni Gaudí, featuring unique mosaic art, whimsical structures, and panoramic city views.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Park_Guell_Barcelona.jpg/800px-Park_Guell_Barcelona.jpg","map_url":"","place_id":""},{"place_name":"Gothic Quarter (Barri Gòtic)","address":"Ciutat Vella, 08002 Barcelona, Spain","lat":"41.3828","long":"2.1769","review_ratings":"4.7","highlights":"The oldest part of Barcelona, known for its narrow medieval streets, historic buildings, charming squares, and Barcelona Cathedral.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Barri_Gotic%2C_Barcelona.jpg/800px-Barri_Gotic%2C_Barcelona.jpg","map_url":"","place_id":""},{"place_name":"La Rambla","address":"La Rambla, Barcelona, Spain","lat":"41.3819","long":"2.1724","review_ratings":"4.3","highlights":"A famous tree-lined pedestrian street stretching from Plaça de Catalunya to Port Vell, bustling with street performers, flower stalls, and cafes.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/La_Rambla_Barcelona_Spain.jpg/800px-La_Rambla_Barcelona_Spain.jpg","map_url":"","place_id":""},{"place_name":"Casa Batlló","address":"Passeig de Gràcia, 43, 08007 Barcelona, Spain","lat":"41.3916","long":"2.1649","review_ratings":"4.7","highlights":"Another of Gaudí's masterpieces, a stunning example of Modernisme architecture with a fantastical facade and innovative design.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Casa_Batllo_Barcelona.jpg/800px-Casa_Batllo_Barcelona.jpg","map_url":"","place_id":""}]}}
+[2025-08-17 00:56:30.695][E] -----------------------------------------------------------
+[2025-08-17 00:56:30.695][E] 
+[2025-08-17 00:56:30.698][E] 2025-08-17 00:56:30,698 - DEBUG - llm_agent.py:447 - Skipping output save for agent root_agent: event authored by inspiration_agent
+[2025-08-17 00:56:30.699][E] 2025-08-17 00:56:30,698 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"functionResponse":{"id":"adk-236505e4-4ef2-42a2-9864-be4efe2adfd3","name":"poi_agent","response":{"places":[{"place_name":"Sagrada Familia","address":"Carrer de Mallorca, 401, 08013 Barcelona, Spain","lat":"41.4036","long":"2.1743","review_ratings":"4.8","highlights":"Antoni Gaudí's unfinished masterpiece, a stunning basilica with unique architectural style and rich history.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg/800px-Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg","map_url":"","place_id":""},{"place_name":"Park Güell","address":"Gràcia, 08024 Barcelona, Spain","lat":"41.4137","long":"2.1525","review_ratings":"4.7","highlights":"A vibrant public park designed by Antoni Gaudí, featuring unique mosaic art, whimsical structures, and panoramic city views.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Park_Guell_Barcelona.jpg/800px-Park_Guell_Barcelona.jpg","map_url":"","place_id":""},{"place_name":"Gothic Quarter (Barri Gòtic)","address":"Ciutat Vella, 08002 Barcelona, Spain","lat":"41.3828","long":"2.1769","review_ratings":"4.7","highlights":"The oldest part of Barcelona, known for its narrow medieval streets, historic buildings, charming squares, and Barcelona Cathedral.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Barri_Gotic%2C_Barcelona.jpg/800px-Barri_Gotic%2C_Barcelona.jpg","map_url":"","place_id":""},{"place_name":"La Rambla","address":"La Rambla, Barcelona, Spain","lat":"41.3819","long":"2.1724","review_ratings":"4.3","highlights":"A famous tree-lined pedestrian street stretching from Plaça de Catalunya to Port Vell, bustling with street performers, flower stalls, and cafes.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/La_Rambla_Barcelona_Spain.jpg/800px-La_Rambla_Barcelona_Spain.jpg","map_url":"","place_id":""},{"place_name":"Casa Batlló","address":"Passeig de Gràcia, 43, 08007 Barcelona, Spain","lat":"41.3916","long":"2.1649","review_ratings":"4.7","highlights":"Another of Gaudí's masterpieces, a stunning example of Modernisme architecture with a fantastical facade and innovative design.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Casa_Batllo_Barcelona.jpg/800px-Casa_Batllo_Barcelona.jpg","map_url":"","place_id":""}]}}}],"role":"user"},"invocationId":"e-4183a70a-54c5-41e8-91f9-92698f093981","author":"inspiration_agent","actions":{"stateDelta":{"poi":{"places":[{"place_name":"Sagrada Familia","address":"Carrer de Mallorca, 401, 08013 Barcelona, Spain","lat":"41.4036","long":"2.1743","review_ratings":"4.8","highlights":"Antoni Gaudí's unfinished masterpiece, a stunning basilica with unique architectural style and rich history.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg/800px-Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg","map_url":"","place_id":""},{"place_name":"Park Güell","address":"Gràcia, 08024 Barcelona, Spain","lat":"41.4137","long":"2.1525","review_ratings":"4.7","highlights":"A vibrant public park designed by Antoni Gaudí, featuring unique mosaic art, whimsical structures, and panoramic city views.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Park_Guell_Barcelona.jpg/800px-Park_Guell_Barcelona.jpg","map_url":"","place_id":""},{"place_name":"Gothic Quarter (Barri Gòtic)","address":"Ciutat Vella, 08002 Barcelona, Spain","lat":"41.3828","long":"2.1769","review_ratings":"4.7","highlights":"The oldest part of Barcelona, known for its narrow medieval streets, historic buildings, charming squares, and Barcelona Cathedral.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Barri_Gotic%2C_Barcelona.jpg/800px-Barri_Gotic%2C_Barcelona.jpg","map_url":"","place_id":""},{"place_name":"La Rambla","address":"La Rambla, Barcelona, Spain","lat":"41.3819","long":"2.1724","review_ratings":"4.3","highlights":"A famous tree-lined pedestrian street stretching from Plaça de Catalunya to Port Vell, bustling with street performers, flower stalls, and cafes.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/La_Rambla_Barcelona_Spain.jpg/800px-La_Rambla_Barcelona_Spain.jpg","map_url":"","place_id":""},{"place_name":"Casa Batlló","address":"Passeig de Gràcia, 43, 08007 Barcelona, Spain","lat":"41.3916","long":"2.1649","review_ratings":"4.7","highlights":"Another of Gaudí's masterpieces, a stunning example of Modernisme architecture with a fantastical facade and innovative design.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Casa_Batllo_Barcelona.jpg/800px-Casa_Batllo_Barcelona.jpg","map_url":"","place_id":""}]}},"artifactDelta":{},"requestedAuthConfigs":{}},"id":"0cf5d05c-b3f9-41e6-840e-2ffa2ef08a15","timestamp":1755384990.698511}
+[2025-08-17 00:56:30.750][E] 2025-08-17 00:56:30,750 - INFO - google_llm.py:111 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+[2025-08-17 00:56:30.750][E] 2025-08-17 00:56:30,750 - DEBUG - google_llm.py:117 -
+[2025-08-17 00:56:30.750][E] LLM Request:
+[2025-08-17 00:56:30.750][E] -----------------------------------------------------------
+[2025-08-17 00:56:30.750][E] System Instruction:
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] You are travel inspiration agent who help users find their next big dream vacation destinations.
+[2025-08-17 00:56:30.750][E] Your role and goal is to help the user identify a destination and a few activities at the destination the user is interested in.
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] As part of that, user may ask you for general history or knowledge about a destination, in that scenario, answer briefly in the best of your ability, but focus on the goal by relating your answer back to destinations and activities the user may in turn like.
+[2025-08-17 00:56:30.750][E] - You will call the two agent tool `place_agent(inspiration query)` and `poi_agent(destination)` when appropriate:
+[2025-08-17 00:56:30.750][E] - Use `place_agent` to recommend general vacation destinations given vague ideas, be it a city, a region, a country.
+[2025-08-17 00:56:30.750][E] - Use `poi_agent` to provide points of interests and acitivities suggestions, once the user has a specific city or region in mind.
+[2025-08-17 00:56:30.750][E] - Everytime after `poi_agent` is invoked, call `map_tool` with the key being `poi` to verify the latitude and longitudes.
+[2025-08-17 00:56:30.750][E] - Avoid asking too many questions. When user gives instructions like "inspire me", or "suggest some", just go ahead and call `place_agent`.
+[2025-08-17 00:56:30.750][E] - As follow up, you may gather a few information from the user to future their vacation inspirations.
+[2025-08-17 00:56:30.750][E] - Once the user selects their destination, then you help them by providing granular insights by being their personal local travel guide
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] - Here's the optimal flow:
+[2025-08-17 00:56:30.750][E] - inspire user for a dream vacation
+[2025-08-17 00:56:30.750][E] - show them interesting things to do for the selected location
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] - Your role is only to identify possible destinations and acitivites.
+[2025-08-17 00:56:30.750][E] - Do not attempt to assume the role of `place_agent` and `poi_agent`, use them instead.
+[2025-08-17 00:56:30.750][E] - Do not attempt to plan an itinerary for the user with start dates and details, leave that to the planning_agent.
+[2025-08-17 00:56:30.750][E] - Transfer the user to planning_agent once the user wants to:
+[2025-08-17 00:56:30.750][E] - Enumerate a more detailed full itinerary,
+[2025-08-17 00:56:30.750][E] - Looking for flights and hotels deals.
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] - Please use the context info below for any user preferences:
+[2025-08-17 00:56:30.750][E] Current user:
+[2025-08-17 00:56:30.750][E] <user_profile>
+[2025-08-17 00:56:30.750][E] {'passport_nationality': 'US Citizen', 'seat_preference': 'window', 'food_preference': 'vegan', 'allergies': [], 'likes': [], 'dislikes': [], 'price_sensitivity': [], 'home': {'event_type': 'home', 'address': '6420 Sequence Dr #400, San Diego, CA 92121, United States', 'local_prefer_mode': 'drive'}}
+[2025-08-17 00:56:30.750][E] </user_profile>
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] Current time: 2025-08-17 00:56:24.002809
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] You are an agent. Your internal name is "inspiration_agent".
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] The description about you is "A travel inspiration agent who inspire users, and discover their next vacations; Provide information about places, activities, interests,"
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] You have a list of other agents to transfer to:
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] Agent name: root_agent
+[2025-08-17 00:56:30.750][E] Agent description: A Travel Conceirge using the services of multiple sub-agents
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] Agent name: planning_agent
+[2025-08-17 00:56:30.750][E] Agent description: Helps users with travel planning, complete a full itinerary for their vacation, finding best deals for flights and hotels.
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] Agent name: booking_agent
+[2025-08-17 00:56:30.750][E] Agent description: Given an itinerary, complete the bookings of items by handling payment choices and processing.
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] Agent name: pre_trip_agent
+[2025-08-17 00:56:30.750][E] Agent description: Given an itinerary, this agent keeps up to date and provides relevant travel information to the user before the trip.
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] Agent name: in_trip_agent
+[2025-08-17 00:56:30.750][E] Agent description: Provide information about what the users need as part of the tour.
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] Agent name: post_trip_agent
+[2025-08-17 00:56:30.750][E] Agent description: A follow up agent to learn from user's experience; In turn improves the user's future trips planning and in-trip experience.
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] If you are the best to answer the question according to your description, you
+[2025-08-17 00:56:30.750][E] can answer it.
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] If another agent is better for answering the question according to its
+[2025-08-17 00:56:30.750][E] description, call `transfer_to_agent` function to transfer the
+[2025-08-17 00:56:30.750][E] question to that agent. When transferring, do not generate any text other than
+[2025-08-17 00:56:30.750][E] the function call.
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] Your parent agent is root_agent. If neither the other agents nor
+[2025-08-17 00:56:30.750][E] you are best for answering the question according to the descriptions, transfer
+[2025-08-17 00:56:30.750][E] to your parent agent.
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] -----------------------------------------------------------
+[2025-08-17 00:56:30.750][E] Contents:
+[2025-08-17 00:56:30.750][E] {"parts":[{"text":"I want to go to Barcelona"}],"role":"user"}
+[2025-08-17 00:56:30.750][E] {"parts":[{"text":"For context:"},{"text":"[root_agent] called tool `transfer_to_agent` with parameters: {'agent_name': 'inspiration_agent'}"}],"role":"user"}
+[2025-08-17 00:56:30.750][E] {"parts":[{"text":"For context:"},{"text":"[root_agent] `transfer_to_agent` tool returned result: {'result': None}"}],"role":"user"}
+[2025-08-17 00:56:30.750][E] {"parts":[{"thought_signature":"CvEDAVSoXO7TwKeR1kHl1ZpOZtYbiabyxOkftFaNnFbu2fAFKV7YbnaafAhImqsztaDlW1XlXDLDnM5Hh_F3rK2rJPRDzIIkGKBc3GZtCHih9vQZz30rKOU481JasD9fmz_FpiTpsVpXca3LaM1GDD-wvwfYCApDotMojfqcw6Aa2Zom-Pn3qBzFF6vTEcASdEIt5R9GhAqL8JDwbmCCdhD4o-YMCn3_n2eL_48GZqb16GsVjhCYmTDdy8TZuUqpFV3pBznGhnU6ze_QwGvpgWEPAj2OWcpSQdv4h4108oMEgztYJPCiGhU5D3HUCUiLtI_fd4AGpK4g43vXvYrJi5zDNifC7lFVzFBO7FMZ0jv12FFiifk8MQ6CHrc2PDLXKyXcukq-T2HvqX_2FFlRXr_AIEInuftQ8afVhjvXWMnoKuZwUmLSzA_Bv0hBFqMJPP5SY4KymV3nSiiCl9hbIOETE0Z2NFABMk0L6UApzslRQD82lWLP2ad_ic855CSjS4aD1AKvgBTwjO6Q074YiSU1LPoWQjL-T5tyolZbjVbhKfKPGEgvNIKkW-MI2JnY4JpIVItu3Dbj5UUUBMTetrLEzb-lqtmk8wZh8Ce2Zm4UECu4pMepf0Rjb5tP0K0J8W_3zejzK2TEKqVwVrRjj9YVzmg=","function_call":{"args":{"request":"Barcelona"},"name":"poi_agent"}}],"role":"model"}
+[2025-08-17 00:56:30.750][E] {"parts":[{"function_response":{"name":"poi_agent","response":{"places":[{"place_name":"Sagrada Familia","address":"Carrer de Mallorca, 401, 08013 Barcelona, Spain","lat":"41.4036","long":"2.1743","review_ratings":"4.8","highlights":"Antoni Gaudí's unfinished masterpiece, a stunning basilica with unique architectural style and rich history.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg/800px-Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg","map_url":"","place_id":""},{"place_name":"Park Güell","address":"Gràcia, 08024 Barcelona, Spain","lat":"41.4137","long":"2.1525","review_ratings":"4.7","highlights":"A vibrant public park designed by Antoni Gaudí, featuring unique mosaic art, whimsical structures, and panoramic city views.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Park_Guell_Barcelona.jpg/800px-Park_Guell_Barcelona.jpg","map_url":"","place_id":""},{"place_name":"Gothic Quarter (Barri Gòtic)","address":"Ciutat Vella, 08002 Barcelona, Spain","lat":"41.3828","long":"2.1769","review_ratings":"4.7","highlights":"The oldest part of Barcelona, known for its narrow medieval streets, historic buildings, charming squares, and Barcelona Cathedral.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Barri_Gotic%2C_Barcelona.jpg/800px-Barri_Gotic%2C_Barcelona.jpg","map_url":"","place_id":""},{"place_name":"La Rambla","address":"La Rambla, Barcelona, Spain","lat":"41.3819","long":"2.1724","review_ratings":"4.3","highlights":"A famous tree-lined pedestrian street stretching from Plaça de Catalunya to Port Vell, bustling with street performers, flower stalls, and cafes.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/La_Rambla_Barcelona_Spain.jpg/800px-La_Rambla_Barcelona_Spain.jpg","map_url":"","place_id":""},{"place_name":"Casa Batlló","address":"Passeig de Gràcia, 43, 08007 Barcelona, Spain","lat":"41.3916","long":"2.1649","review_ratings":"4.7","highlights":"Another of Gaudí's masterpieces, a stunning example of Modernisme architecture with a fantastical facade and innovative design.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Casa_Batllo_Barcelona.jpg/800px-Casa_Batllo_Barcelona.jpg","map_url":"","place_id":""}]}}}],"role":"user"}
+[2025-08-17 00:56:30.750][E] -----------------------------------------------------------
+[2025-08-17 00:56:30.750][E] Functions:
+[2025-08-17 00:56:30.750][E] transfer_to_agent: {'agent_name': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:30.750][E] place_agent: {'request': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:30.750][E] poi_agent: {'request': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:30.750][E] map_tool: {'key': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:30.750][E] -----------------------------------------------------------
+[2025-08-17 00:56:30.750][E] 
+[2025-08-17 00:56:30.750][E] 2025-08-17 00:56:30,750 - INFO - models.py:7422 - AFC is enabled with max remote calls: 10.
+[2025-08-17 00:56:30.751][E] 2025-08-17 00:56:30,751 - DEBUG - _trace.py:87 - close.started
+[2025-08-17 00:56:30.751][E] 2025-08-17 00:56:30,751 - DEBUG - _trace.py:87 - close.started
+[2025-08-17 00:56:30.751][E] 2025-08-17 00:56:30,751 - DEBUG - _trace.py:87 - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+[2025-08-17 00:56:30.751][E] 2025-08-17 00:56:30,751 - DEBUG - _trace.py:87 - close.complete
+[2025-08-17 00:56:30.751][E] 2025-08-17 00:56:30,751 - DEBUG - _trace.py:87 - close.complete
+[2025-08-17 00:56:30.868][E] 2025-08-17 00:56:30,868 - DEBUG - _trace.py:87 - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x14b962900>
+[2025-08-17 00:56:30.868][E] 2025-08-17 00:56:30,868 - DEBUG - _trace.py:87 - start_tls.started ssl_context=<ssl.SSLContext object at 0x14afd7f50> server_hostname='generativelanguage.googleapis.com' timeout=None
+[2025-08-17 00:56:30.913][E] 2025-08-17 00:56:30,913 - DEBUG - _trace.py:87 - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x14af52510>
+[2025-08-17 00:56:30.914][E] 2025-08-17 00:56:30,914 - DEBUG - _trace.py:87 - send_request_headers.started request=<Request [b'POST']>
+[2025-08-17 00:56:30.915][E] 2025-08-17 00:56:30,915 - DEBUG - _trace.py:87 - send_request_headers.complete
+[2025-08-17 00:56:30.915][E] 2025-08-17 00:56:30,915 - DEBUG - _trace.py:87 - send_request_body.started request=<Request [b'POST']>
+[2025-08-17 00:56:30.915][E] 2025-08-17 00:56:30,915 - DEBUG - _trace.py:87 - send_request_body.complete
+[2025-08-17 00:56:30.916][E] 2025-08-17 00:56:30,915 - DEBUG - _trace.py:87 - receive_response_headers.started request=<Request [b'POST']>
+[2025-08-17 00:56:32.124][E] 2025-08-17 00:56:32,124 - DEBUG - _trace.py:87 - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=UTF-8'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sat, 16 Aug 2025 22:56:32 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=1095'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+[2025-08-17 00:56:32.124][E] 2025-08-17 00:56:32,124 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+[2025-08-17 00:56:32.124][E] 2025-08-17 00:56:32,124 - DEBUG - _trace.py:87 - receive_response_body.started request=<Request [b'POST']>
+[2025-08-17 00:56:32.125][E] 2025-08-17 00:56:32,125 - DEBUG - _trace.py:87 - receive_response_body.complete
+[2025-08-17 00:56:32.125][E] 2025-08-17 00:56:32,125 - DEBUG - _trace.py:87 - response_closed.started
+[2025-08-17 00:56:32.125][E] 2025-08-17 00:56:32,125 - DEBUG - _trace.py:87 - response_closed.complete
+[2025-08-17 00:56:32.126][E] 2025-08-17 00:56:32,126 - INFO - google_llm.py:203 - Response received from the model.
+[2025-08-17 00:56:32.126][E] 2025-08-17 00:56:32,126 - WARNING - types.py:5176 - Warning: there are non-text parts in the response: ['thought_signature', 'function_call'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+[2025-08-17 00:56:32.126][E] 2025-08-17 00:56:32,126 - DEBUG - google_llm.py:204 -
+[2025-08-17 00:56:32.126][E] LLM Response:
+[2025-08-17 00:56:32.126][E] -----------------------------------------------------------
+[2025-08-17 00:56:32.126][E] Text:
+[2025-08-17 00:56:32.126][E] None
+[2025-08-17 00:56:32.126][E] -----------------------------------------------------------
+[2025-08-17 00:56:32.126][E] Function calls:
+[2025-08-17 00:56:32.126][E] name: map_tool, args: {'key': 'poi'}
+[2025-08-17 00:56:32.126][E] -----------------------------------------------------------
+[2025-08-17 00:56:32.126][E] Raw response:
+[2025-08-17 00:56:32.126][E] {"sdk_http_response":{"headers":{"content-type":"application/json; charset=UTF-8","vary":"Origin, X-Origin, Referer","content-encoding":"gzip","date":"Sat, 16 Aug 2025 22:56:32 GMT","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=1095","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000","transfer-encoding":"chunked"}},"candidates":[{"content":{"parts":[{"thought_signature":"CsMDAVSoXO6YCIzLFgoSPyIavva0qsM1ucZEYjENCHwouZfXCCU3PcFz8VDO6dpYI9KAtd3h0GcNkoO80wm9O-IpBdeom6EMWLbA9dMWgtD2xEIpdNnEXuJ1_nuEC_FYcrwKjFRZlCXotyhfu9UpKulCJNQfOtv0GShjVTySwGgopS_wtUtaTwL6UmHNuykZD4Q3s-nCSiEFBiORI5ThIN7ZwhjrgA6_-gU7lGIsad9d7X2qJeKMzWpn3k9whejxKRMv93QXXNOqMDGUUL9zud7FFHhKAWD0oy8VZbT-SnBIb3teAT8XZbgsnk9S4dofmwHYF7b4dtp0GxyvvDr--SbB80KWdtb39xA_eNu6ko8ObEm8ZSP8jPwTq4_B54a2iZHK8cD2HaDt129uu7Hb_HdbnTovxTHZ9lXHTHx19pXWVWU90mrVKlUMuGrjsqniyKGZsaQu1FVp0-dfaoRfpcNG8gRvz7mdr_E6x3QOt0sRsihkhCQARh8ISGY2KK0Qky04KYXyNZviL6qtDO9CQrYh-FQaleK_mn5iy2fOxz6JyHmChP8m2kJlGvrTvDd9sDRHtWTrPDC2TH1JsrkWQIXSJDSfAw==","function_call":{"args":{"key":"poi"},"name":"map_tool"}}],"role":"model"},"finish_reason":"STOP","index":0}],"model_version":"gemini-2.5-flash","usage_metadata":{"candidates_token_count":15,"prompt_token_count":2150,"prompt_tokens_details":[{"modality":"TEXT","token_count":2150}],"thoughts_token_count":112,"total_token_count":2277},"automatic_function_calling_history":[]}
+[2025-08-17 00:56:32.126][E] -----------------------------------------------------------
+[2025-08-17 00:56:32.126][E] 
+[2025-08-17 00:56:32.126][E] 2025-08-17 00:56:32,126 - DEBUG - llm_agent.py:447 - Skipping output save for agent root_agent: event authored by inspiration_agent
+[2025-08-17 00:56:32.126][E] 2025-08-17 00:56:32,126 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"thoughtSignature":"CsMDAVSoXO6YCIzLFgoSPyIavva0qsM1ucZEYjENCHwouZfXCCU3PcFz8VDO6dpYI9KAtd3h0GcNkoO80wm9O-IpBdeom6EMWLbA9dMWgtD2xEIpdNnEXuJ1_nuEC_FYcrwKjFRZlCXotyhfu9UpKulCJNQfOtv0GShjVTySwGgopS_wtUtaTwL6UmHNuykZD4Q3s-nCSiEFBiORI5ThIN7ZwhjrgA6_-gU7lGIsad9d7X2qJeKMzWpn3k9whejxKRMv93QXXNOqMDGUUL9zud7FFHhKAWD0oy8VZbT-SnBIb3teAT8XZbgsnk9S4dofmwHYF7b4dtp0GxyvvDr--SbB80KWdtb39xA_eNu6ko8ObEm8ZSP8jPwTq4_B54a2iZHK8cD2HaDt129uu7Hb_HdbnTovxTHZ9lXHTHx19pXWVWU90mrVKlUMuGrjsqniyKGZsaQu1FVp0-dfaoRfpcNG8gRvz7mdr_E6x3QOt0sRsihkhCQARh8ISGY2KK0Qky04KYXyNZviL6qtDO9CQrYh-FQaleK_mn5iy2fOxz6JyHmChP8m2kJlGvrTvDd9sDRHtWTrPDC2TH1JsrkWQIXSJDSfAw==","functionCall":{"id":"adk-7a60ab04-7422-4b68-b301-b4492ecb539b","args":{"key":"poi"},"name":"map_tool"}}],"role":"model"},"usageMetadata":{"candidatesTokenCount":15,"promptTokenCount":2150,"promptTokensDetails":[{"modality":"TEXT","tokenCount":2150}],"thoughtsTokenCount":112,"totalTokenCount":2277},"invocationId":"e-4183a70a-54c5-41e8-91f9-92698f093981","author":"inspiration_agent","actions":{"stateDelta":{},"artifactDelta":{},"requestedAuthConfigs":{}},"longRunningToolIds":[],"id":"0dfc99ac-2ab5-4c1f-94bd-fbe8a8054cfc","timestamp":1755384990.703345}
+[2025-08-17 00:56:32.132][E] 2025-08-17 00:56:32,132 - DEBUG - connectionpool.py:1049 - Starting new HTTPS connection (1): maps.googleapis.com:443
+[2025-08-17 00:56:32.288][E] 2025-08-17 00:56:32,288 - DEBUG - connectionpool.py:544 - https://maps.googleapis.com:443 "GET /maps/api/place/findplacefromtext/json?input=Sagrada+Familia%2C+Carrer+de+Mallorca%2C+401%2C+08013+Barcelona%2C+Spain&inputtype=textquery&fields=place_id%2Cformatted_address%2Cname%2Cphotos%2Cgeometry HTTP/1.1" 200 239
+[2025-08-17 00:56:32.289][E] 2025-08-17 00:56:32,289 - DEBUG - connectionpool.py:1049 - Starting new HTTPS connection (1): maps.googleapis.com:443
+[2025-08-17 00:56:32.386][E] 2025-08-17 00:56:32,386 - DEBUG - connectionpool.py:544 - https://maps.googleapis.com:443 "GET /maps/api/place/findplacefromtext/json?input=Park+G%C3%BCell%2C+Gr%C3%A0cia%2C+08024+Barcelona%2C+Spain&inputtype=textquery&fields=place_id%2Cformatted_address%2Cname%2Cphotos%2Cgeometry HTTP/1.1" 200 239
+[2025-08-17 00:56:32.387][E] 2025-08-17 00:56:32,387 - DEBUG - connectionpool.py:1049 - Starting new HTTPS connection (1): maps.googleapis.com:443
+[2025-08-17 00:56:32.491][E] 2025-08-17 00:56:32,490 - DEBUG - connectionpool.py:544 - https://maps.googleapis.com:443 "GET /maps/api/place/findplacefromtext/json?input=Gothic+Quarter+%28Barri+G%C3%B2tic%29%2C+Ciutat+Vella%2C+08002+Barcelona%2C+Spain&inputtype=textquery&fields=place_id%2Cformatted_address%2Cname%2Cphotos%2Cgeometry HTTP/1.1" 200 239
+[2025-08-17 00:56:32.494][E] 2025-08-17 00:56:32,494 - DEBUG - connectionpool.py:1049 - Starting new HTTPS connection (1): maps.googleapis.com:443
+[2025-08-17 00:56:32.607][E] 2025-08-17 00:56:32,607 - DEBUG - connectionpool.py:544 - https://maps.googleapis.com:443 "GET /maps/api/place/findplacefromtext/json?input=La+Rambla%2C+La+Rambla%2C+Barcelona%2C+Spain&inputtype=textquery&fields=place_id%2Cformatted_address%2Cname%2Cphotos%2Cgeometry HTTP/1.1" 200 239
+[2025-08-17 00:56:32.611][E] 2025-08-17 00:56:32,610 - DEBUG - connectionpool.py:1049 - Starting new HTTPS connection (1): maps.googleapis.com:443
+[2025-08-17 00:56:32.698][E] 2025-08-17 00:56:32,698 - DEBUG - connectionpool.py:544 - https://maps.googleapis.com:443 "GET /maps/api/place/findplacefromtext/json?input=Casa+Batll%C3%B3%2C+Passeig+de+Gr%C3%A0cia%2C+43%2C+08007+Barcelona%2C+Spain&inputtype=textquery&fields=place_id%2Cformatted_address%2Cname%2Cphotos%2Cgeometry HTTP/1.1" 200 239
+[2025-08-17 00:56:32.700][E] 2025-08-17 00:56:32,700 - DEBUG - llm_agent.py:447 - Skipping output save for agent root_agent: event authored by inspiration_agent
+[2025-08-17 00:56:32.701][E] 2025-08-17 00:56:32,701 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"functionResponse":{"id":"adk-7a60ab04-7422-4b68-b301-b4492ecb539b","name":"map_tool","response":{"places":[{"place_name":"Sagrada Familia","address":"Carrer de Mallorca, 401, 08013 Barcelona, Spain","lat":"41.4036","long":"2.1743","review_ratings":"4.8","highlights":"Antoni Gaudí's unfinished masterpiece, a stunning basilica with unique architectural style and rich history.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg/800px-Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg","map_url":null,"place_id":null},{"place_name":"Park Güell","address":"Gràcia, 08024 Barcelona, Spain","lat":"41.4137","long":"2.1525","review_ratings":"4.7","highlights":"A vibrant public park designed by Antoni Gaudí, featuring unique mosaic art, whimsical structures, and panoramic city views.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Park_Guell_Barcelona.jpg/800px-Park_Guell_Barcelona.jpg","map_url":null,"place_id":null},{"place_name":"Gothic Quarter (Barri Gòtic)","address":"Ciutat Vella, 08002 Barcelona, Spain","lat":"41.3828","long":"2.1769","review_ratings":"4.7","highlights":"The oldest part of Barcelona, known for its narrow medieval streets, historic buildings, charming squares, and Barcelona Cathedral.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Barri_Gotic%2C_Barcelona.jpg/800px-Barri_Gotic%2C_Barcelona.jpg","map_url":null,"place_id":null},{"place_name":"La Rambla","address":"La Rambla, Barcelona, Spain","lat":"41.3819","long":"2.1724","review_ratings":"4.3","highlights":"A famous tree-lined pedestrian street stretching from Plaça de Catalunya to Port Vell, bustling with street performers, flower stalls, and cafes.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/La_Rambla_Barcelona_Spain.jpg/800px-La_Rambla_Barcelona_Spain.jpg","map_url":null,"place_id":null},{"place_name":"Casa Batlló","address":"Passeig de Gràcia, 43, 08007 Barcelona, Spain","lat":"41.3916","long":"2.1649","review_ratings":"4.7","highlights":"Another of Gaudí's masterpieces, a stunning example of Modernisme architecture with a fantastical facade and innovative design.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Casa_Batllo_Barcelona.jpg/800px-Casa_Batllo_Barcelona.jpg","map_url":null,"place_id":null}]}}}],"role":"user"},"invocationId":"e-4183a70a-54c5-41e8-91f9-92698f093981","author":"inspiration_agent","actions":{"stateDelta":{},"artifactDelta":{},"requestedAuthConfigs":{}},"id":"ac93ae00-cb94-42cb-86e8-67b54fe7c092","timestamp":1755384992.700139}
+[2025-08-17 00:56:32.760][E] 2025-08-17 00:56:32,760 - INFO - google_llm.py:111 - Sending out request, model: gemini-2.5-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+[2025-08-17 00:56:32.760][E] 2025-08-17 00:56:32,760 - DEBUG - google_llm.py:117 -
+[2025-08-17 00:56:32.760][E] LLM Request:
+[2025-08-17 00:56:32.760][E] -----------------------------------------------------------
+[2025-08-17 00:56:32.760][E] System Instruction:
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] You are travel inspiration agent who help users find their next big dream vacation destinations.
+[2025-08-17 00:56:32.760][E] Your role and goal is to help the user identify a destination and a few activities at the destination the user is interested in.
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] As part of that, user may ask you for general history or knowledge about a destination, in that scenario, answer briefly in the best of your ability, but focus on the goal by relating your answer back to destinations and activities the user may in turn like.
+[2025-08-17 00:56:32.760][E] - You will call the two agent tool `place_agent(inspiration query)` and `poi_agent(destination)` when appropriate:
+[2025-08-17 00:56:32.760][E] - Use `place_agent` to recommend general vacation destinations given vague ideas, be it a city, a region, a country.
+[2025-08-17 00:56:32.760][E] - Use `poi_agent` to provide points of interests and acitivities suggestions, once the user has a specific city or region in mind.
+[2025-08-17 00:56:32.760][E] - Everytime after `poi_agent` is invoked, call `map_tool` with the key being `poi` to verify the latitude and longitudes.
+[2025-08-17 00:56:32.760][E] - Avoid asking too many questions. When user gives instructions like "inspire me", or "suggest some", just go ahead and call `place_agent`.
+[2025-08-17 00:56:32.760][E] - As follow up, you may gather a few information from the user to future their vacation inspirations.
+[2025-08-17 00:56:32.760][E] - Once the user selects their destination, then you help them by providing granular insights by being their personal local travel guide
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] - Here's the optimal flow:
+[2025-08-17 00:56:32.760][E] - inspire user for a dream vacation
+[2025-08-17 00:56:32.760][E] - show them interesting things to do for the selected location
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] - Your role is only to identify possible destinations and acitivites.
+[2025-08-17 00:56:32.760][E] - Do not attempt to assume the role of `place_agent` and `poi_agent`, use them instead.
+[2025-08-17 00:56:32.760][E] - Do not attempt to plan an itinerary for the user with start dates and details, leave that to the planning_agent.
+[2025-08-17 00:56:32.760][E] - Transfer the user to planning_agent once the user wants to:
+[2025-08-17 00:56:32.760][E] - Enumerate a more detailed full itinerary,
+[2025-08-17 00:56:32.760][E] - Looking for flights and hotels deals.
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] - Please use the context info below for any user preferences:
+[2025-08-17 00:56:32.760][E] Current user:
+[2025-08-17 00:56:32.760][E] <user_profile>
+[2025-08-17 00:56:32.760][E] {'passport_nationality': 'US Citizen', 'seat_preference': 'window', 'food_preference': 'vegan', 'allergies': [], 'likes': [], 'dislikes': [], 'price_sensitivity': [], 'home': {'event_type': 'home', 'address': '6420 Sequence Dr #400, San Diego, CA 92121, United States', 'local_prefer_mode': 'drive'}}
+[2025-08-17 00:56:32.760][E] </user_profile>
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] Current time: 2025-08-17 00:56:24.002809
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] You are an agent. Your internal name is "inspiration_agent".
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] The description about you is "A travel inspiration agent who inspire users, and discover their next vacations; Provide information about places, activities, interests,"
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] You have a list of other agents to transfer to:
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] Agent name: root_agent
+[2025-08-17 00:56:32.760][E] Agent description: A Travel Conceirge using the services of multiple sub-agents
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] Agent name: planning_agent
+[2025-08-17 00:56:32.760][E] Agent description: Helps users with travel planning, complete a full itinerary for their vacation, finding best deals for flights and hotels.
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] Agent name: booking_agent
+[2025-08-17 00:56:32.760][E] Agent description: Given an itinerary, complete the bookings of items by handling payment choices and processing.
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] Agent name: pre_trip_agent
+[2025-08-17 00:56:32.760][E] Agent description: Given an itinerary, this agent keeps up to date and provides relevant travel information to the user before the trip.
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] Agent name: in_trip_agent
+[2025-08-17 00:56:32.760][E] Agent description: Provide information about what the users need as part of the tour.
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] Agent name: post_trip_agent
+[2025-08-17 00:56:32.760][E] Agent description: A follow up agent to learn from user's experience; In turn improves the user's future trips planning and in-trip experience.
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] If you are the best to answer the question according to your description, you
+[2025-08-17 00:56:32.760][E] can answer it.
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] If another agent is better for answering the question according to its
+[2025-08-17 00:56:32.760][E] description, call `transfer_to_agent` function to transfer the
+[2025-08-17 00:56:32.760][E] question to that agent. When transferring, do not generate any text other than
+[2025-08-17 00:56:32.760][E] the function call.
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] Your parent agent is root_agent. If neither the other agents nor
+[2025-08-17 00:56:32.760][E] you are best for answering the question according to the descriptions, transfer
+[2025-08-17 00:56:32.760][E] to your parent agent.
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] -----------------------------------------------------------
+[2025-08-17 00:56:32.760][E] Contents:
+[2025-08-17 00:56:32.760][E] {"parts":[{"text":"I want to go to Barcelona"}],"role":"user"}
+[2025-08-17 00:56:32.760][E] {"parts":[{"text":"For context:"},{"text":"[root_agent] called tool `transfer_to_agent` with parameters: {'agent_name': 'inspiration_agent'}"}],"role":"user"}
+[2025-08-17 00:56:32.760][E] {"parts":[{"text":"For context:"},{"text":"[root_agent] `transfer_to_agent` tool returned result: {'result': None}"}],"role":"user"}
+[2025-08-17 00:56:32.760][E] {"parts":[{"thought_signature":"CvEDAVSoXO7TwKeR1kHl1ZpOZtYbiabyxOkftFaNnFbu2fAFKV7YbnaafAhImqsztaDlW1XlXDLDnM5Hh_F3rK2rJPRDzIIkGKBc3GZtCHih9vQZz30rKOU481JasD9fmz_FpiTpsVpXca3LaM1GDD-wvwfYCApDotMojfqcw6Aa2Zom-Pn3qBzFF6vTEcASdEIt5R9GhAqL8JDwbmCCdhD4o-YMCn3_n2eL_48GZqb16GsVjhCYmTDdy8TZuUqpFV3pBznGhnU6ze_QwGvpgWEPAj2OWcpSQdv4h4108oMEgztYJPCiGhU5D3HUCUiLtI_fd4AGpK4g43vXvYrJi5zDNifC7lFVzFBO7FMZ0jv12FFiifk8MQ6CHrc2PDLXKyXcukq-T2HvqX_2FFlRXr_AIEInuftQ8afVhjvXWMnoKuZwUmLSzA_Bv0hBFqMJPP5SY4KymV3nSiiCl9hbIOETE0Z2NFABMk0L6UApzslRQD82lWLP2ad_ic855CSjS4aD1AKvgBTwjO6Q074YiSU1LPoWQjL-T5tyolZbjVbhKfKPGEgvNIKkW-MI2JnY4JpIVItu3Dbj5UUUBMTetrLEzb-lqtmk8wZh8Ce2Zm4UECu4pMepf0Rjb5tP0K0J8W_3zejzK2TEKqVwVrRjj9YVzmg=","function_call":{"args":{"request":"Barcelona"},"name":"poi_agent"}}],"role":"model"}
+[2025-08-17 00:56:32.760][E] {"parts":[{"function_response":{"name":"poi_agent","response":{"places":[{"place_name":"Sagrada Familia","address":"Carrer de Mallorca, 401, 08013 Barcelona, Spain","lat":"41.4036","long":"2.1743","review_ratings":"4.8","highlights":"Antoni Gaudí's unfinished masterpiece, a stunning basilica with unique architectural style and rich history.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg/800px-Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg","map_url":"","place_id":""},{"place_name":"Park Güell","address":"Gràcia, 08024 Barcelona, Spain","lat":"41.4137","long":"2.1525","review_ratings":"4.7","highlights":"A vibrant public park designed by Antoni Gaudí, featuring unique mosaic art, whimsical structures, and panoramic city views.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Park_Guell_Barcelona.jpg/800px-Park_Guell_Barcelona.jpg","map_url":"","place_id":""},{"place_name":"Gothic Quarter (Barri Gòtic)","address":"Ciutat Vella, 08002 Barcelona, Spain","lat":"41.3828","long":"2.1769","review_ratings":"4.7","highlights":"The oldest part of Barcelona, known for its narrow medieval streets, historic buildings, charming squares, and Barcelona Cathedral.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Barri_Gotic%2C_Barcelona.jpg/800px-Barri_Gotic%2C_Barcelona.jpg","map_url":"","place_id":""},{"place_name":"La Rambla","address":"La Rambla, Barcelona, Spain","lat":"41.3819","long":"2.1724","review_ratings":"4.3","highlights":"A famous tree-lined pedestrian street stretching from Plaça de Catalunya to Port Vell, bustling with street performers, flower stalls, and cafes.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/La_Rambla_Barcelona_Spain.jpg/800px-La_Rambla_Barcelona_Spain.jpg","map_url":"","place_id":""},{"place_name":"Casa Batlló","address":"Passeig de Gràcia, 43, 08007 Barcelona, Spain","lat":"41.3916","long":"2.1649","review_ratings":"4.7","highlights":"Another of Gaudí's masterpieces, a stunning example of Modernisme architecture with a fantastical facade and innovative design.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Casa_Batllo_Barcelona.jpg/800px-Casa_Batllo_Barcelona.jpg","map_url":"","place_id":""}]}}}],"role":"user"}
+[2025-08-17 00:56:32.760][E] {"parts":[{"thought_signature":"CsMDAVSoXO6YCIzLFgoSPyIavva0qsM1ucZEYjENCHwouZfXCCU3PcFz8VDO6dpYI9KAtd3h0GcNkoO80wm9O-IpBdeom6EMWLbA9dMWgtD2xEIpdNnEXuJ1_nuEC_FYcrwKjFRZlCXotyhfu9UpKulCJNQfOtv0GShjVTySwGgopS_wtUtaTwL6UmHNuykZD4Q3s-nCSiEFBiORI5ThIN7ZwhjrgA6_-gU7lGIsad9d7X2qJeKMzWpn3k9whejxKRMv93QXXNOqMDGUUL9zud7FFHhKAWD0oy8VZbT-SnBIb3teAT8XZbgsnk9S4dofmwHYF7b4dtp0GxyvvDr--SbB80KWdtb39xA_eNu6ko8ObEm8ZSP8jPwTq4_B54a2iZHK8cD2HaDt129uu7Hb_HdbnTovxTHZ9lXHTHx19pXWVWU90mrVKlUMuGrjsqniyKGZsaQu1FVp0-dfaoRfpcNG8gRvz7mdr_E6x3QOt0sRsihkhCQARh8ISGY2KK0Qky04KYXyNZviL6qtDO9CQrYh-FQaleK_mn5iy2fOxz6JyHmChP8m2kJlGvrTvDd9sDRHtWTrPDC2TH1JsrkWQIXSJDSfAw==","function_call":{"args":{"key":"poi"},"name":"map_tool"}}],"role":"model"}
+[2025-08-17 00:56:32.760][E] {"parts":[{"function_response":{"name":"map_tool","response":{"places":[{"place_name":"Sagrada Familia","address":"Carrer de Mallorca, 401, 08013 Barcelona, Spain","lat":"41.4036","long":"2.1743","review_ratings":"4.8","highlights":"Antoni Gaudí's unfinished masterpiece, a stunning basilica with unique architectural style and rich history.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg/800px-Bas%C3%ADlica_de_la_Sagrada_Fam%C3%ADlia.jpg","map_url":null,"place_id":null},{"place_name":"Park Güell","address":"Gràcia, 08024 Barcelona, Spain","lat":"41.4137","long":"2.1525","review_ratings":"4.7","highlights":"A vibrant public park designed by Antoni Gaudí, featuring unique mosaic art, whimsical structures, and panoramic city views.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Park_Guell_Barcelona.jpg/800px-Park_Guell_Barcelona.jpg","map_url":null,"place_id":null},{"place_name":"Gothic Quarter (Barri Gòtic)","address":"Ciutat Vella, 08002 Barcelona, Spain","lat":"41.3828","long":"2.1769","review_ratings":"4.7","highlights":"The oldest part of Barcelona, known for its narrow medieval streets, historic buildings, charming squares, and Barcelona Cathedral.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Barri_Gotic%2C_Barcelona.jpg/800px-Barri_Gotic%2C_Barcelona.jpg","map_url":null,"place_id":null},{"place_name":"La Rambla","address":"La Rambla, Barcelona, Spain","lat":"41.3819","long":"2.1724","review_ratings":"4.3","highlights":"A famous tree-lined pedestrian street stretching from Plaça de Catalunya to Port Vell, bustling with street performers, flower stalls, and cafes.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/La_Rambla_Barcelona_Spain.jpg/800px-La_Rambla_Barcelona_Spain.jpg","map_url":null,"place_id":null},{"place_name":"Casa Batlló","address":"Passeig de Gràcia, 43, 08007 Barcelona, Spain","lat":"41.3916","long":"2.1649","review_ratings":"4.7","highlights":"Another of Gaudí's masterpieces, a stunning example of Modernisme architecture with a fantastical facade and innovative design.","image_url":"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Casa_Batllo_Barcelona.jpg/800px-Casa_Batllo_Barcelona.jpg","map_url":null,"place_id":null}]}}}],"role":"user"}
+[2025-08-17 00:56:32.760][E] -----------------------------------------------------------
+[2025-08-17 00:56:32.760][E] Functions:
+[2025-08-17 00:56:32.760][E] transfer_to_agent: {'agent_name': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:32.760][E] place_agent: {'request': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:32.760][E] poi_agent: {'request': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:32.760][E] map_tool: {'key': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 00:56:32.760][E] -----------------------------------------------------------
+[2025-08-17 00:56:32.760][E] 
+[2025-08-17 00:56:32.760][E] 2025-08-17 00:56:32,760 - INFO - models.py:7422 - AFC is enabled with max remote calls: 10.
+[2025-08-17 00:56:32.761][E] 2025-08-17 00:56:32,761 - DEBUG - _trace.py:87 - close.started
+[2025-08-17 00:56:32.761][E] 2025-08-17 00:56:32,761 - DEBUG - _trace.py:87 - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+[2025-08-17 00:56:32.761][E] 2025-08-17 00:56:32,761 - DEBUG - _trace.py:87 - close.complete
+[2025-08-17 00:56:32.806][E] 2025-08-17 00:56:32,806 - DEBUG - _trace.py:87 - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x14b963ec0>
+[2025-08-17 00:56:32.807][E] 2025-08-17 00:56:32,806 - DEBUG - _trace.py:87 - start_tls.started ssl_context=<ssl.SSLContext object at 0x14afd4450> server_hostname='generativelanguage.googleapis.com' timeout=None
+[2025-08-17 00:56:32.836][E] 2025-08-17 00:56:32,836 - DEBUG - _trace.py:87 - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x14b9630b0>
+[2025-08-17 00:56:32.837][E] 2025-08-17 00:56:32,837 - DEBUG - _trace.py:87 - send_request_headers.started request=<Request [b'POST']>
+[2025-08-17 00:56:32.837][E] 2025-08-17 00:56:32,837 - DEBUG - _trace.py:87 - send_request_headers.complete
+[2025-08-17 00:56:32.837][E] 2025-08-17 00:56:32,837 - DEBUG - _trace.py:87 - send_request_body.started request=<Request [b'POST']>
+[2025-08-17 00:56:32.837][E] 2025-08-17 00:56:32,837 - DEBUG - _trace.py:87 - send_request_body.complete
+[2025-08-17 00:56:32.837][E] 2025-08-17 00:56:32,837 - DEBUG - _trace.py:87 - receive_response_headers.started request=<Request [b'POST']>
+[2025-08-17 00:56:34.587][E] 2025-08-17 00:56:34,587 - DEBUG - _trace.py:87 - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=UTF-8'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sat, 16 Aug 2025 22:56:34 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=1719'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+[2025-08-17 00:56:34.588][E] 2025-08-17 00:56:34,588 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+[2025-08-17 00:56:34.588][E] 2025-08-17 00:56:34,588 - DEBUG - _trace.py:87 - receive_response_body.started request=<Request [b'POST']>
+[2025-08-17 00:56:34.603][E] 2025-08-17 00:56:34,603 - DEBUG - _trace.py:87 - receive_response_body.complete
+[2025-08-17 00:56:34.604][E] 2025-08-17 00:56:34,604 - DEBUG - _trace.py:87 - response_closed.started
+[2025-08-17 00:56:34.604][E] 2025-08-17 00:56:34,604 - DEBUG - _trace.py:87 - response_closed.complete
+[2025-08-17 00:56:34.605][E] 2025-08-17 00:56:34,605 - INFO - google_llm.py:203 - Response received from the model.
+[2025-08-17 00:56:34.605][E] 2025-08-17 00:56:34,605 - WARNING - types.py:5176 - Warning: there are non-text parts in the response: ['thought_signature'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+[2025-08-17 00:56:34.605][E] 2025-08-17 00:56:34,605 - DEBUG - google_llm.py:204 -
+[2025-08-17 00:56:34.605][E] LLM Response:
+[2025-08-17 00:56:34.605][E] -----------------------------------------------------------
+[2025-08-17 00:56:34.605][E] Text:
+[2025-08-17 00:56:34.605][E] Barcelona is a fantastic choice! Here are some of the most popular attractions and points of interest there:
+[2025-08-17 00:56:34.605][E] 
+[2025-08-17 00:56:34.606][E] *   **Sagrada Familia**: Antoni Gaudí's unfinished masterpiece, a stunning basilica with unique architectural style and rich history.
+[2025-08-17 00:56:34.606][E] *   **Park Güell**: A vibrant public park also designed by Antoni Gaudí, featuring unique mosaic art, whimsical structures, and panoramic city views.
+[2025-08-17 00:56:34.606][E] *   **Gothic Quarter (Barri Gòtic)**: The oldest part of Barcelona, known for its narrow medieval streets, historic buildings, charming squares, and Barcelona Cathedral.
+[2025-08-17 00:56:34.606][E] *   **La Rambla**: A famous tree-lined pedestrian street stretching from Plaça de Catalunya to Port Vell, bustling with street performers, flower stalls, and cafes.
+[2025-08-17 00:56:34.606][E] *   **Casa Batlló**: Another of Gaudí's masterpieces, a stunning example of Modernisme architecture with a fantastical facade and innovative design.
+[2025-08-17 00:56:34.606][E] 
+[2025-08-17 00:56:34.606][E] Do any of these pique your interest, or would you like to explore other types of activities in Barcelona?
+[2025-08-17 00:56:34.606][E] -----------------------------------------------------------
+[2025-08-17 00:56:34.606][E] Function calls:
+[2025-08-17 00:56:34.606][E] 
+[2025-08-17 00:56:34.606][E] -----------------------------------------------------------
+[2025-08-17 00:56:34.606][E] Raw response:
+[2025-08-17 00:56:34.606][E] {"sdk_http_response":{"headers":{"content-type":"application/json; charset=UTF-8","vary":"Origin, X-Origin, Referer","content-encoding":"gzip","date":"Sat, 16 Aug 2025 22:56:34 GMT","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=1719","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000","transfer-encoding":"chunked"}},"candidates":[{"content":{"parts":[{"thought_signature":"CpIEAVSoXO7sZTVDSNEeGU-dX3k-x3JNQZ5CS3Wr9C6cPuE46XFqzB2RYxVf47E2jRtqFZ4yELvRhSlpNBGDzSEBtTUXU5kGU2ag_tGAEX2KHOkwOj9S7APo4Rd1tUzQrdW89XMvFHxzvakyV1SiDRJb5XoH8dMXNRxnewooRy6jyBrZCwsadP-idUukbgCgyXMpsTtGLomFRp53qLoH4wwabr7xDpiubHgfwz-gzU2funhbVzWxOxzIsGKP0A8whq-ot8pnfbVvDMULtv2Dw50R2YFLsgZcgCdkSmi9P-o9JVWRgTX6Sx8SHP4PPdUx6UEpk0DvqPGioHgdWDNhTl0-QSBBU2jiiB1C_LizK2585XFVgyhbaQRrppK8cMio6pUtOIp5uAW4WTOkD3DSAwxZLt5svTTjutwhbArlI1cAS-wINBeyJxIKaOU5VMfAyKg5z4ghgZp_iUyT3zhwqCNsn2XXDEmcAHsQW7Ik3fR_7Mgu6wO-ZUIyaLP-L0GsfUGlmkVuzEKzbRw42b83kqVTHGqm87Y4V6OwFtaB6Z9ir5-MbGpyv9GBZxLjdKg2vAiUk47FFB8J5rqaElm4GEav7QtzBKKnacuVq1qz61JapKeesWmFhfMPQMVMUn-ZfxbxNlNFtPiEPtGLBWbDrVPKflDlPn0ifPQpKUvdmrcFIm8XiUF4kWVpkdkJBZckUfNqLbY=","text":"Barcelona is a fantastic choice! Here are some of the most popular attractions and points of interest there:\n\n*   **Sagrada Familia**: Antoni Gaudí's unfinished masterpiece, a stunning basilica with unique architectural style and rich history.\n*   **Park Güell**: A vibrant public park also designed by Antoni Gaudí, featuring unique mosaic art, whimsical structures, and panoramic city views.\n*   **Gothic Quarter (Barri Gòtic)**: The oldest part of Barcelona, known for its narrow medieval streets, historic buildings, charming squares, and Barcelona Cathedral.\n*   **La Rambla**: A famous tree-lined pedestrian street stretching from Plaça de Catalunya to Port Vell, bustling with street performers, flower stalls, and cafes.\n*   **Casa Batlló**: Another of Gaudí's masterpieces, a stunning example of Modernisme architecture with a fantastical facade and innovative design.\n\nDo any of these pique your interest, or would you like to explore other types of activities in Barcelona?"}],"role":"model"},"finish_reason":"STOP","index":0}],"model_version":"gemini-2.5-flash","usage_metadata":{"candidates_token_count":207,"prompt_token_count":2991,"prompt_tokens_details":[{"modality":"TEXT","token_count":2991}],"thoughts_token_count":97,"total_token_count":3295},"automatic_function_calling_history":[]}
+[2025-08-17 00:56:34.606][E] -----------------------------------------------------------
+[2025-08-17 00:56:34.606][E] 
+[2025-08-17 00:56:34.606][E] 2025-08-17 00:56:34,606 - DEBUG - llm_agent.py:447 - Skipping output save for agent root_agent: event authored by inspiration_agent
+[2025-08-17 00:56:34.606][E] 2025-08-17 00:56:34,606 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"thoughtSignature":"CpIEAVSoXO7sZTVDSNEeGU-dX3k-x3JNQZ5CS3Wr9C6cPuE46XFqzB2RYxVf47E2jRtqFZ4yELvRhSlpNBGDzSEBtTUXU5kGU2ag_tGAEX2KHOkwOj9S7APo4Rd1tUzQrdW89XMvFHxzvakyV1SiDRJb5XoH8dMXNRxnewooRy6jyBrZCwsadP-idUukbgCgyXMpsTtGLomFRp53qLoH4wwabr7xDpiubHgfwz-gzU2funhbVzWxOxzIsGKP0A8whq-ot8pnfbVvDMULtv2Dw50R2YFLsgZcgCdkSmi9P-o9JVWRgTX6Sx8SHP4PPdUx6UEpk0DvqPGioHgdWDNhTl0-QSBBU2jiiB1C_LizK2585XFVgyhbaQRrppK8cMio6pUtOIp5uAW4WTOkD3DSAwxZLt5svTTjutwhbArlI1cAS-wINBeyJxIKaOU5VMfAyKg5z4ghgZp_iUyT3zhwqCNsn2XXDEmcAHsQW7Ik3fR_7Mgu6wO-ZUIyaLP-L0GsfUGlmkVuzEKzbRw42b83kqVTHGqm87Y4V6OwFtaB6Z9ir5-MbGpyv9GBZxLjdKg2vAiUk47FFB8J5rqaElm4GEav7QtzBKKnacuVq1qz61JapKeesWmFhfMPQMVMUn-ZfxbxNlNFtPiEPtGLBWbDrVPKflDlPn0ifPQpKUvdmrcFIm8XiUF4kWVpkdkJBZckUfNqLbY=","text":"Barcelona is a fantastic choice! Here are some of the most popular attractions and points of interest there:\n\n*   **Sagrada Familia**: Antoni Gaudí's unfinished masterpiece, a stunning basilica with unique architectural style and rich history.\n*   **Park Güell**: A vibrant public park also designed by Antoni Gaudí, featuring unique mosaic art, whimsical structures, and panoramic city views.\n*   **Gothic Quarter (Barri Gòtic)**: The oldest part of Barcelona, known for its narrow medieval streets, historic buildings, charming squares, and Barcelona Cathedral.\n*   **La Rambla**: A famous tree-lined pedestrian street stretching from Plaça de Catalunya to Port Vell, bustling with street performers, flower stalls, and cafes.\n*   **Casa Batlló**: Another of Gaudí's masterpieces, a stunning example of Modernisme architecture with a fantastical facade and innovative design.\n\nDo any of these pique your interest, or would you like to explore other types of activities in Barcelona?"}],"role":"model"},"usageMetadata":{"candidatesTokenCount":207,"promptTokenCount":2991,"promptTokensDetails":[{"modality":"TEXT","tokenCount":2991}],"thoughtsTokenCount":97,"totalTokenCount":3295},"invocationId":"e-4183a70a-54c5-41e8-91f9-92698f093981","author":"inspiration_agent","actions":{"stateDelta":{},"artifactDelta":{},"requestedAuthConfigs":{}},"id":"6e231f53-7dce-48d4-aa85-8d0e31042fac","timestamp":1755384992.713141}
+[2025-08-17 00:56:34.610][E] 2025-08-17 00:56:34,610 - DEBUG - _trace.py:87 - close.started
+[2025-08-17 00:56:34.610][E] 2025-08-17 00:56:34,610 - DEBUG - _trace.py:87 - close.started
+[2025-08-17 00:56:34.610][E] 2025-08-17 00:56:34,610 - DEBUG - _trace.py:87 - close.complete
+[2025-08-17 00:56:34.610][E] 2025-08-17 00:56:34,610 - DEBUG - _trace.py:87 - close.complete
