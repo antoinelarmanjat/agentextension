@@ -43,5 +43,6 @@ This extension provides tools for working with ADK agents:
 
 Initial release with core agent management features:
 - Agent tree view
-- Terminal and web interface integration
+- Web interface integration with loggin
 - Basic agent file manipulation tools
+- To get access to the logs, use Gemini Code Assist and include the logs directory
