@@ -5,3 +5,5 @@ src/**
 *.log
 webpack.config.js
 out/**
+travel_concierge/
+logs/

@@ -41,10 +41,6 @@
         "title": "Run ADK Web"
       },
       {
-        "command": "agent-inspector.runAdkTerminal",
-        "title": "Run ADK Terminal"
-      },
-      {
         "command": "agent-inspector.addTool",
         "title": "Add Tool"
       },
@@ -81,10 +77,6 @@
       "editor/title": [
         {
           "command": "agent-inspector.runAdkWebTopBar",
-          "group": "navigation"
-        },
-        {
-          "command": "agent-inspector.runAdkTerminal",
           "group": "navigation"
         }
       ],

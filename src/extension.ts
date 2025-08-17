@@ -121,36 +121,6 @@ ${agentToolName} = Agent(
     });
     context.subscriptions.push(addAgentCommand);
 
-    // ********* YOU ARE MISSING THIS BLOCK *********
-    // This is the command that the status bar item will run
-    const insertCommand = vscode.commands.registerCommand('agent-inspector.insertDateTime', () => {
-        const editor = vscode.window.activeTextEditor;
-        if (editor) {
-            const selection = editor.selection;
-            const dateTimeString = new Date().toLocaleString();
-            editor.edit(editBuilder => {
-                editBuilder.replace(selection, dateTimeString);
-            });
-        }
-    });
-    context.subscriptions.push(insertCommand);
-    // ***********************************************
-
-    // Create the status bar item
-    myStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-
-    // Set the command that runs when the item is clicked
-    myStatusBarItem.command = 'agent-inspector.insertDateTime';
-
-    // Set the text and tooltip
-    myStatusBarItem.text = `$(watch) Insert Time`;
-    myStatusBarItem.tooltip = `Inserts the current date and time`;
-
-    // Add it to the subscriptions so it's disposed of when the extension deactivates
-    context.subscriptions.push(myStatusBarItem);
-
-    // And finally, show it in the status bar
-    myStatusBarItem.show();
 
     // Create a new status bar item for running adk web
     // let adkStatusBarItem: vscode.StatusBarItem;
@@ -281,26 +251,6 @@ ${agentToolName} = Agent(
     });
     context.subscriptions.push(runAdkWebTopBarCommand);
 
-    const runAdkTerminalCommand = vscode.commands.registerCommand('agent-inspector.runAdkTerminal', () => {
-        const terminal = vscode.window.createTerminal({
-            name: 'ADK Terminal',
-            env: {
-                "PATH": process.env.PATH + ":/Library/Frameworks/Python.framework/Versions/3.12/bin",
-                "GOOGLE_API_KEY": "AIzaSyBWCSHpR5FucjbeasA0XKrCPmCRRPKx4b8"
-            }
-        });
-        terminal.sendText('adk run travel_concierge');
-        terminal.show();
-    });
-    context.subscriptions.push(runAdkTerminalCommand);
-
-    let adkTerminalStatusBarItem: vscode.StatusBarItem;
-    adkTerminalStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-    adkTerminalStatusBarItem.command = 'agent-inspector.runAdkTerminal';
-    adkTerminalStatusBarItem.text = `$(terminal) ADK Terminal`;
-    adkTerminalStatusBarItem.tooltip = `Starts a new terminal with ADK environment variables`;
-    context.subscriptions.push(adkTerminalStatusBarItem);
-    adkTerminalStatusBarItem.show();
     }
 // This method is called when your extension is deactivated
 export function deactivate() { }

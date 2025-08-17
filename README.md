@@ -8,7 +8,6 @@ This extension provides tools for working with ADK agents:
 
 - **Agent Tree View**: Browse and inspect agent definitions in your workspace
 - **ADK Web Button**: Launch ADK web interface with proper environment setup
-- **ADK Terminal Button**: Open a terminal with ADK environment variables and run `adk run travel_concierge`
 - **Agent Management**: Add sub-agents, tools, and agent tools to your agent definitions
 - **Agent Scanner**: Scan directories for agent files and definitions
 
@@ -16,9 +15,7 @@ This extension provides tools for working with ADK agents:
 
 ### Status Bar Buttons
 
-- **Insert Time**: Inserts current date and time at cursor position
 - **ADK Web**: Launches ADK web interface in a webview panel
-- **ADK Terminal**: Opens a new terminal with ADK environment variables and runs the travel concierge agent
 
 ### Commands
 
