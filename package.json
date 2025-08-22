@@ -4,6 +4,7 @@
   "description": "An extension to design ADK agents",
   "version": "0.0.1",
   "publisher": "agentdesigner",
+  "icon": "src/adk-icon.png",
   "repository": {
     "type": "git",
     "url": ""

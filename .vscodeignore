@@ -2,6 +2,7 @@
 .vscode-test/**
 node_modules/**
 src/**
+!src/adk-icon.png
 *.log
 webpack.config.js
 out/**
