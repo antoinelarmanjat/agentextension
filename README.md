@@ -27,6 +27,7 @@ This extension provides tools for working with ADK agents:
 
 ## Requirements
 
+- You need to have an agent (in an agent.py file) called root_agent
 - Python 3.12 (specifically at `/Library/Frameworks/Python.framework/Versions/3.12/bin`)
 - ADK (Agent Development Kit) installed
 - Google API Key for agent functionality
