@@ -46,7 +46,6 @@ trip_monitor_agent = Agent(
     output_key="daily_checks",  # can be sent via email.
 )
 
-
 in_trip_agent = Agent(
     model="gemini-2.5-flash",
     name="in_trip_agent",

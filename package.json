@@ -38,7 +38,13 @@
       },
       {
         "command": "agent-inspector.runAdkWebTopBar",
-        "title": "Run ADK Web"
+        "title": "Run ADK Web",
+        "icon": "$(play)"
+      },
+      {
+        "command": "agent-inspector.stopAdkWeb",
+        "title": "Stop ADK Web",
+        "icon": "$(debug-stop)"
       },
       {
         "command": "agent-inspector.addTool",
@@ -77,7 +83,13 @@
       "editor/title": [
         {
           "command": "agent-inspector.runAdkWebTopBar",
-          "group": "navigation"
+          "group": "navigation",
+          "when": "!adk.web.running"
+        },
+        {
+          "command": "agent-inspector.stopAdkWeb",
+          "group": "navigation",
+          "when": "adk.web.running"
         }
       ],
       "view/title": [

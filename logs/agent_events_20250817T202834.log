@@ -1,0 +1,255 @@
+[2025-08-17 22:28:37.508] 
+[2025-08-17 22:28:37.508] +-----------------------------------------------------------------------------+
+[2025-08-17 22:28:37.508] | ADK Web Server started                                                      |
+[2025-08-17 22:28:37.508] |                                                                             |
+[2025-08-17 22:28:37.508] | For local testing, access at http://localhost:5000.                         |
+[2025-08-17 22:28:37.508] +-----------------------------------------------------------------------------+
+[2025-08-17 22:28:37.508] 
+[2025-08-17 22:28:40.042] INFO:     127.0.0.1:64714 - "GET / HTTP/1.1" 307 Temporary Redirect
+[2025-08-17 22:28:40.240] INFO:     127.0.0.1:64714 - "GET /list-apps?relative_path=./ HTTP/1.1" 200 OK
+[2025-08-17 22:28:44.216] INFO:     127.0.0.1:64714 - "POST /apps/simpleagent/users/user/sessions HTTP/1.1" 200 OK
+[2025-08-17 22:28:44.244] INFO:     127.0.0.1:64715 - "GET /apps/simpleagent/eval_results HTTP/1.1" 200 OK
+[2025-08-17 22:28:44.245] INFO:     127.0.0.1:64714 - "GET /apps/simpleagent/eval_sets HTTP/1.1" 200 OK
+[2025-08-17 22:28:44.282] INFO:     127.0.0.1:64714 - "GET /apps/simpleagent/users/user/sessions HTTP/1.1" 200 OK
+[2025-08-17 22:28:44.744] INFO:     127.0.0.1:64714 - "GET /apps/simpleagent/users/user/sessions HTTP/1.1" 200 OK
+[2025-08-17 22:28:55.451] INFO:     127.0.0.1:64717 - "POST /run_sse HTTP/1.1" 200 OK
+[2025-08-17 22:28:56.614] INFO:     127.0.0.1:64717 - "GET /apps/simpleagent/users/user/sessions/e5d1e638-a584-4801-b0d2-1a3e924337ab HTTP/1.1" 200 OK
+[2025-08-17 22:28:56.616] INFO:     127.0.0.1:64720 - "GET /debug/trace/session/e5d1e638-a584-4801-b0d2-1a3e924337ab HTTP/1.1" 200 OK
+[2025-08-17 22:29:06.113] INFO:     127.0.0.1:64725 - "POST /run_sse HTTP/1.1" 200 OK
+[2025-08-17 22:29:07.385] INFO:     127.0.0.1:64725 - "GET /apps/simpleagent/users/user/sessions/e5d1e638-a584-4801-b0d2-1a3e924337ab HTTP/1.1" 200 OK
+[2025-08-17 22:29:07.388] INFO:     127.0.0.1:64730 - "GET /debug/trace/session/e5d1e638-a584-4801-b0d2-1a3e924337ab HTTP/1.1" 200 OK
+[2025-08-17 22:29:21.776] 
+[2025-08-17 22:29:21.776] +-----------------------------------------------------------------------------+
+[2025-08-17 22:29:21.776] | ADK Web Server shutting down...                                             |
+[2025-08-17 22:29:21.776] +-----------------------------------------------------------------------------+
+[2025-08-17 22:29:21.776] 
+7 -
+[2025-08-17 22:28:55.517][E] LLM Request:
+[2025-08-17 22:28:55.517][E] -----------------------------------------------------------
+[2025-08-17 22:28:55.517][E] System Instruction:
+[2025-08-17 22:28:55.517][E] I can answer your questions about the time and weather in a city.
+[2025-08-17 22:28:55.517][E] 
+[2025-08-17 22:28:55.517][E] You are an agent. Your internal name is "weather_time_agent".
+[2025-08-17 22:28:55.517][E] 
+[2025-08-17 22:28:55.517][E] The description about you is "Agent to answer questions about the time and weather in a city."
+[2025-08-17 22:28:55.517][E] -----------------------------------------------------------
+[2025-08-17 22:28:55.517][E] Contents:
+[2025-08-17 22:28:55.517][E] {"parts":[{"text":"what is the weather like in London?"}],"role":"user"}
+[2025-08-17 22:28:55.517][E] -----------------------------------------------------------
+[2025-08-17 22:28:55.517][E] Functions:
+[2025-08-17 22:28:55.517][E] get_weather: {'city': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 22:28:55.517][E] get_current_time: {'city': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 22:28:55.517][E] -----------------------------------------------------------
+[2025-08-17 22:28:55.517][E] 
+[2025-08-17 22:28:55.517][E] 2025-08-17 22:28:55,517 - INFO - models.py:7422 - AFC is enabled with max remote calls: 10.
+[2025-08-17 22:28:55.518][E] 2025-08-17 22:28:55,518 - DEBUG - _trace.py:87 - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+[2025-08-17 22:28:55.655][E] 2025-08-17 22:28:55,655 - DEBUG - _trace.py:87 - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x120dad970>
+[2025-08-17 22:28:55.656][E] 2025-08-17 22:28:55,655 - DEBUG - _trace.py:87 - start_tls.started ssl_context=<ssl.SSLContext object at 0x120d3cad0> server_hostname='generativelanguage.googleapis.com' timeout=None
+[2025-08-17 22:28:55.680][E] 2025-08-17 22:28:55,680 - DEBUG - _trace.py:87 - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x120d29e80>
+[2025-08-17 22:28:55.681][E] 2025-08-17 22:28:55,680 - DEBUG - _trace.py:87 - send_request_headers.started request=<Request [b'POST']>
+[2025-08-17 22:28:55.681][E] 2025-08-17 22:28:55,681 - DEBUG - _trace.py:87 - send_request_headers.complete
+[2025-08-17 22:28:55.681][E] 2025-08-17 22:28:55,681 - DEBUG - _trace.py:87 - send_request_body.started request=<Request [b'POST']>
+[2025-08-17 22:28:55.682][E] 2025-08-17 22:28:55,682 - DEBUG - _trace.py:87 - send_request_body.complete
+[2025-08-17 22:28:55.682][E] 2025-08-17 22:28:55,682 - DEBUG - _trace.py:87 - receive_response_headers.started request=<Request [b'POST']>
+[2025-08-17 22:28:56.117][E] 2025-08-17 22:28:56,117 - DEBUG - _trace.py:87 - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=UTF-8'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sun, 17 Aug 2025 20:28:56 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=398'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+[2025-08-17 22:28:56.117][E] 2025-08-17 22:28:56,117 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 200 OK"
+[2025-08-17 22:28:56.117][E] 2025-08-17 22:28:56,117 - DEBUG - _trace.py:87 - receive_response_body.started request=<Request [b'POST']>
+[2025-08-17 22:28:56.118][E] 2025-08-17 22:28:56,118 - DEBUG - _trace.py:87 - receive_response_body.complete
+[2025-08-17 22:28:56.118][E] 2025-08-17 22:28:56,118 - DEBUG - _trace.py:87 - response_closed.started
+[2025-08-17 22:28:56.118][E] 2025-08-17 22:28:56,118 - DEBUG - _trace.py:87 - response_closed.complete
+[2025-08-17 22:28:56.119][E] 2025-08-17 22:28:56,119 - INFO - google_llm.py:203 - Response received from the model.
+[2025-08-17 22:28:56.119][E] 2025-08-17 22:28:56,119 - WARNING - types.py:5176 - Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+[2025-08-17 22:28:56.120][E] 2025-08-17 22:28:56,120 - DEBUG - google_llm.py:204 -
+[2025-08-17 22:28:56.120][E] LLM Response:
+[2025-08-17 22:28:56.120][E] -----------------------------------------------------------
+[2025-08-17 22:28:56.120][E] Text:
+[2025-08-17 22:28:56.120][E] None
+[2025-08-17 22:28:56.120][E] -----------------------------------------------------------
+[2025-08-17 22:28:56.120][E] Function calls:
+[2025-08-17 22:28:56.120][E] name: get_weather, args: {'city': 'London'}
+[2025-08-17 22:28:56.120][E] -----------------------------------------------------------
+[2025-08-17 22:28:56.120][E] Raw response:
+[2025-08-17 22:28:56.120][E] {"sdk_http_response":{"headers":{"content-type":"application/json; charset=UTF-8","vary":"Origin, X-Origin, Referer","content-encoding":"gzip","date":"Sun, 17 Aug 2025 20:28:56 GMT","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=398","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000","transfer-encoding":"chunked"}},"candidates":[{"content":{"parts":[{"function_call":{"args":{"city":"London"},"name":"get_weather"}}],"role":"model"},"finish_reason":"STOP","avg_logprobs":-0.0007171565666794777}],"model_version":"gemini-2.0-flash","usage_metadata":{"candidates_token_count":5,"candidates_tokens_details":[{"modality":"TEXT","token_count":5}],"prompt_token_count":212,"prompt_tokens_details":[{"modality":"TEXT","token_count":212}],"total_token_count":217},"automatic_function_calling_history":[]}
+[2025-08-17 22:28:56.120][E] -----------------------------------------------------------
+[2025-08-17 22:28:56.120][E] 
+[2025-08-17 22:28:56.120][E] 2025-08-17 22:28:56,120 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"functionCall":{"id":"adk-f370203e-7122-4757-81cd-ab217bc81f59","args":{"city":"London"},"name":"get_weather"}}],"role":"model"},"usageMetadata":{"candidatesTokenCount":5,"candidatesTokensDetails":[{"modality":"TEXT","tokenCount":5}],"promptTokenCount":212,"promptTokensDetails":[{"modality":"TEXT","tokenCount":212}],"totalTokenCount":217},"invocationId":"e-f197cfc8-53d2-4527-9b3e-302adc72ec5d","author":"weather_time_agent","actions":{"stateDelta":{},"artifactDelta":{},"requestedAuthConfigs":{}},"longRunningToolIds":[],"id":"3d30f375-ca48-4952-ba45-ba40d534c42e","timestamp":1755462535.462438}
+[2025-08-17 22:28:56.121][E] 2025-08-17 22:28:56,121 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"functionResponse":{"id":"adk-f370203e-7122-4757-81cd-ab217bc81f59","name":"get_weather","response":{"status":"error","error_message":"Weather information for 'London' is not available."}}}],"role":"user"},"invocationId":"e-f197cfc8-53d2-4527-9b3e-302adc72ec5d","author":"weather_time_agent","actions":{"stateDelta":{},"artifactDelta":{},"requestedAuthConfigs":{}},"id":"d8ad7b72-0aba-45cc-b9f9-5fa604f7c03e","timestamp":1755462536.12123}
+[2025-08-17 22:28:56.165][E] 2025-08-17 22:28:56,165 - INFO - google_llm.py:111 - Sending out request, model: gemini-2.0-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+[2025-08-17 22:28:56.165][E] 2025-08-17 22:28:56,165 - DEBUG - google_llm.py:117 -
+[2025-08-17 22:28:56.165][E] LLM Request:
+[2025-08-17 22:28:56.165][E] -----------------------------------------------------------
+[2025-08-17 22:28:56.165][E] System Instruction:
+[2025-08-17 22:28:56.165][E] I can answer your questions about the time and weather in a city.
+[2025-08-17 22:28:56.165][E] 
+[2025-08-17 22:28:56.165][E] You are an agent. Your internal name is "weather_time_agent".
+[2025-08-17 22:28:56.165][E] 
+[2025-08-17 22:28:56.165][E] The description about you is "Agent to answer questions about the time and weather in a city."
+[2025-08-17 22:28:56.165][E] -----------------------------------------------------------
+[2025-08-17 22:28:56.165][E] Contents:
+[2025-08-17 22:28:56.165][E] {"parts":[{"text":"what is the weather like in London?"}],"role":"user"}
+[2025-08-17 22:28:56.165][E] {"parts":[{"function_call":{"args":{"city":"London"},"name":"get_weather"}}],"role":"model"}
+[2025-08-17 22:28:56.165][E] {"parts":[{"function_response":{"name":"get_weather","response":{"status":"error","error_message":"Weather information for 'London' is not available."}}}],"role":"user"}
+[2025-08-17 22:28:56.165][E] -----------------------------------------------------------
+[2025-08-17 22:28:56.165][E] Functions:
+[2025-08-17 22:28:56.165][E] get_weather: {'city': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 22:28:56.165][E] get_current_time: {'city': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 22:28:56.165][E] -----------------------------------------------------------
+[2025-08-17 22:28:56.165][E] 
+[2025-08-17 22:28:56.165][E] 2025-08-17 22:28:56,165 - INFO - models.py:7422 - AFC is enabled with max remote calls: 10.
+[2025-08-17 22:28:56.166][E] 2025-08-17 22:28:56,166 - DEBUG - _trace.py:87 - close.started
+[2025-08-17 22:28:56.166][E] 2025-08-17 22:28:56,166 - DEBUG - _trace.py:87 - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+[2025-08-17 22:28:56.166][E] 2025-08-17 22:28:56,166 - DEBUG - _trace.py:87 - close.complete
+[2025-08-17 22:28:56.178][E] 2025-08-17 22:28:56,178 - DEBUG - _trace.py:87 - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x120d2acc0>
+[2025-08-17 22:28:56.178][E] 2025-08-17 22:28:56,178 - DEBUG - _trace.py:87 - start_tls.started ssl_context=<ssl.SSLContext object at 0x120d9df50> server_hostname='generativelanguage.googleapis.com' timeout=None
+[2025-08-17 22:28:56.195][E] 2025-08-17 22:28:56,195 - DEBUG - _trace.py:87 - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x120cec170>
+[2025-08-17 22:28:56.196][E] 2025-08-17 22:28:56,196 - DEBUG - _trace.py:87 - send_request_headers.started request=<Request [b'POST']>
+[2025-08-17 22:28:56.196][E] 2025-08-17 22:28:56,196 - DEBUG - _trace.py:87 - send_request_headers.complete
+[2025-08-17 22:28:56.196][E] 2025-08-17 22:28:56,196 - DEBUG - _trace.py:87 - send_request_body.started request=<Request [b'POST']>
+[2025-08-17 22:28:56.196][E] 2025-08-17 22:28:56,196 - DEBUG - _trace.py:87 - send_request_body.complete
+[2025-08-17 22:28:56.196][E] 2025-08-17 22:28:56,196 - DEBUG - _trace.py:87 - receive_response_headers.started request=<Request [b'POST']>
+[2025-08-17 22:28:56.582][E] 2025-08-17 22:28:56,581 - DEBUG - _trace.py:87 - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=UTF-8'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sun, 17 Aug 2025 20:28:56 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=369'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+[2025-08-17 22:28:56.582][E] 2025-08-17 22:28:56,582 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 200 OK"
+[2025-08-17 22:28:56.583][E] 2025-08-17 22:28:56,583 - DEBUG - _trace.py:87 - receive_response_body.started request=<Request [b'POST']>
+[2025-08-17 22:28:56.584][E] 2025-08-17 22:28:56,584 - DEBUG - _trace.py:87 - receive_response_body.complete
+[2025-08-17 22:28:56.584][E] 2025-08-17 22:28:56,584 - DEBUG - _trace.py:87 - response_closed.started
+[2025-08-17 22:28:56.585][E] 2025-08-17 22:28:56,584 - DEBUG - _trace.py:87 - response_closed.complete
+[2025-08-17 22:28:56.586][E] 2025-08-17 22:28:56,586 - INFO - google_llm.py:203 - Response received from the model.
+[2025-08-17 22:28:56.587][E] 2025-08-17 22:28:56,587 - DEBUG - google_llm.py:204 -
+[2025-08-17 22:28:56.587][E] LLM Response:
+[2025-08-17 22:28:56.587][E] -----------------------------------------------------------
+[2025-08-17 22:28:56.587][E] Text:
+[2025-08-17 22:28:56.587][E] I am sorry, I cannot fulfill this request. The weather information for London is not available.
+[2025-08-17 22:28:56.587][E] -----------------------------------------------------------
+[2025-08-17 22:28:56.587][E] Function calls:
+[2025-08-17 22:28:56.587][E] 
+[2025-08-17 22:28:56.587][E] -----------------------------------------------------------
+[2025-08-17 22:28:56.587][E] Raw response:
+[2025-08-17 22:28:56.587][E] {"sdk_http_response":{"headers":{"content-type":"application/json; charset=UTF-8","vary":"Origin, X-Origin, Referer","content-encoding":"gzip","date":"Sun, 17 Aug 2025 20:28:56 GMT","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=369","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000","transfer-encoding":"chunked"}},"candidates":[{"content":{"parts":[{"text":"I am sorry, I cannot fulfill this request. The weather information for London is not available."}],"role":"model"},"finish_reason":"STOP","avg_logprobs":-0.0045650522959859744}],"model_version":"gemini-2.0-flash","usage_metadata":{"candidates_token_count":19,"candidates_tokens_details":[{"modality":"TEXT","token_count":19}],"prompt_token_count":235,"prompt_tokens_details":[{"modality":"TEXT","token_count":235}],"total_token_count":254},"automatic_function_calling_history":[]}
+[2025-08-17 22:28:56.587][E] -----------------------------------------------------------
+[2025-08-17 22:28:56.587][E] 
+[2025-08-17 22:28:56.587][E] 2025-08-17 22:28:56,587 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"text":"I am sorry, I cannot fulfill this request. The weather information for London is not available."}],"role":"model"},"usageMetadata":{"candidatesTokenCount":19,"candidatesTokensDetails":[{"modality":"TEXT","tokenCount":19}],"promptTokenCount":235,"promptTokensDetails":[{"modality":"TEXT","tokenCount":235}],"totalTokenCount":254},"invocationId":"e-f197cfc8-53d2-4527-9b3e-302adc72ec5d","author":"weather_time_agent","actions":{"stateDelta":{},"artifactDelta":{},"requestedAuthConfigs":{}},"id":"8ffdc52b-3e68-4d5c-b151-9c48196484e0","timestamp":1755462536.123359}
+[2025-08-17 22:28:56.592][E] 2025-08-17 22:28:56,592 - DEBUG - _trace.py:87 - close.started
+[2025-08-17 22:28:56.593][E] 2025-08-17 22:28:56,593 - DEBUG - _trace.py:87 - close.complete
+[2025-08-17 22:29:06.113][E] 2025-08-17 22:29:06,113 - INFO - envs.py:54 - No .env file found for simpleagent
+[2025-08-17 22:29:06.165][E] 2025-08-17 22:29:06,165 - INFO - google_llm.py:111 - Sending out request, model: gemini-2.0-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+[2025-08-17 22:29:06.165][E] 2025-08-17 22:29:06,165 - DEBUG - google_llm.py:117 -
+[2025-08-17 22:29:06.165][E] LLM Request:
+[2025-08-17 22:29:06.165][E] -----------------------------------------------------------
+[2025-08-17 22:29:06.165][E] System Instruction:
+[2025-08-17 22:29:06.165][E] I can answer your questions about the time and weather in a city.
+[2025-08-17 22:29:06.165][E] 
+[2025-08-17 22:29:06.165][E] You are an agent. Your internal name is "weather_time_agent".
+[2025-08-17 22:29:06.165][E] 
+[2025-08-17 22:29:06.165][E] The description about you is "Agent to answer questions about the time and weather in a city."
+[2025-08-17 22:29:06.165][E] -----------------------------------------------------------
+[2025-08-17 22:29:06.165][E] Contents:
+[2025-08-17 22:29:06.165][E] {"parts":[{"text":"what is the weather like in London?"}],"role":"user"}
+[2025-08-17 22:29:06.165][E] {"parts":[{"function_call":{"args":{"city":"London"},"name":"get_weather"}}],"role":"model"}
+[2025-08-17 22:29:06.165][E] {"parts":[{"function_response":{"name":"get_weather","response":{"status":"error","error_message":"Weather information for 'London' is not available."}}}],"role":"user"}
+[2025-08-17 22:29:06.165][E] {"parts":[{"text":"I am sorry, I cannot fulfill this request. The weather information for London is not available."}],"role":"model"}
+[2025-08-17 22:29:06.165][E] {"parts":[{"text":"and new york ?"}],"role":"user"}
+[2025-08-17 22:29:06.165][E] -----------------------------------------------------------
+[2025-08-17 22:29:06.165][E] Functions:
+[2025-08-17 22:29:06.165][E] get_weather: {'city': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 22:29:06.165][E] get_current_time: {'city': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 22:29:06.165][E] -----------------------------------------------------------
+[2025-08-17 22:29:06.165][E] 
+[2025-08-17 22:29:06.165][E] 2025-08-17 22:29:06,165 - INFO - models.py:7422 - AFC is enabled with max remote calls: 10.
+[2025-08-17 22:29:06.166][E] 2025-08-17 22:29:06,166 - DEBUG - _trace.py:87 - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+[2025-08-17 22:29:06.210][E] 2025-08-17 22:29:06,210 - DEBUG - _trace.py:87 - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x120ddc800>
+[2025-08-17 22:29:06.210][E] 2025-08-17 22:29:06,210 - DEBUG - _trace.py:87 - start_tls.started ssl_context=<ssl.SSLContext object at 0x120d9eed0> server_hostname='generativelanguage.googleapis.com' timeout=None
+[2025-08-17 22:29:06.238][E] 2025-08-17 22:29:06,238 - DEBUG - _trace.py:87 - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x120cc3410>
+[2025-08-17 22:29:06.238][E] 2025-08-17 22:29:06,238 - DEBUG - _trace.py:87 - send_request_headers.started request=<Request [b'POST']>
+[2025-08-17 22:29:06.239][E] 2025-08-17 22:29:06,238 - DEBUG - _trace.py:87 - send_request_headers.complete
+[2025-08-17 22:29:06.239][E] 2025-08-17 22:29:06,239 - DEBUG - _trace.py:87 - send_request_body.started request=<Request [b'POST']>
+[2025-08-17 22:29:06.239][E] 2025-08-17 22:29:06,239 - DEBUG - _trace.py:87 - send_request_body.complete
+[2025-08-17 22:29:06.239][E] 2025-08-17 22:29:06,239 - DEBUG - _trace.py:87 - receive_response_headers.started request=<Request [b'POST']>
+[2025-08-17 22:29:06.729][E] 2025-08-17 22:29:06,729 - DEBUG - _trace.py:87 - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=UTF-8'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sun, 17 Aug 2025 20:29:06 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=471'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+[2025-08-17 22:29:06.730][E] 2025-08-17 22:29:06,729 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 200 OK"
+[2025-08-17 22:29:06.730][E] 2025-08-17 22:29:06,730 - DEBUG - _trace.py:87 - receive_response_body.started request=<Request [b'POST']>
+[2025-08-17 22:29:06.737][E] 2025-08-17 22:29:06,737 - DEBUG - _trace.py:87 - receive_response_body.complete
+[2025-08-17 22:29:06.737][E] 2025-08-17 22:29:06,737 - DEBUG - _trace.py:87 - response_closed.started
+[2025-08-17 22:29:06.737][E] 2025-08-17 22:29:06,737 - DEBUG - _trace.py:87 - response_closed.complete
+[2025-08-17 22:29:06.738][E] 2025-08-17 22:29:06,738 - INFO - google_llm.py:203 - Response received from the model.
+[2025-08-17 22:29:06.738][E] 2025-08-17 22:29:06,738 - WARNING - types.py:5176 - Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+[2025-08-17 22:29:06.739][E] 2025-08-17 22:29:06,738 - DEBUG - google_llm.py:204 -
+[2025-08-17 22:29:06.739][E] LLM Response:
+[2025-08-17 22:29:06.739][E] -----------------------------------------------------------
+[2025-08-17 22:29:06.739][E] Text:
+[2025-08-17 22:29:06.739][E] None
+[2025-08-17 22:29:06.739][E] -----------------------------------------------------------
+[2025-08-17 22:29:06.739][E] Function calls:
+[2025-08-17 22:29:06.739][E] name: get_weather, args: {'city': 'New York'}
+[2025-08-17 22:29:06.739][E] -----------------------------------------------------------
+[2025-08-17 22:29:06.739][E] Raw response:
+[2025-08-17 22:29:06.739][E] {"sdk_http_response":{"headers":{"content-type":"application/json; charset=UTF-8","vary":"Origin, X-Origin, Referer","content-encoding":"gzip","date":"Sun, 17 Aug 2025 20:29:06 GMT","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=471","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000","transfer-encoding":"chunked"}},"candidates":[{"content":{"parts":[{"function_call":{"args":{"city":"New York"},"name":"get_weather"}}],"role":"model"},"finish_reason":"STOP","avg_logprobs":-0.000021294976856249075}],"model_version":"gemini-2.0-flash","usage_metadata":{"candidates_token_count":6,"candidates_tokens_details":[{"modality":"TEXT","token_count":6}],"prompt_token_count":258,"prompt_tokens_details":[{"modality":"TEXT","token_count":258}],"total_token_count":264},"automatic_function_calling_history":[]}
+[2025-08-17 22:29:06.739][E] -----------------------------------------------------------
+[2025-08-17 22:29:06.739][E] 
+[2025-08-17 22:29:06.739][E] 2025-08-17 22:29:06,739 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"functionCall":{"id":"adk-2a0df382-c59c-4195-b49e-3b4a307a40d2","args":{"city":"New York"},"name":"get_weather"}}],"role":"model"},"usageMetadata":{"candidatesTokenCount":6,"candidatesTokensDetails":[{"modality":"TEXT","tokenCount":6}],"promptTokenCount":258,"promptTokensDetails":[{"modality":"TEXT","tokenCount":258}],"totalTokenCount":264},"invocationId":"e-5c31a135-5aeb-416b-acf4-4e6fdf9d87df","author":"weather_time_agent","actions":{"stateDelta":{},"artifactDelta":{},"requestedAuthConfigs":{}},"longRunningToolIds":[],"id":"b926d904-a693-4750-a83c-aab0886b8697","timestamp":1755462546.115961}
+[2025-08-17 22:29:06.740][E] 2025-08-17 22:29:06,740 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"functionResponse":{"id":"adk-2a0df382-c59c-4195-b49e-3b4a307a40d2","name":"get_weather","response":{"status":"success","report":"The weather in New York is sunny with a temperature of 25 degrees Celsius (77 degrees Fahrenheit)."}}}],"role":"user"},"invocationId":"e-5c31a135-5aeb-416b-acf4-4e6fdf9d87df","author":"weather_time_agent","actions":{"stateDelta":{},"artifactDelta":{},"requestedAuthConfigs":{}},"id":"3a2a2742-6911-49a7-afbd-92aeba78884e","timestamp":1755462546.740048}
+[2025-08-17 22:29:06.789][E] 2025-08-17 22:29:06,789 - INFO - google_llm.py:111 - Sending out request, model: gemini-2.0-flash, backend: GoogleLLMVariant.GEMINI_API, stream: False
+[2025-08-17 22:29:06.789][E] 2025-08-17 22:29:06,789 - DEBUG - google_llm.py:117 -
+[2025-08-17 22:29:06.789][E] LLM Request:
+[2025-08-17 22:29:06.789][E] -----------------------------------------------------------
+[2025-08-17 22:29:06.789][E] System Instruction:
+[2025-08-17 22:29:06.789][E] I can answer your questions about the time and weather in a city.
+[2025-08-17 22:29:06.789][E] 
+[2025-08-17 22:29:06.789][E] You are an agent. Your internal name is "weather_time_agent".
+[2025-08-17 22:29:06.789][E] 
+[2025-08-17 22:29:06.789][E] The description about you is "Agent to answer questions about the time and weather in a city."
+[2025-08-17 22:29:06.789][E] -----------------------------------------------------------
+[2025-08-17 22:29:06.789][E] Contents:
+[2025-08-17 22:29:06.789][E] {"parts":[{"text":"what is the weather like in London?"}],"role":"user"}
+[2025-08-17 22:29:06.789][E] {"parts":[{"function_call":{"args":{"city":"London"},"name":"get_weather"}}],"role":"model"}
+[2025-08-17 22:29:06.789][E] {"parts":[{"function_response":{"name":"get_weather","response":{"status":"error","error_message":"Weather information for 'London' is not available."}}}],"role":"user"}
+[2025-08-17 22:29:06.789][E] {"parts":[{"text":"I am sorry, I cannot fulfill this request. The weather information for London is not available."}],"role":"model"}
+[2025-08-17 22:29:06.789][E] {"parts":[{"text":"and new york ?"}],"role":"user"}
+[2025-08-17 22:29:06.789][E] {"parts":[{"function_call":{"args":{"city":"New York"},"name":"get_weather"}}],"role":"model"}
+[2025-08-17 22:29:06.789][E] {"parts":[{"function_response":{"name":"get_weather","response":{"status":"success","report":"The weather in New York is sunny with a temperature of 25 degrees Celsius (77 degrees Fahrenheit)."}}}],"role":"user"}
+[2025-08-17 22:29:06.789][E] -----------------------------------------------------------
+[2025-08-17 22:29:06.789][E] Functions:
+[2025-08-17 22:29:06.789][E] get_weather: {'city': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 22:29:06.789][E] get_current_time: {'city': {'type': <Type.STRING: 'STRING'>}}
+[2025-08-17 22:29:06.789][E] -----------------------------------------------------------
+[2025-08-17 22:29:06.789][E] 
+[2025-08-17 22:29:06.789][E] 2025-08-17 22:29:06,789 - INFO - models.py:7422 - AFC is enabled with max remote calls: 10.
+[2025-08-17 22:29:06.790][E] 2025-08-17 22:29:06,790 - DEBUG - _trace.py:87 - close.started
+[2025-08-17 22:29:06.790][E] 2025-08-17 22:29:06,790 - DEBUG - _trace.py:87 - connect_tcp.started host='generativelanguage.googleapis.com' port=443 local_address=None timeout=None socket_options=None
+[2025-08-17 22:29:06.790][E] 2025-08-17 22:29:06,790 - DEBUG - _trace.py:87 - close.complete
+[2025-08-17 22:29:06.812][E] 2025-08-17 22:29:06,812 - DEBUG - _trace.py:87 - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x120daef60>
+[2025-08-17 22:29:06.812][E] 2025-08-17 22:29:06,812 - DEBUG - _trace.py:87 - start_tls.started ssl_context=<ssl.SSLContext object at 0x120d9c350> server_hostname='generativelanguage.googleapis.com' timeout=None
+[2025-08-17 22:29:06.833][E] 2025-08-17 22:29:06,833 - DEBUG - _trace.py:87 - start_tls.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x120cc3cb0>
+[2025-08-17 22:29:06.833][E] 2025-08-17 22:29:06,833 - DEBUG - _trace.py:87 - send_request_headers.started request=<Request [b'POST']>
+[2025-08-17 22:29:06.833][E] 2025-08-17 22:29:06,833 - DEBUG - _trace.py:87 - send_request_headers.complete
+[2025-08-17 22:29:06.833][E] 2025-08-17 22:29:06,833 - DEBUG - _trace.py:87 - send_request_body.started request=<Request [b'POST']>
+[2025-08-17 22:29:06.834][E] 2025-08-17 22:29:06,834 - DEBUG - _trace.py:87 - send_request_body.complete
+[2025-08-17 22:29:06.834][E] 2025-08-17 22:29:06,834 - DEBUG - _trace.py:87 - receive_response_headers.started request=<Request [b'POST']>
+[2025-08-17 22:29:07.353][E] 2025-08-17 22:29:07,353 - DEBUG - _trace.py:87 - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/json; charset=UTF-8'), (b'Vary', b'Origin'), (b'Vary', b'X-Origin'), (b'Vary', b'Referer'), (b'Content-Encoding', b'gzip'), (b'Date', b'Sun, 17 Aug 2025 20:29:07 GMT'), (b'Server', b'scaffolding on HTTPServer2'), (b'X-XSS-Protection', b'0'), (b'X-Frame-Options', b'SAMEORIGIN'), (b'X-Content-Type-Options', b'nosniff'), (b'Server-Timing', b'gfet4t7; dur=501'), (b'Alt-Svc', b'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000'), (b'Transfer-Encoding', b'chunked')])
+[2025-08-17 22:29:07.354][E] 2025-08-17 22:29:07,353 - INFO - _client.py:1740 - HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent "HTTP/1.1 200 OK"
+[2025-08-17 22:29:07.354][E] 2025-08-17 22:29:07,354 - DEBUG - _trace.py:87 - receive_response_body.started request=<Request [b'POST']>
+[2025-08-17 22:29:07.359][E] 2025-08-17 22:29:07,358 - DEBUG - _trace.py:87 - receive_response_body.complete
+[2025-08-17 22:29:07.359][E] 2025-08-17 22:29:07,359 - DEBUG - _trace.py:87 - response_closed.started
+[2025-08-17 22:29:07.359][E] 2025-08-17 22:29:07,359 - DEBUG - _trace.py:87 - response_closed.complete
+[2025-08-17 22:29:07.362][E] 2025-08-17 22:29:07,361 - INFO - google_llm.py:203 - Response received from the model.
+[2025-08-17 22:29:07.362][E] 2025-08-17 22:29:07,362 - DEBUG - google_llm.py:204 -
+[2025-08-17 22:29:07.362][E] LLM Response:
+[2025-08-17 22:29:07.362][E] -----------------------------------------------------------
+[2025-08-17 22:29:07.362][E] Text:
+[2025-08-17 22:29:07.362][E] OK. The weather in New York is sunny with a temperature of 25 degrees Celsius (77 degrees Fahrenheit).
+[2025-08-17 22:29:07.362][E] -----------------------------------------------------------
+[2025-08-17 22:29:07.362][E] Function calls:
+[2025-08-17 22:29:07.362][E] 
+[2025-08-17 22:29:07.362][E] -----------------------------------------------------------
+[2025-08-17 22:29:07.362][E] Raw response:
+[2025-08-17 22:29:07.362][E] {"sdk_http_response":{"headers":{"content-type":"application/json; charset=UTF-8","vary":"Origin, X-Origin, Referer","content-encoding":"gzip","date":"Sun, 17 Aug 2025 20:29:07 GMT","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=501","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000","transfer-encoding":"chunked"}},"candidates":[{"content":{"parts":[{"text":"OK. The weather in New York is sunny with a temperature of 25 degrees Celsius (77 degrees Fahrenheit)."}],"role":"model"},"finish_reason":"STOP","avg_logprobs":-0.0016917713607350986}],"model_version":"gemini-2.0-flash","usage_metadata":{"candidates_token_count":24,"candidates_tokens_details":[{"modality":"TEXT","token_count":24}],"prompt_token_count":292,"prompt_tokens_details":[{"modality":"TEXT","token_count":292}],"total_token_count":316},"automatic_function_calling_history":[]}
+[2025-08-17 22:29:07.362][E] -----------------------------------------------------------
+[2025-08-17 22:29:07.362][E] 
+[2025-08-17 22:29:07.363][E] 2025-08-17 22:29:07,363 - DEBUG - adk_web_server.py:852 - Generated event in agent run streaming: {"content":{"parts":[{"text":"OK. The weather in New York is sunny with a temperature of 25 degrees Celsius (77 degrees Fahrenheit)."}],"role":"model"},"usageMetadata":{"candidatesTokenCount":24,"candidatesTokensDetails":[{"modality":"TEXT","tokenCount":24}],"promptTokenCount":292,"promptTokensDetails":[{"modality":"TEXT","tokenCount":292}],"totalTokenCount":316},"invocationId":"e-5c31a135-5aeb-416b-acf4-4e6fdf9d87df","author":"weather_time_agent","actions":{"stateDelta":{},"artifactDelta":{},"requestedAuthConfigs":{}},"id":"e55cf3bf-3ee5-47ea-a084-3e99d0acf5a7","timestamp":1755462546.743607}
+[2025-08-17 22:29:07.368][E] 2025-08-17 22:29:07,368 - DEBUG - _trace.py:87 - close.started
+[2025-08-17 22:29:07.369][E] 2025-08-17 22:29:07,369 - DEBUG - _trace.py:87 - close.complete
+[2025-08-17 22:29:21.673][E] INFO:     Shutting down
+[2025-08-17 22:29:21.775][E] INFO:     Waiting for application shutdown.
+[2025-08-17 22:29:21.777][E] INFO:     Application shutdown complete.
+[2025-08-17 22:29:21.777][E] INFO:     Finished server process [40245]
+[2025-08-17 22:29:21.779][E] 
+[2025-08-17 22:29:21.779][E] Aborted!

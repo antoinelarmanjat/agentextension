@@ -4,12 +4,16 @@ import * as fs from 'fs';
 import { findAnyAgentLocation } from './agent-finder';
 import { findToolLocation } from './agent-finder';
 import { AgentTreeDataProvider } from './agent-tree-provider';
-import { exec } from 'child_process';
+import { spawn, ChildProcess } from 'child_process';
+
+let adkProcess: ChildProcess | null = null;
 
 // This method is called when your extension is activated
 // This method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
     let myStatusBarItem: vscode.StatusBarItem;
+    const outputChannel = vscode.window.createOutputChannel("ADK Web");
+
 
     console.log('Congratulations, your extension "agent-inspector" is now active!');
     console.log('Agent Inspector Extension Activated');
@@ -222,27 +226,49 @@ ${agentToolName} = Agent(
     context.subscriptions.push(findToolCommand);
 
     const runAdkWebTopBarCommand = vscode.commands.registerCommand('agent-inspector.runAdkWebTopBar', () => {
+        if (adkProcess) {
+            vscode.window.showInformationMessage('ADK Web is already running.');
+            return;
+        }
         // Execute the command in a terminal
-        const terminal = vscode.window.createTerminal({
-            name: 'ADK Web',
-            env: {
-                "PATH": process.env.PATH + ":/Library/Frameworks/Python.framework/Versions/3.12/bin",
-                "GOOGLE_API_KEY": "AIzaSyBWCSHpR5FucjbeasA0XKrCPmCRRPKx4b8"
-            }
-        });
         const pythonScriptPath = path.join(context.extensionPath, 'python', 'process_log.py');
         const timestamp = new Date().toISOString().replace(/[-:.]/g, '').slice(0, -4);
-        
         const logsDir = path.join(rootPath, 'logs');
         if (!fs.existsSync(logsDir)) {
             fs.mkdirSync(logsDir);
         }
-
         const logFileName = path.join(logsDir, `agent_events_${timestamp}.log`);
-        terminal.sendText(`adk web --port 5000 --log_level DEBUG \
-    1> >(python3 ${pythonScriptPath} --source stdout > ${logFileName}) \
-    2> >(python3 ${pythonScriptPath} --source stderr >> ${logFileName})`);
-        terminal.show();
+
+        const command = `adk web --port 5000 --log_level DEBUG 1> >(python3 ${pythonScriptPath} --source stdout > ${logFileName}) 2> >(python3 ${pythonScriptPath} --source stderr >> ${logFileName})`;
+        
+        adkProcess = spawn(command, [], {
+            env: {
+                ...process.env,
+                "PATH": process.env.PATH + ":/Library/Frameworks/Python.framework/Versions/3.12/bin",
+                "GOOGLE_API_KEY": "AIzaSyBWCSHpR5FucjbeasA0XKrCPmCRRPKx4b8"
+            },
+            shell: '/bin/bash',
+            cwd: rootPath,
+            detached: true
+        });
+
+        adkProcess.stdout?.on('data', (data) => {
+            outputChannel.appendLine(data);
+        });
+
+        adkProcess.stderr?.on('data', (data) => {
+            outputChannel.appendLine(`ERROR: ${data}`);
+        });
+
+        adkProcess.on('exit', (code) => {
+            outputChannel.appendLine(`ADK Web process exited with code ${code}`);
+            vscode.commands.executeCommand('setContext', 'adk.web.running', false);
+            adkProcess = null;
+        });
+
+        outputChannel.show();
+        vscode.commands.executeCommand('setContext', 'adk.web.running', true);
+
 
         // Wait for 5 seconds before opening the browser
         setTimeout(() => {
@@ -251,6 +277,23 @@ ${agentToolName} = Agent(
     });
     context.subscriptions.push(runAdkWebTopBarCommand);
 
-    }
+    const stopAdkWebCommand = vscode.commands.registerCommand('agent-inspector.stopAdkWeb', () => {
+        if (adkProcess && adkProcess.pid) {
+            try {
+                // Kill the entire process group by sending a signal to the negative PID.
+                process.kill(-adkProcess.pid);
+                vscode.window.showInformationMessage('ADK Web process stopped.');
+            } catch (e: any) {
+                vscode.window.showErrorMessage(`Error stopping ADK Web process: ${e.message}`);
+            } finally {
+                adkProcess = null;
+                vscode.commands.executeCommand('setContext', 'adk.web.running', false);
+            }
+        } else {
+            vscode.window.showWarningMessage('ADK Web process not running.');
+        }
+    });
+    context.subscriptions.push(stopAdkWebCommand);
+}
 // This method is called when your extension is deactivated
 export function deactivate() { }
