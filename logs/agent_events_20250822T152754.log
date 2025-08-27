@@ -1,0 +1,55 @@
+[2025-08-22 17:27:56.374] 
+[2025-08-22 17:27:56.374] +-----------------------------------------------------------------------------+
+[2025-08-22 17:27:56.374] | ADK Web Server started                                                      |
+[2025-08-22 17:27:56.374] |                                                                             |
+[2025-08-22 17:27:56.374] | For local testing, access at http://localhost:5000.                         |
+[2025-08-22 17:27:56.374] +-----------------------------------------------------------------------------+
+[2025-08-22 17:27:56.374] 
+[2025-08-22 17:27:59.450] INFO:     127.0.0.1:64532 - "GET / HTTP/1.1" 307 Temporary Redirect
+[2025-08-22 17:27:59.745] INFO:     127.0.0.1:64532 - "GET /list-apps?relative_path=./ HTTP/1.1" 200 OK
+[2025-08-22 17:28:02.593] INFO:     127.0.0.1:64545 - "POST /apps/travel_concierge/users/user/sessions HTTP/1.1" 200 OK
+[2025-08-22 17:28:02.608] INFO:     127.0.0.1:64545 - "GET /apps/travel_concierge/eval_sets HTTP/1.1" 200 OK
+[2025-08-22 17:28:02.609] INFO:     127.0.0.1:64546 - "GET /apps/travel_concierge/eval_results HTTP/1.1" 200 OK
+[2025-08-22 17:28:02.637] INFO:     127.0.0.1:64546 - "GET /apps/travel_concierge/users/user/sessions HTTP/1.1" 200 OK
+[2025-08-22 17:28:03.117] INFO:     127.0.0.1:64546 - "GET /apps/travel_concierge/users/user/sessions HTTP/1.1" 200 OK
+[2025-08-22 17:28:13.053] INFO:     127.0.0.1:64565 - "POST /run_sse HTTP/1.1" 200 OK
+[2025-08-22 17:28:13.087] INFO:     127.0.0.1:64565 - "GET /apps/travel_concierge/users/user/sessions/b9fae4c2-ecd2-4274-8934-273512908760 HTTP/1.1" 200 OK
+[2025-08-22 17:28:13.088] INFO:     127.0.0.1:64566 - "GET /debug/trace/session/b9fae4c2-ecd2-4274-8934-273512908760 HTTP/1.1" 200 OK
+28:13,053 - DEBUG - agent_loader.py:170 - Loading .env for agent travel_concierge from /Users/larmanjat/agentextension
+[2025-08-22 17:28:13.053][E] 2025-08-22 17:28:13,053 - INFO - envs.py:54 - No .env file found for travel_concierge
+[2025-08-22 17:28:13.081][E] 2025-08-22 17:28:13,078 - ERROR - adk_web_server.py:857 - Error in event_generator: Fail to load 'travel_concierge' module. name 'jo' is not defined
+[2025-08-22 17:28:13.081][E] Traceback (most recent call last):
+[2025-08-22 17:28:13.081][E] File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/google/adk/cli/adk_web_server.py", line 842, in event_generator
+[2025-08-22 17:28:13.081][E] runner = await self.get_runner_async(req.app_name)
+[2025-08-22 17:28:13.081][E] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2025-08-22 17:28:13.081][E] File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/google/adk/cli/adk_web_server.py", line 263, in get_runner_async
+[2025-08-22 17:28:13.081][E] root_agent = self.agent_loader.load_agent(app_name)
+[2025-08-22 17:28:13.081][E] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2025-08-22 17:28:13.081][E] File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/google/adk/cli/utils/agent_loader.py", line 202, in load_agent
+[2025-08-22 17:28:13.081][E] agent = self._perform_load(agent_name)
+[2025-08-22 17:28:13.081][E] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2025-08-22 17:28:13.081][E] File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/google/adk/cli/utils/agent_loader.py", line 175, in _perform_load
+[2025-08-22 17:28:13.081][E] if root_agent := self._load_from_module_or_package(agent_name):
+[2025-08-22 17:28:13.081][E] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2025-08-22 17:28:13.081][E] File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/google/adk/cli/utils/agent_loader.py", line 95, in _load_from_module_or_package
+[2025-08-22 17:28:13.081][E] raise e
+[2025-08-22 17:28:13.081][E] File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/google/adk/cli/utils/agent_loader.py", line 63, in _load_from_module_or_package
+[2025-08-22 17:28:13.081][E] module_candidate = importlib.import_module(agent_name)
+[2025-08-22 17:28:13.081][E] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2025-08-22 17:28:13.081][E] File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py", line 90, in import_module
+[2025-08-22 17:28:13.081][E] return _bootstrap._gcd_import(name[level:], package, level)
+[2025-08-22 17:28:13.081][E] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2025-08-22 17:28:13.081][E] File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+[2025-08-22 17:28:13.081][E] File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+[2025-08-22 17:28:13.081][E] File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+[2025-08-22 17:28:13.081][E] File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+[2025-08-22 17:28:13.081][E] File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+[2025-08-22 17:28:13.081][E] File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+[2025-08-22 17:28:13.081][E] File "/Users/larmanjat/agentextension/travel_concierge/__init__.py", line 15, in <module>
+[2025-08-22 17:28:13.081][E] from . import agent
+[2025-08-22 17:28:13.081][E] File "/Users/larmanjat/agentextension/travel_concierge/agent.py", line 23, in <module>
+[2025-08-22 17:28:13.081][E] from travel_concierge.sub_agents.inspiration.agent import inspiration_agent
+[2025-08-22 17:28:13.081][E] File "/Users/larmanjat/agentextension/travel_concierge/sub_agents/inspiration/agent.py", line 53, in <module>
+[2025-08-22 17:28:13.081][E] tools=[AgentTool(agent=place_agent), AgentTool(agent=poi_agent), AgentTool(agent=jo),map_tool],
+[2025-08-22 17:28:13.081][E] ^^
+[2025-08-22 17:28:13.081][E] NameError: Fail to load 'travel_concierge' module. name 'jo' is not defined

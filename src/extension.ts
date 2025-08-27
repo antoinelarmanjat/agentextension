@@ -5,6 +5,7 @@ import { findAnyAgentLocation } from './agent-finder';
 import { findToolLocation } from './agent-finder';
 import { AgentTreeDataProvider } from './agent-tree-provider';
 import { spawn, ChildProcess } from 'child_process';
+import * as dotenv from 'dotenv';
 
 let adkProcess: ChildProcess | null = null;
 
@@ -241,11 +242,16 @@ ${agentToolName} = Agent(
 
         const command = `adk web --port 5000 --log_level DEBUG 1> >(python3 ${pythonScriptPath} --source stdout > ${logFileName}) 2> >(python3 ${pythonScriptPath} --source stderr >> ${logFileName})`;
         
+        const envPath = path.join(rootPath, '.env');
+        const envConfig = dotenv.parse(fs.readFileSync(envPath));
+
+        for (const k in envConfig) {
+            process.env[k] = envConfig[k];
+        }
+        
         adkProcess = spawn(command, [], {
             env: {
                 ...process.env,
-                "PATH": process.env.PATH + ":/Library/Frameworks/Python.framework/Versions/3.12/bin",
-                "GOOGLE_API_KEY": "AIzaSyBWCSHpR5FucjbeasA0XKrCPmCRRPKx4b8"
             },
             shell: '/bin/bash',
             cwd: rootPath,

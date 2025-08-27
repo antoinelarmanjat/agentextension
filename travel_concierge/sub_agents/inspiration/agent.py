@@ -50,7 +50,7 @@ inspiration_agent = Agent(
     name="inspiration_agent",
     description="A travel inspiration agent who inspire users, and discover their next vacations; Provide information about places, activities, interests,",
     instruction=prompt.INSPIRATION_AGENT_INSTR,
-    tools=[AgentTool(agent=place_agent), AgentTool(agent=poi_agent), AgentTool(agent=jo),map_tool],
+    tools=[AgentTool(agent=place_agent), AgentTool(agent=poi_agent),map_tool],
 )
 
 
