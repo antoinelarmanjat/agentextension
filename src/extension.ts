@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
             filePath = item.filePath;
         } else {
             const agents = agentTreeDataProvider.getRootAgents().map(agent => ({
-                label: agent.name || 'Unnamed Agent',
+                label: agent.args.name || 'Unnamed Agent',
                 description: agent.file,
                 agent: agent
             }));
@@ -60,7 +60,8 @@ export function activate(context: vscode.ExtensionContext) {
         if (filePath) {
             const toolName = await vscode.window.showInputBox({ prompt: 'Enter the name of the new tool' });
             if (toolName) {
-                const doc = await vscode.workspace.openTextDocument(filePath);
+                const absolutePath = path.isAbsolute(filePath) ? filePath : path.join(rootPath, filePath);
+                const doc = await vscode.workspace.openTextDocument(absolutePath);
                 const editor = await vscode.window.showTextDocument(doc);
                 const eof = new vscode.Position(doc.lineCount, 0);
                 editor.edit(editBuilder => {
@@ -86,7 +87,7 @@ def ${toolName}():
             filePath = item.filePath;
         } else {
             const agents = agentTreeDataProvider.getRootAgents().map(agent => ({
-                label: agent.name || 'Unnamed Agent',
+                label: agent.args.name || 'Unnamed Agent',
                 description: agent.file,
                 agent: agent
             }));
@@ -101,7 +102,8 @@ def ${toolName}():
         if (filePath) {
             const agentToolName = await vscode.window.showInputBox({ prompt: 'Enter the name of the new agent tool' });
             if (agentToolName) {
-                const doc = await vscode.workspace.openTextDocument(filePath);
+                const absolutePath = path.isAbsolute(filePath) ? filePath : path.join(rootPath, filePath);
+                const doc = await vscode.workspace.openTextDocument(absolutePath);
                 const editor = await vscode.window.showTextDocument(doc);
                 
                 // Append the agent definition to the end of the file
@@ -183,9 +185,10 @@ ${agentToolName} = Agent(
 
         const absolutePath = path.isAbsolute(fileName) ? fileName : path.join(rootPath, fileName);
 
-        const location = findAnyAgentLocation(absolutePath, agent);
+        const location = findAnyAgentLocation(fileName, agent, rootPath);
 
         if (location.found) {
+            const absolutePath = path.isAbsolute(location.actualFileName) ? location.actualFileName : path.join(rootPath, location.actualFileName);
             const document = await vscode.workspace.openTextDocument(absolutePath);
             const editor = await vscode.window.showTextDocument(document);
             const lineNumber = location.lineNumber;
@@ -213,7 +216,8 @@ ${agentToolName} = Agent(
         const location = findToolLocation(fileName, tool, rootPath);
 
         if (location.found) {
-            const document = await vscode.workspace.openTextDocument(location.actualFileName);
+            const absolutePath = path.isAbsolute(location.actualFileName) ? location.actualFileName : path.join(rootPath, location.actualFileName);
+            const document = await vscode.workspace.openTextDocument(absolutePath);
             const editor = await vscode.window.showTextDocument(document);
             const lineNumber = location.lineNumber;
             const position = new vscode.Position(lineNumber - 1, 0);
@@ -232,7 +236,10 @@ ${agentToolName} = Agent(
             return;
         }
         // Execute the command in a terminal
-        const pythonScriptPath = path.join(context.extensionPath, 'python', 'process_log.py');
+        const isDebugMode = fs.existsSync(context.asAbsolutePath('dist'));
+        const pythonScriptPath = isDebugMode
+            ? context.asAbsolutePath(path.join('src', 'python', 'process_log.py'))
+            : context.asAbsolutePath(path.join('python', 'process_log.py'));
         const timestamp = new Date().toISOString().replace(/[-:.]/g, '').slice(0, -4);
         const logsDir = path.join(rootPath, 'logs');
         if (!fs.existsSync(logsDir)) {

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { scanAndComplementAgents } from './new-agent-scanner';
-import type { AgentInfo, AgentReference } from './new-agent-scanner';
+import { scanAndComplementAgents } from './agent-scanner';
+import type { AgentInfo, AgentReference } from './agent-scanner';
 import * as path from 'path';
 
 export class AgentTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
@@ -25,19 +25,20 @@ export class AgentTreeDataProvider implements vscode.TreeDataProvider<vscode.Tre
 
     if (element instanceof SubAgentsTreeItem) {
         return Promise.resolve(element.subAgents.map(agent => {
-            if ('variable' in agent) { // It's an AgentInfo
-                return new AgentVarTreeItem(agent.variable, agent, this.context, agent.file, this.workspaceRoot);
-            } else { // It's an AgentReference
-                const foundAgent = this.findAgentByName(agent.name);
-                return new AgentVarTreeItem(agent.name, foundAgent, this.context, agent.file, this.workspaceRoot);
+            if ('ref' in agent) { // It's an AgentReference
+                const foundAgent = this.findAgentByName(agent.ref || agent.id);
+                return new AgentVarTreeItem(agent.ref || agent.id, foundAgent, this.context, agent.file || '', this.workspaceRoot);
+            } else { // It's an AgentInfo
+                return new AgentVarTreeItem(agent.id, agent as AgentInfo, this.context, agent.file, this.workspaceRoot);
             }
         }));
     } else if (element instanceof AgentToolsTreeItem) {
         return Promise.resolve(element.subAgents.map(agent => {
-            if ('variable' in agent) { // It's an AgentInfo
-                return new AgentVarTreeItem(agent.variable, agent, this.context, agent.file, this.workspaceRoot);
-            } else { // It's an AgentReference
-                return new AgentVarTreeItem(agent.name, undefined, this.context, agent.file, this.workspaceRoot);
+            if ('ref' in agent) { // It's an AgentReference
+                const foundAgent = this.findAgentByName(agent.ref || agent.id);
+                return new AgentVarTreeItem(agent.ref || agent.id, foundAgent, this.context, agent.file || '', this.workspaceRoot);
+            } else { // It's an AgentInfo
+                return new AgentVarTreeItem(agent.id, agent as AgentInfo, this.context, agent.file, this.workspaceRoot);
             }
         }));
     } else if (element instanceof AgentVarTreeItem) {
@@ -45,60 +46,48 @@ export class AgentTreeDataProvider implements vscode.TreeDataProvider<vscode.Tre
         if (!agent) {
             return Promise.resolve([new vscode.TreeItem('Agent not found')]);
         }
-        const properties = Object.keys(agent)
-            .filter(key => 
-                key !== 'sub_agents' && 
-                key !== 'agent_tools' && 
-                key !== 'tools' && 
-                key !== 'variable' && 
-                key !== 'file' && 
-                key !== 'line_number' && 
-                key !== 'include_contents'
-            )
+        const properties = Object.keys(agent.args)
+            .filter(key => key !== 'sub_agents' && key !== 'tools' && key !== 'agent_tools')
             .map(key => {
-                if (key === 'name') {
-                    const item = new vscode.TreeItem(`${key}: ${agent[key as keyof AgentInfo]}`);
-                    item.iconPath = new vscode.ThemeIcon('symbol-field', new vscode.ThemeColor('charts.blue'));
-                    item.command = {
-                        command: 'agent-inspector.findAgent',
-                        title: 'Find Agent',
-                        arguments: [path.relative(this.workspaceRoot, element.filePath), element.varName]
-                    };
-                    return item;
+                const value = agent.args[key as keyof typeof agent.args];
+                let displayValue: string;
+                if (typeof value === 'object' && value !== null) {
+                    if ('kind' in value && value.kind === 'ref' && 'ref' in value) {
+                        displayValue = `${value.ref}`;
+                        if ('resolved' in value && value.resolved === false) {
+                            displayValue += ' (unresolved)';
+                        }
+                    } else {
+                        displayValue = JSON.stringify(value);
+                    }
+                } else {
+                    displayValue = String(value);
                 }
-                const item = new vscode.TreeItem(`${key}: ${agent[key as keyof AgentInfo]}`);
-                switch (key) {
-                    case 'type':
-                        item.iconPath = new vscode.ThemeIcon('symbol-class', new vscode.ThemeColor('charts.green'));
-                        break;
-                    case 'model':
-                        item.iconPath = new vscode.ThemeIcon('symbol-misc', new vscode.ThemeColor('charts.orange'));
-                        break;
-                    case 'instruction':
-                        item.iconPath = new vscode.ThemeIcon('symbol-text', new vscode.ThemeColor('charts.purple'));
-                        break;
-                    case 'description':
-                        item.iconPath = new vscode.ThemeIcon('note');
-                        break;
-                    case 'output_key':
-                        item.iconPath = new vscode.ThemeIcon('key');
-                        break;
+                const item = new vscode.TreeItem(`${key}: ${displayValue}`);
+                if (key === 'model') {
+                    item.iconPath = new vscode.ThemeIcon('chip');
+                } else if (key === 'instruction') {
+                    item.iconPath = new vscode.ThemeIcon('note');
+                } else if (key === 'description') {
+                    item.iconPath = new vscode.ThemeIcon('book');
+                } else if (key === 'name') {
+                    item.iconPath = new vscode.ThemeIcon('tag');
                 }
                 return item;
-            })
+            });
         
         const children: vscode.TreeItem[] = [...properties];
-        if (agent.tools && agent.tools.length > 0) {
-            children.push(new ToolsTreeItem('tools', agent.tools.map((t: AgentReference) => t.name).filter(name => name !== undefined) as string[], element.filePath));
+        if (agent.args.tools && agent.args.tools.length > 0) {
+            children.push(new ToolsTreeItem('tools', agent.args.tools.map((t: any) => t.id || t.ref).filter((name: string | undefined) => name !== undefined) as string[], element.filePath));
         }
 
-        if (agent.sub_agents && agent.sub_agents.length > 0) {
-            const subAgentsNode = new SubAgentsTreeItem('sub_agents', agent.sub_agents as (AgentInfo | { name: string, file: string })[], this.context, element.filePath);
+        if (agent.args.sub_agents && agent.args.sub_agents.length > 0) {
+            const subAgentsNode = new SubAgentsTreeItem('sub_agents', agent.args.sub_agents as (AgentInfo | AgentReference)[], this.context, element.filePath);
             children.push(subAgentsNode);
         }
 
-        if (agent.agent_tools && agent.agent_tools.length > 0) {
-            const agentToolsNode = new AgentToolsTreeItem('agent_tools', agent.agent_tools as (AgentInfo | { name: string, file: string })[], this.context, element.filePath, new vscode.ThemeIcon('robot'));
+        if (agent.args.agent_tools && agent.args.agent_tools.length > 0) {
+            const agentToolsNode = new AgentToolsTreeItem('agent_tools', agent.args.agent_tools as (AgentInfo | AgentReference)[], this.context, element.filePath, new vscode.ThemeIcon('robot'));
             children.push(agentToolsNode);
         }
 
@@ -108,7 +97,7 @@ export class AgentTreeDataProvider implements vscode.TreeDataProvider<vscode.Tre
         return Promise.resolve(element.toolNames.map(toolName => new ToolTreeItem(toolName, element.filePath)));
     } else {
       // Root level
-      return Promise.resolve(this.rootAgents.map(agent => new AgentVarTreeItem(agent.variable, agent, this.context, agent.file, this.workspaceRoot)));
+      return Promise.resolve(this.rootAgents.map(agent => new AgentVarTreeItem(agent.id, agent, this.context, agent.file, this.workspaceRoot)));
     }
 
     return Promise.resolve([]);
@@ -119,7 +108,7 @@ export class AgentTreeDataProvider implements vscode.TreeDataProvider<vscode.Tre
     this._onDidChangeTreeData.fire();
     if (this.workspaceRoot) {
         try {
-            this.rootAgents = await scanAndComplementAgents(this.workspaceRoot);
+            this.rootAgents = await scanAndComplementAgents(this.workspaceRoot, this.context.extensionPath);
         } catch (error) {
             console.error('Error scanning and complementing agents:', error);
             this.rootAgents = [];
@@ -133,13 +122,20 @@ export class AgentTreeDataProvider implements vscode.TreeDataProvider<vscode.Tre
   }
 
   private findAgentByName(name: string): AgentInfo | undefined {
-    const findIn = (agents: AgentInfo[]): AgentInfo | undefined => {
-        for (const agent of agents) {
-            if (agent.name === name) {
-                return agent;
-            }
-            if (agent.sub_agents) {
-                const found = findIn(agent.sub_agents as AgentInfo[]);
+    const findIn = (agents: (AgentInfo | AgentReference)[]): AgentInfo | undefined => {
+        for (const item of agents) {
+            if (item.kind !== 'ref') {
+                // It's an AgentInfo
+                if (item.id === name) {
+                    return item as AgentInfo;
+                }
+                // Recurse
+                const subItems: (AgentInfo | AgentReference)[] = [];
+                if (item.args.sub_agents) subItems.push(...item.args.sub_agents);
+                if (item.args.tools) subItems.push(...item.args.tools);
+                if (item.args.agent_tools) subItems.push(...item.args.agent_tools);
+                
+                const found = findIn(subItems);
                 if (found) {
                     return found;
                 }
@@ -161,13 +157,14 @@ class AgentVarTreeItem extends vscode.TreeItem {
         public readonly filePath: string,
         private readonly workspaceRoot: string,
     ) {
-        super(agentInfo?.name || varName, agentInfo ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
+        const label = agentInfo ? (agentInfo.args.name || varName) : `${varName} (unknown)`;
+        super(label, agentInfo ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None);
         this.id = this.varName;
         this.iconPath = new vscode.ThemeIcon('robot');
         this.command = {
             command: 'agent-inspector.findAgent',
             title: 'Find Agent',
-            arguments: [path.relative(this.workspaceRoot, this.filePath), this.varName]
+            arguments: [this.filePath, this.varName]
         };
         this.contextValue = 'agentItem';
     }
@@ -176,7 +173,7 @@ class AgentVarTreeItem extends vscode.TreeItem {
 class SubAgentsTreeItem extends vscode.TreeItem {
     constructor(
         public readonly label: string,
-        public readonly subAgents: (AgentInfo | { name: string, file: string })[],
+        public readonly subAgents: (AgentInfo | AgentReference)[],
         private readonly context: vscode.ExtensionContext,
         public readonly filePath: string,
         iconPath?: vscode.ThemeIcon
@@ -209,7 +206,7 @@ class ToolTreeItem extends vscode.TreeItem {
         this.command = {
             command: 'agent-inspector.findTool',
             title: 'Find Tool',
-            arguments: [path.resolve(this.filePath), this.label]
+            arguments: [this.filePath, this.label]
         };
     }
 }
@@ -217,7 +214,7 @@ class ToolTreeItem extends vscode.TreeItem {
 class AgentToolsTreeItem extends vscode.TreeItem {
     constructor(
         public readonly label: string,
-        public readonly subAgents: (AgentInfo | { name: string, file: string })[],
+        public readonly subAgents: (AgentInfo | AgentReference)[],
         private readonly context: vscode.ExtensionContext,
         public readonly filePath: string,
         iconPath?: vscode.ThemeIcon

@@ -412,10 +412,9 @@ class AgentScannerLib {
    * @param fileName - The name of the Python file to search in
    * @returns Array of imported agent information
    */
-  public findImportedAgents(fileName: string): ImportedAgent[] {
+  public findImportedAgents(fileName: string, workspaceRoot: string): ImportedAgent[] {
     try {
-      const currentDir = process.cwd();
-      const filePath = path.join(currentDir, fileName);
+      const filePath = path.join(workspaceRoot, fileName);
       
       if (!fs.existsSync(filePath)) {
         console.error(`File not found at: ${filePath}`);
@@ -441,7 +440,7 @@ class AgentScannerLib {
           // Check if this looks like an agent import (ends with .agent or contains 'agent')
           if (modulePath.includes('agent') || importedName.includes('agent')) {
             // Try to resolve the actual file path
-            const sourceFile = this.resolveImportPath(modulePath, fileName);
+            const sourceFile = this.resolveImportPath(modulePath, fileName, workspaceRoot);
             
             importedAgents.push({
               importedName,
@@ -467,10 +466,9 @@ class AgentScannerLib {
    * @param currentFile - The current file being processed
    * @returns The resolved file path
    */
-  private resolveImportPath(modulePath: string, currentFile: string): string {
+  private resolveImportPath(modulePath: string, currentFile: string, workspaceRoot: string): string {
     try {
-      const currentDir = process.cwd();
-      const currentFileDir = path.dirname(path.join(currentDir, currentFile));
+      const currentFileDir = path.dirname(path.join(workspaceRoot, currentFile));
       
       // Handle relative imports
       if (modulePath.startsWith('.')) {
@@ -486,18 +484,18 @@ class AgentScannerLib {
         // Try relative to current file directory
         path.join(currentFileDir, modulePathParts.join('/') + '.py'),
         // Try relative to project root
-        path.join(currentDir, modulePathParts.join('/') + '.py'),
+        path.join(workspaceRoot, modulePathParts.join('/') + '.py'),
         // Try with travel/ prefix (common in this project)
-        path.join(currentDir, 'travel', modulePathParts.join('/') + '.py'),
+        path.join(workspaceRoot, 'travel', modulePathParts.join('/') + '.py'),
         // Try with travel/travel_concierge/ prefix
-        path.join(currentDir, 'travel', 'travel_concierge', modulePathParts.slice(1).join('/') + '.py')
+        path.join(workspaceRoot, 'travel', 'travel_concierge', modulePathParts.slice(1).join('/') + '.py')
       ];
       
       // Check if any of these paths exist
       for (const potentialPath of potentialPaths) {
         if (fs.existsSync(potentialPath)) {
           // Return relative path from current directory
-          return path.relative(currentDir, potentialPath);
+          return path.relative(workspaceRoot, potentialPath);
         }
       }
       
@@ -527,7 +525,7 @@ class AgentScannerLib {
       }
 
       // Find imported agents
-      const importedAgents = this.findImportedAgents(fileName);
+      const importedAgents = this.findImportedAgents(fileName, process.cwd());
       
       // Build resolved agent info
       const resolvedAgent: ResolvedAgentInfo = {
@@ -745,7 +743,7 @@ export const getFilesWithAgents = (baseDirectory?: string) => agentScanner.getFi
 export const getScanSummary = (baseDirectory?: string) => agentScanner.getScanSummary(baseDirectory);
 
 // Export new cross-file functions
-export const findImportedAgents = (fileName: string) => agentScanner.findImportedAgents(fileName);
+export const findImportedAgents = (fileName: string, workspaceRoot: string) => agentScanner.findImportedAgents(fileName, workspaceRoot);
 export const resolveAgentHierarchy = (fileName: string, agentName: string) => agentScanner.resolveAgentHierarchy(fileName, agentName);
 export const buildCrossFileHierarchy = (baseDirectory?: string) => agentScanner.buildCrossFileHierarchy(baseDirectory);
 export const createHierarchicalStructure = (scanResult: any) => agentScanner.createHierarchicalStructure(scanResult); 

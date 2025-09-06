@@ -27,7 +27,6 @@ from travel_concierge.sub_agents.pre_trip.agent import pre_trip_agent
 
 from travel_concierge.tools.memory import _load_precreated_itinerary
 
-
 root_agent = Agent(
     model="gemini-2.5-flash",
     name="root_agent",
@@ -43,3 +42,5 @@ root_agent = Agent(
     ],
     before_agent_callback=_load_precreated_itinerary,
 )
+
+

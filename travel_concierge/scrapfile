@@ -1,0 +1,1273 @@
+Flat registry:
+{
+  "agents": {
+    "root_agent": {
+      "kind": "agent",
+      "id": "root_agent",
+      "file": "agent.py",
+      "line_start": 30,
+      "line_end": 44,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "root_agent",
+        "description": "A Travel Conceirge using the services of multiple sub-agents",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).ROOT_AGENT_INSTR",
+          "resolved": false
+        },
+        "sub_agents": [
+          {
+            "kind": "agent",
+            "ref": "inspiration_agent",
+            "resolved": true
+          },
+          {
+            "kind": "agent",
+            "ref": "planning_agent",
+            "resolved": true
+          },
+          {
+            "kind": "agent",
+            "ref": "booking_agent",
+            "resolved": true
+          },
+          {
+            "kind": "agent",
+            "ref": "pre_trip_agent",
+            "resolved": true
+          },
+          {
+            "kind": "agent",
+            "ref": "in_trip_agent",
+            "resolved": true
+          },
+          {
+            "kind": "agent",
+            "ref": "post_trip_agent",
+            "resolved": true
+          }
+        ],
+        "before_agent_callback": {
+          "kind": "ref",
+          "ref": "_load_precreated_itinerary",
+          "resolved": false
+        }
+      }
+    },
+    "_search_agent": {
+      "kind": "agent",
+      "id": "_search_agent",
+      "file": "tools/search.py",
+      "line_start": 22,
+      "line_end": 32,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "google_search_grounding",
+        "description": "An agent providing Google-search grounding capability",
+        "instruction": ",\n    Answer the user's question directly using google_search grounding tool; Provide a brief but concise response. \n    Rather than a detail response, provide the immediate actionable item for a tourist or traveler, in a single sentence.\n    Do not ask the user to check or look up information for themselves, that's your role; do your best to be informative.\n    ",
+        "tools": [
+          {
+            "kind": "ref",
+            "ref": "google_search",
+            "resolved": false
+          }
+        ]
+      }
+    },
+    "create_reservation": {
+      "kind": "agent",
+      "id": "create_reservation",
+      "file": "sub_agents/booking/agent.py",
+      "line_start": 24,
+      "line_end": 29,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "create_reservation",
+        "description": "Create a reservation for the selected item.",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).CONFIRM_RESERVATION_INSTR",
+          "resolved": false
+        }
+      }
+    },
+    "payment_choice": {
+      "kind": "agent",
+      "id": "payment_choice",
+      "file": "sub_agents/booking/agent.py",
+      "line_start": 32,
+      "line_end": 37,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "payment_choice",
+        "description": "Show the users available payment choices.",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).PAYMENT_CHOICE_INSTR",
+          "resolved": false
+        }
+      }
+    },
+    "process_payment": {
+      "kind": "agent",
+      "id": "process_payment",
+      "file": "sub_agents/booking/agent.py",
+      "line_start": 39,
+      "line_end": 44,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "process_payment",
+        "description": "Given a selected payment choice, processes the payment, completing the transaction.",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).PROCESS_PAYMENT_INSTR",
+          "resolved": false
+        }
+      }
+    },
+    "booking_agent": {
+      "kind": "agent",
+      "id": "booking_agent",
+      "file": "sub_agents/booking/agent.py",
+      "line_start": 47,
+      "line_end": 60,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "booking_agent",
+        "description": "Given an itinerary, complete the bookings of items by handling payment choices and processing.",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).BOOKING_AGENT_INSTR",
+          "resolved": false
+        },
+        "tools": [
+          {
+            "kind": "agent",
+            "ref": "create_reservation",
+            "resolved": true
+          },
+          {
+            "kind": "agent",
+            "ref": "payment_choice",
+            "resolved": true
+          },
+          {
+            "kind": "agent",
+            "ref": "process_payment",
+            "resolved": true
+          }
+        ],
+        "generate_content_config": {
+          "kind": "call",
+          "name": "GenerateContentConfig"
+        }
+      }
+    },
+    "itinerary_agent": {
+      "kind": "agent",
+      "id": "itinerary_agent",
+      "file": "sub_agents/planning/agent.py",
+      "line_start": 25,
+      "line_end": 35,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "itinerary_agent",
+        "description": "Create and persist a structured JSON representation of the itinerary",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).ITINERARY_AGENT_INSTR",
+          "resolved": false
+        },
+        "disallow_transfer_to_parent": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "disallow_transfer_to_peers": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "output_schema": {
+          "kind": "ref",
+          "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).Itinerary",
+          "resolved": false
+        },
+        "output_key": "itinerary",
+        "generate_content_config": {
+          "kind": "ref",
+          "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).json_response_config",
+          "resolved": false
+        }
+      }
+    },
+    "hotel_room_selection_agent": {
+      "kind": "agent",
+      "id": "hotel_room_selection_agent",
+      "file": "sub_agents/planning/agent.py",
+      "line_start": 38,
+      "line_end": 48,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "hotel_room_selection_agent",
+        "description": "Help users with the room choices for a hotel",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).HOTEL_ROOM_SELECTION_INSTR",
+          "resolved": false
+        },
+        "disallow_transfer_to_parent": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "disallow_transfer_to_peers": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "output_schema": {
+          "kind": "ref",
+          "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).RoomsSelection",
+          "resolved": false
+        },
+        "output_key": "room",
+        "generate_content_config": {
+          "kind": "ref",
+          "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).json_response_config",
+          "resolved": false
+        }
+      }
+    },
+    "hotel_search_agent": {
+      "kind": "agent",
+      "id": "hotel_search_agent",
+      "file": "sub_agents/planning/agent.py",
+      "line_start": 50,
+      "line_end": 60,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "hotel_search_agent",
+        "description": "Help users find hotel around a specific geographic area",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).HOTEL_SEARCH_INSTR",
+          "resolved": false
+        },
+        "disallow_transfer_to_parent": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "disallow_transfer_to_peers": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "output_schema": {
+          "kind": "ref",
+          "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).HotelsSelection",
+          "resolved": false
+        },
+        "output_key": "hotel",
+        "generate_content_config": {
+          "kind": "ref",
+          "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).json_response_config",
+          "resolved": false
+        }
+      }
+    },
+    "flight_seat_selection_agent": {
+      "kind": "agent",
+      "id": "flight_seat_selection_agent",
+      "file": "sub_agents/planning/agent.py",
+      "line_start": 63,
+      "line_end": 73,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "flight_seat_selection_agent",
+        "description": "Help users with the seat choices",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).FLIGHT_SEAT_SELECTION_INSTR",
+          "resolved": false
+        },
+        "disallow_transfer_to_parent": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "disallow_transfer_to_peers": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "output_schema": {
+          "kind": "ref",
+          "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).SeatsSelection",
+          "resolved": false
+        },
+        "output_key": "seat",
+        "generate_content_config": {
+          "kind": "ref",
+          "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).json_response_config",
+          "resolved": false
+        }
+      }
+    },
+    "flight_search_agent": {
+      "kind": "agent",
+      "id": "flight_search_agent",
+      "file": "sub_agents/planning/agent.py",
+      "line_start": 75,
+      "line_end": 85,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "flight_search_agent",
+        "description": "Help users find best flight deals",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).FLIGHT_SEARCH_INSTR",
+          "resolved": false
+        },
+        "disallow_transfer_to_parent": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "disallow_transfer_to_peers": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "output_schema": {
+          "kind": "ref",
+          "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).FlightsSelection",
+          "resolved": false
+        },
+        "output_key": "flight",
+        "generate_content_config": {
+          "kind": "ref",
+          "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).json_response_config",
+          "resolved": false
+        }
+      }
+    },
+    "planning_agent": {
+      "kind": "agent",
+      "id": "planning_agent",
+      "file": "sub_agents/planning/agent.py",
+      "line_start": 88,
+      "line_end": 104,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "description": "Helps users with travel planning, complete a full itinerary for their vacation, finding best deals for flights and hotels.",
+        "name": "planning_agent",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).PLANNING_AGENT_INSTR",
+          "resolved": false
+        },
+        "tools": [
+          {
+            "kind": "agent",
+            "ref": "flight_search_agent",
+            "resolved": true
+          },
+          {
+            "kind": "agent",
+            "ref": "flight_seat_selection_agent",
+            "resolved": true
+          },
+          {
+            "kind": "agent",
+            "ref": "hotel_search_agent",
+            "resolved": true
+          },
+          {
+            "kind": "agent",
+            "ref": "hotel_room_selection_agent",
+            "resolved": true
+          },
+          {
+            "kind": "agent",
+            "ref": "itinerary_agent",
+            "resolved": true
+          },
+          {
+            "kind": "ref",
+            "ref": "memorize",
+            "resolved": false
+          }
+        ],
+        "generate_content_config": {
+          "kind": "call",
+          "name": "GenerateContentConfig"
+        }
+      }
+    },
+    "post_trip_agent": {
+      "kind": "agent",
+      "id": "post_trip_agent",
+      "file": "sub_agents/post_trip/agent.py",
+      "line_start": 22,
+      "line_end": 28,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "post_trip_agent",
+        "description": "A follow up agent to learn from user's experience; In turn improves the user's future trips planning and in-trip experience.",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).POSTTRIP_INSTR",
+          "resolved": false
+        },
+        "tools": [
+          {
+            "kind": "ref",
+            "ref": "memorize",
+            "resolved": false
+          }
+        ]
+      }
+    },
+    "what_to_pack_agent": {
+      "kind": "agent",
+      "id": "what_to_pack_agent",
+      "file": "sub_agents/pre_trip/agent.py",
+      "line_start": 24,
+      "line_end": 33,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "what_to_pack_agent",
+        "description": "Make suggestion on what to bring for the trip",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).WHATTOPACK_INSTR",
+          "resolved": false
+        },
+        "disallow_transfer_to_parent": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "disallow_transfer_to_peers": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "output_key": "what_to_pack",
+        "output_schema": {
+          "kind": "ref",
+          "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).PackingList",
+          "resolved": false
+        }
+      }
+    },
+    "pre_trip_agent": {
+      "kind": "agent",
+      "id": "pre_trip_agent",
+      "file": "sub_agents/pre_trip/agent.py",
+      "line_start": 35,
+      "line_end": 41,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "pre_trip_agent",
+        "description": "Given an itinerary, this agent keeps up to date and provides relevant travel information to the user before the trip.",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).PRETRIP_AGENT_INSTR",
+          "resolved": false
+        },
+        "tools": [
+          {
+            "kind": "ref",
+            "ref": "google_search_grounding",
+            "resolved": false
+          },
+          {
+            "kind": "agent",
+            "ref": "what_to_pack_agent",
+            "resolved": true
+          }
+        ]
+      }
+    },
+    "place_agent": {
+      "kind": "agent",
+      "id": "place_agent",
+      "file": "sub_agents/inspiration/agent.py",
+      "line_start": 24,
+      "line_end": 34,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "place_agent",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).PLACE_AGENT_INSTR",
+          "resolved": false
+        },
+        "description": "This agent suggests a few destination given some user preferences",
+        "disallow_transfer_to_parent": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "disallow_transfer_to_peers": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "output_schema": {
+          "kind": "ref",
+          "ref": "DestinationIdeas",
+          "resolved": false
+        },
+        "output_key": "place",
+        "generate_content_config": {
+          "kind": "ref",
+          "ref": "json_response_config",
+          "resolved": false
+        }
+      }
+    },
+    "poi_agent": {
+      "kind": "agent",
+      "id": "poi_agent",
+      "file": "sub_agents/inspiration/agent.py",
+      "line_start": 36,
+      "line_end": 46,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "poi_agent",
+        "description": "This agent suggests a few activities and points of interests given a destination",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).POI_AGENT_INSTR",
+          "resolved": false
+        },
+        "disallow_transfer_to_parent": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "disallow_transfer_to_peers": {
+          "kind": "ref",
+          "ref": "True",
+          "resolved": false
+        },
+        "output_schema": {
+          "kind": "ref",
+          "ref": "POISuggestions",
+          "resolved": false
+        },
+        "output_key": "poi",
+        "generate_content_config": {
+          "kind": "ref",
+          "ref": "json_response_config",
+          "resolved": false
+        }
+      }
+    },
+    "inspiration_agent": {
+      "kind": "agent",
+      "id": "inspiration_agent",
+      "file": "sub_agents/inspiration/agent.py",
+      "line_start": 48,
+      "line_end": 54,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "inspiration_agent",
+        "description": "A travel inspiration agent who inspire users, and discover their next vacations; Provide information about places, activities, interests,",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).INSPIRATION_AGENT_INSTR",
+          "resolved": false
+        },
+        "tools": [
+          {
+            "kind": "agent",
+            "ref": "place_agent",
+            "resolved": true
+          },
+          {
+            "kind": "agent",
+            "ref": "poi_agent",
+            "resolved": true
+          },
+          {
+            "kind": "ref",
+            "ref": "map_tool",
+            "resolved": false
+          }
+        ]
+      }
+    },
+    "day_of_agent": {
+      "kind": "agent",
+      "id": "day_of_agent",
+      "file": "sub_agents/in_trip/agent.py",
+      "line_start": 32,
+      "line_end": 37,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "day_of_agent",
+        "description": "Day_of agent is the agent handling the travel logistics of a trip.",
+        "instruction": {
+          "kind": "ref",
+          "ref": "transit_coordination",
+          "resolved": false
+        }
+      }
+    },
+    "trip_monitor_agent": {
+      "kind": "agent",
+      "id": "trip_monitor_agent",
+      "file": "sub_agents/in_trip/agent.py",
+      "line_start": 40,
+      "line_end": 47,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "trip_monitor_agent",
+        "description": "Monitor aspects of a itinerary and bring attention to items that necessitate changes",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).TRIP_MONITOR_INSTR",
+          "resolved": false
+        },
+        "tools": [
+          {
+            "kind": "ref",
+            "ref": "flight_status_check",
+            "resolved": false
+          },
+          {
+            "kind": "ref",
+            "ref": "event_booking_check",
+            "resolved": false
+          },
+          {
+            "kind": "ref",
+            "ref": "weather_impact_check",
+            "resolved": false
+          }
+        ],
+        "output_key": "daily_checks"
+      }
+    },
+    "in_trip_agent": {
+      "kind": "agent",
+      "id": "in_trip_agent",
+      "file": "sub_agents/in_trip/agent.py",
+      "line_start": 49,
+      "line_end": 61,
+      "args": {
+        "model": "gemini-2.5-flash",
+        "name": "in_trip_agent",
+        "description": "Provide information about what the users need as part of the tour.",
+        "instruction": {
+          "kind": "ref",
+          "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).INTRIP_INSTR",
+          "resolved": false
+        },
+        "sub_agents": [
+          {
+            "kind": "agent",
+            "ref": "trip_monitor_agent",
+            "resolved": true
+          }
+        ],
+        "tools": [
+          {
+            "kind": "agent",
+            "ref": "day_of_agent",
+            "resolved": true
+          },
+          {
+            "kind": "ref",
+            "ref": "memorize",
+            "resolved": false
+          }
+        ]
+      }
+    }
+  },
+  "tools": {}
+}
+
+Nested tree for root_agent:
+{
+  "id": "root_agent",
+  "kind": "agent",
+  "file": "agent.py",
+  "line_start": 30,
+  "line_end": 44,
+  "args": {
+    "model": "gemini-2.5-flash",
+    "name": "root_agent",
+    "description": "A Travel Conceirge using the services of multiple sub-agents",
+    "instruction": {
+      "kind": "ref",
+      "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).ROOT_AGENT_INSTR",
+      "resolved": false
+    },
+    "sub_agents": [
+      {
+        "id": "inspiration_agent",
+        "kind": "agent",
+        "file": "sub_agents/inspiration/agent.py",
+        "line_start": 48,
+        "line_end": 54,
+        "args": {
+          "model": "gemini-2.5-flash",
+          "name": "inspiration_agent",
+          "description": "A travel inspiration agent who inspire users, and discover their next vacations; Provide information about places, activities, interests,",
+          "instruction": {
+            "kind": "ref",
+            "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).INSPIRATION_AGENT_INSTR",
+            "resolved": false
+          },
+          "tools": [
+            {
+              "id": "place_agent",
+              "kind": "agent",
+              "file": "sub_agents/inspiration/agent.py",
+              "line_start": 24,
+              "line_end": 34,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "place_agent",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).PLACE_AGENT_INSTR",
+                  "resolved": false
+                },
+                "description": "This agent suggests a few destination given some user preferences",
+                "disallow_transfer_to_parent": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "disallow_transfer_to_peers": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "output_schema": {
+                  "kind": "ref",
+                  "ref": "DestinationIdeas",
+                  "resolved": false
+                },
+                "output_key": "place",
+                "generate_content_config": {
+                  "kind": "ref",
+                  "ref": "json_response_config",
+                  "resolved": false
+                }
+              }
+            },
+            {
+              "id": "poi_agent",
+              "kind": "agent",
+              "file": "sub_agents/inspiration/agent.py",
+              "line_start": 36,
+              "line_end": 46,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "poi_agent",
+                "description": "This agent suggests a few activities and points of interests given a destination",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).POI_AGENT_INSTR",
+                  "resolved": false
+                },
+                "disallow_transfer_to_parent": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "disallow_transfer_to_peers": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "output_schema": {
+                  "kind": "ref",
+                  "ref": "POISuggestions",
+                  "resolved": false
+                },
+                "output_key": "poi",
+                "generate_content_config": {
+                  "kind": "ref",
+                  "ref": "json_response_config",
+                  "resolved": false
+                }
+              }
+            },
+            {
+              "kind": "ref",
+              "ref": "map_tool",
+              "resolved": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "planning_agent",
+        "kind": "agent",
+        "file": "sub_agents/planning/agent.py",
+        "line_start": 88,
+        "line_end": 104,
+        "args": {
+          "model": "gemini-2.5-flash",
+          "description": "Helps users with travel planning, complete a full itinerary for their vacation, finding best deals for flights and hotels.",
+          "name": "planning_agent",
+          "instruction": {
+            "kind": "ref",
+            "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).PLANNING_AGENT_INSTR",
+            "resolved": false
+          },
+          "tools": [
+            {
+              "id": "flight_search_agent",
+              "kind": "agent",
+              "file": "sub_agents/planning/agent.py",
+              "line_start": 75,
+              "line_end": 85,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "flight_search_agent",
+                "description": "Help users find best flight deals",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).FLIGHT_SEARCH_INSTR",
+                  "resolved": false
+                },
+                "disallow_transfer_to_parent": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "disallow_transfer_to_peers": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "output_schema": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).FlightsSelection",
+                  "resolved": false
+                },
+                "output_key": "flight",
+                "generate_content_config": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).json_response_config",
+                  "resolved": false
+                }
+              }
+            },
+            {
+              "id": "flight_seat_selection_agent",
+              "kind": "agent",
+              "file": "sub_agents/planning/agent.py",
+              "line_start": 63,
+              "line_end": 73,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "flight_seat_selection_agent",
+                "description": "Help users with the seat choices",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).FLIGHT_SEAT_SELECTION_INSTR",
+                  "resolved": false
+                },
+                "disallow_transfer_to_parent": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "disallow_transfer_to_peers": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "output_schema": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).SeatsSelection",
+                  "resolved": false
+                },
+                "output_key": "seat",
+                "generate_content_config": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).json_response_config",
+                  "resolved": false
+                }
+              }
+            },
+            {
+              "id": "hotel_search_agent",
+              "kind": "agent",
+              "file": "sub_agents/planning/agent.py",
+              "line_start": 50,
+              "line_end": 60,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "hotel_search_agent",
+                "description": "Help users find hotel around a specific geographic area",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).HOTEL_SEARCH_INSTR",
+                  "resolved": false
+                },
+                "disallow_transfer_to_parent": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "disallow_transfer_to_peers": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "output_schema": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).HotelsSelection",
+                  "resolved": false
+                },
+                "output_key": "hotel",
+                "generate_content_config": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).json_response_config",
+                  "resolved": false
+                }
+              }
+            },
+            {
+              "id": "hotel_room_selection_agent",
+              "kind": "agent",
+              "file": "sub_agents/planning/agent.py",
+              "line_start": 38,
+              "line_end": 48,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "hotel_room_selection_agent",
+                "description": "Help users with the room choices for a hotel",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).HOTEL_ROOM_SELECTION_INSTR",
+                  "resolved": false
+                },
+                "disallow_transfer_to_parent": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "disallow_transfer_to_peers": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "output_schema": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).RoomsSelection",
+                  "resolved": false
+                },
+                "output_key": "room",
+                "generate_content_config": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).json_response_config",
+                  "resolved": false
+                }
+              }
+            },
+            {
+              "id": "itinerary_agent",
+              "kind": "agent",
+              "file": "sub_agents/planning/agent.py",
+              "line_start": 25,
+              "line_end": 35,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "itinerary_agent",
+                "description": "Create and persist a structured JSON representation of the itinerary",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).ITINERARY_AGENT_INSTR",
+                  "resolved": false
+                },
+                "disallow_transfer_to_parent": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "disallow_transfer_to_peers": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "output_schema": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).Itinerary",
+                  "resolved": false
+                },
+                "output_key": "itinerary",
+                "generate_content_config": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).json_response_config",
+                  "resolved": false
+                }
+              }
+            },
+            {
+              "kind": "ref",
+              "ref": "memorize",
+              "resolved": false
+            }
+          ],
+          "generate_content_config": {
+            "kind": "call",
+            "name": "GenerateContentConfig"
+          }
+        }
+      },
+      {
+        "id": "booking_agent",
+        "kind": "agent",
+        "file": "sub_agents/booking/agent.py",
+        "line_start": 47,
+        "line_end": 60,
+        "args": {
+          "model": "gemini-2.5-flash",
+          "name": "booking_agent",
+          "description": "Given an itinerary, complete the bookings of items by handling payment choices and processing.",
+          "instruction": {
+            "kind": "ref",
+            "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).BOOKING_AGENT_INSTR",
+            "resolved": false
+          },
+          "tools": [
+            {
+              "id": "create_reservation",
+              "kind": "agent",
+              "file": "sub_agents/booking/agent.py",
+              "line_start": 24,
+              "line_end": 29,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "create_reservation",
+                "description": "Create a reservation for the selected item.",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).CONFIRM_RESERVATION_INSTR",
+                  "resolved": false
+                }
+              }
+            },
+            {
+              "id": "payment_choice",
+              "kind": "agent",
+              "file": "sub_agents/booking/agent.py",
+              "line_start": 32,
+              "line_end": 37,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "payment_choice",
+                "description": "Show the users available payment choices.",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).PAYMENT_CHOICE_INSTR",
+                  "resolved": false
+                }
+              }
+            },
+            {
+              "id": "process_payment",
+              "kind": "agent",
+              "file": "sub_agents/booking/agent.py",
+              "line_start": 39,
+              "line_end": 44,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "process_payment",
+                "description": "Given a selected payment choice, processes the payment, completing the transaction.",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).PROCESS_PAYMENT_INSTR",
+                  "resolved": false
+                }
+              }
+            }
+          ],
+          "generate_content_config": {
+            "kind": "call",
+            "name": "GenerateContentConfig"
+          }
+        }
+      },
+      {
+        "id": "pre_trip_agent",
+        "kind": "agent",
+        "file": "sub_agents/pre_trip/agent.py",
+        "line_start": 35,
+        "line_end": 41,
+        "args": {
+          "model": "gemini-2.5-flash",
+          "name": "pre_trip_agent",
+          "description": "Given an itinerary, this agent keeps up to date and provides relevant travel information to the user before the trip.",
+          "instruction": {
+            "kind": "ref",
+            "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).PRETRIP_AGENT_INSTR",
+            "resolved": false
+          },
+          "tools": [
+            {
+              "kind": "ref",
+              "ref": "google_search_grounding",
+              "resolved": false
+            },
+            {
+              "id": "what_to_pack_agent",
+              "kind": "agent",
+              "file": "sub_agents/pre_trip/agent.py",
+              "line_start": 24,
+              "line_end": 33,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "what_to_pack_agent",
+                "description": "Make suggestion on what to bring for the trip",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).WHATTOPACK_INSTR",
+                  "resolved": false
+                },
+                "disallow_transfer_to_parent": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "disallow_transfer_to_peers": {
+                  "kind": "ref",
+                  "ref": "True",
+                  "resolved": false
+                },
+                "output_key": "what_to_pack",
+                "output_schema": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='types',\n    lpar=[],\n    rpar=[],\n).PackingList",
+                  "resolved": false
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "in_trip_agent",
+        "kind": "agent",
+        "file": "sub_agents/in_trip/agent.py",
+        "line_start": 49,
+        "line_end": 61,
+        "args": {
+          "model": "gemini-2.5-flash",
+          "name": "in_trip_agent",
+          "description": "Provide information about what the users need as part of the tour.",
+          "instruction": {
+            "kind": "ref",
+            "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).INTRIP_INSTR",
+            "resolved": false
+          },
+          "sub_agents": [
+            {
+              "id": "trip_monitor_agent",
+              "kind": "agent",
+              "file": "sub_agents/in_trip/agent.py",
+              "line_start": 40,
+              "line_end": 47,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "trip_monitor_agent",
+                "description": "Monitor aspects of a itinerary and bring attention to items that necessitate changes",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).TRIP_MONITOR_INSTR",
+                  "resolved": false
+                },
+                "tools": [
+                  {
+                    "kind": "ref",
+                    "ref": "flight_status_check",
+                    "resolved": false
+                  },
+                  {
+                    "kind": "ref",
+                    "ref": "event_booking_check",
+                    "resolved": false
+                  },
+                  {
+                    "kind": "ref",
+                    "ref": "weather_impact_check",
+                    "resolved": false
+                  }
+                ],
+                "output_key": "daily_checks"
+              }
+            }
+          ],
+          "tools": [
+            {
+              "id": "day_of_agent",
+              "kind": "agent",
+              "file": "sub_agents/in_trip/agent.py",
+              "line_start": 32,
+              "line_end": 37,
+              "args": {
+                "model": "gemini-2.5-flash",
+                "name": "day_of_agent",
+                "description": "Day_of agent is the agent handling the travel logistics of a trip.",
+                "instruction": {
+                  "kind": "ref",
+                  "ref": "transit_coordination",
+                  "resolved": false
+                }
+              }
+            },
+            {
+              "kind": "ref",
+              "ref": "memorize",
+              "resolved": false
+            }
+          ]
+        }
+      },
+      {
+        "id": "post_trip_agent",
+        "kind": "agent",
+        "file": "sub_agents/post_trip/agent.py",
+        "line_start": 22,
+        "line_end": 28,
+        "args": {
+          "model": "gemini-2.5-flash",
+          "name": "post_trip_agent",
+          "description": "A follow up agent to learn from user's experience; In turn improves the user's future trips planning and in-trip experience.",
+          "instruction": {
+            "kind": "ref",
+            "ref": "Name(\n    value='prompt',\n    lpar=[],\n    rpar=[],\n).POSTTRIP_INSTR",
+            "resolved": false
+          },
+          "tools": [
+            {
+              "kind": "ref",
+              "ref": "memorize",
+              "resolved": false
+            }
+          ]
+        }
+      }
+    ],
+    "before_agent_callback": {
+      "kind": "ref",
+      "ref": "_load_precreated_itinerary",
+      "resolved": false
+    }
+  }
+}

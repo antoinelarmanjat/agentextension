@@ -3,6 +3,7 @@
 'use strict';
 
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 
 /**@type {import('webpack').Configuration}*/
 const config = {
@@ -40,5 +41,12 @@ const config = {
   infrastructureLogging: {
     level: "log", // enables logging required for problem matchers
   },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        { from: 'src/python', to: 'dist/python' }
+      ]
+    })
+  ]
 };
 module.exports = config;

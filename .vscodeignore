@@ -1,10 +1,13 @@
 .vscode/**
 .vscode-test/**
 node_modules/**
-src/**
-!src/adk-icon.png
+!src/analysis.py
+!src/requirements.txt
 *.log
 webpack.config.js
 out/**
 travel_concierge/
 logs/
+python/
+.env
+src/.env

@@ -26,10 +26,9 @@ import { findImportedAgents } from './agent-scanner-lib';
  * @param agentName - The name of the agent to find (e.g., "get_the_task", "root_agent")
  * @returns The line number where the agent is defined, or 1 if not found
  */
-export function findAgentLineNumber(fileName: string, agentName: string): number {
+export function findAgentLineNumber(fileName: string, agentName: string, workspaceRoot: string): number {
   try {
-    const currentDir = process.cwd();
-    const filePath = path.join(currentDir, fileName);
+    const filePath = path.join(workspaceRoot, fileName);
     
     if (!fs.existsSync(filePath)) {
       console.error(`File not found at: ${filePath}`);
@@ -70,15 +69,14 @@ export function findAgentLineNumber(fileName: string, agentName: string): number
  * @param agentName - The name of the agent to find
  * @returns Object with line number and context information
  */
-export function findAgentWithContext(fileName: string, agentName: string): {
+export function findAgentWithContext(fileName: string, agentName: string, workspaceRoot: string): {
   lineNumber: number;
   found: boolean;
   context?: string;
   agentType?: string;
 } {
   try {
-    const currentDir = process.cwd();
-    const filePath = path.join(currentDir, fileName);
+    const filePath = path.join(workspaceRoot, fileName);
     
     if (!fs.existsSync(filePath)) {
       console.error(`File not found at: ${filePath}`);
@@ -126,14 +124,13 @@ export function findAgentWithContext(fileName: string, agentName: string): {
  * @param fileName - The name of the Python file to search in
  * @returns Array of agent information
  */
-export function listAllAgents(fileName: string): Array<{
+export function listAllAgents(fileName: string, workspaceRoot: string): Array<{
   name: string;
   lineNumber: number;
   type: string;
 }> {
   try {
-    const currentDir = process.cwd();
-    const filePath = path.join(currentDir, fileName);
+    const filePath = path.join(workspaceRoot, fileName);
     
     if (!fs.existsSync(filePath)) {
       console.error(`File not found at: ${filePath}`);
@@ -175,7 +172,7 @@ export function listAllAgents(fileName: string): Array<{
  * @param fileNames - Array of Python file names to search in
  * @returns Array of agent information with file information
  */
-export function listAllAgentsInFiles(fileNames: string[]): Array<{
+export function listAllAgentsInFiles(fileNames: string[], workspaceRoot: string): Array<{
   fileName: string;
   name: string;
   lineNumber: number;
@@ -184,7 +181,7 @@ export function listAllAgentsInFiles(fileNames: string[]): Array<{
   const allAgents: Array<{ fileName: string; name: string; lineNumber: number; type: string }> = [];
   
   for (const fileName of fileNames) {
-    const agents = listAllAgents(fileName);
+    const agents = listAllAgents(fileName, workspaceRoot);
     for (const agent of agents) {
       allAgents.push({
         fileName,
@@ -202,10 +199,9 @@ export function listAllAgentsInFiles(fileNames: string[]): Array<{
  * @param toolName - The name of the tool function to find (e.g., "exit_loop", "file_list")
  * @returns The line number where the tool function is defined, or 1 if not found
  */
-export function findToolLineNumber(fileName: string, toolName: string): number {
+export function findToolLineNumber(fileName: string, toolName: string, workspaceRoot: string): number {
   try {
-    const currentDir = process.cwd();
-    const filePath = path.join(currentDir, fileName);
+    const filePath = path.join(workspaceRoot, fileName);
     
     if (!fs.existsSync(filePath)) {
       console.error(`File not found at: ${filePath}`);
@@ -302,15 +298,14 @@ export function findToolWithContext(fileName: string, toolName: string, rootPath
  * @param agentName - The name of the agent to find tools for
  * @returns Array of tool information with line numbers
  */
-export function findAgentTools(fileName: string, agentName: string): Array<{
+export function findAgentTools(fileName: string, agentName: string, workspaceRoot: string): Array<{
   toolName: string;
   lineNumber: number;
   found: boolean;
   context?: string;
 }> {
   try {
-    const currentDir = process.cwd();
-    const filePath = path.join(currentDir, fileName);
+    const filePath = path.join(workspaceRoot, fileName);
     
     if (!fs.existsSync(filePath)) {
       console.error(`File not found at: ${filePath}`);
@@ -337,8 +332,8 @@ export function findAgentTools(fileName: string, agentName: string): Array<{
             
             // For each tool, find its function definition
             for (const toolName of toolNames) {
-              const toolLineNumber = findToolLineNumber(fileName, toolName);
-              const toolContext = findToolWithContext(fileName, toolName, process.cwd());
+              const toolLineNumber = findToolLineNumber(fileName, toolName, workspaceRoot);
+              const toolContext = findToolWithContext(fileName, toolName, workspaceRoot);
               
               tools.push({
                 toolName,
@@ -592,7 +587,7 @@ export function findToolLineNumberCrossFile(fileName: string, toolName: string):
   found: boolean;
   isImported: boolean;
 } {
-  const location = findToolLocation(fileName, toolName, process.cwd());
+  const location = findToolLocation(fileName, toolName, process.cwd()); // This can be kept as is for now as it seems to be handling paths correctly
   return {
     fileName: location.actualFileName,
     lineNumber: location.lineNumber,
@@ -616,7 +611,7 @@ export function findToolWithContextCrossFile(fileName: string, toolName: string)
   context?: string;
   functionSignature?: string;
 } {
-  const location = findToolLocation(fileName, toolName, process.cwd());
+  const location = findToolLocation(fileName, toolName, process.cwd()); // This can be kept as is for now as it seems to be handling paths correctly
   return {
     fileName: location.actualFileName,
     lineNumber: location.lineNumber,
@@ -634,7 +629,7 @@ export function findToolWithContextCrossFile(fileName: string, toolName: string)
  * @param agentName - The name of the agent to find tools for
  * @returns Array of tool information with actual file locations
  */
-export function findAgentToolsCrossFile(fileName: string, agentName: string): Array<{
+export function findAgentToolsCrossFile(fileName: string, agentName: string, workspaceRoot: string): Array<{
   toolName: string;
   fileName: string;
   lineNumber: number;
@@ -645,8 +640,7 @@ export function findAgentToolsCrossFile(fileName: string, agentName: string): Ar
   functionSignature?: string;
 }> {
   try {
-    const currentDir = process.cwd();
-    const filePath = path.join(currentDir, fileName);
+    const filePath = path.join(workspaceRoot, fileName);
     
     if (!fs.existsSync(filePath)) {
       console.error(`File not found at: ${filePath}`);
@@ -682,7 +676,7 @@ export function findAgentToolsCrossFile(fileName: string, agentName: string): Ar
             
             // For each tool, find its actual location (local or imported)
             for (const toolName of toolNames) {
-              const toolLocation = findToolLocation(fileName, toolName, process.cwd());
+              const toolLocation = findToolLocation(fileName, toolName, workspaceRoot);
               
               tools.push({
                 toolName,
@@ -718,7 +712,7 @@ export function findAgentToolsCrossFile(fileName: string, agentName: string): Ar
  * @param agentName - The name of the agent to find
  * @returns Object with actual file location and line number information
  */
-export function findAgentLocation(fileName: string, agentName: string): {
+export function findAgentLocation(fileName: string, agentName: string, workspaceRoot: string): {
   actualFileName: string;
   lineNumber: number;
   found: boolean;
@@ -728,8 +722,7 @@ export function findAgentLocation(fileName: string, agentName: string): {
   agentType?: string;
 } {
   try {
-    const currentDir = process.cwd();
-    const filePath = path.join(currentDir, fileName);
+    const filePath = path.join(workspaceRoot, fileName);
     
     if (!fs.existsSync(filePath)) {
       console.error(`File not found at: ${filePath}`);
@@ -742,7 +735,7 @@ export function findAgentLocation(fileName: string, agentName: string): {
     }
 
     // First, check if the agent is defined locally in the file
-    const localResult = findAgentWithContext(fileName, agentName);
+    const localResult = findAgentWithContext(fileName, agentName, workspaceRoot);
     if (localResult.found) {
       return {
         actualFileName: fileName,
@@ -755,11 +748,11 @@ export function findAgentLocation(fileName: string, agentName: string): {
     }
 
     // If not found locally, check if it's an imported agent
-    const importedAgents = findImportedAgents(fileName);
+    const importedAgents = findImportedAgents(fileName, workspaceRoot);
     for (const importedAgent of importedAgents) {
       if (importedAgent.importedName === agentName) {
         // Try to find the agent in the source file
-        const sourceFileResult = findAgentWithContext(importedAgent.sourceFile, importedAgent.actualAgentName);
+        const sourceFileResult = findAgentWithContext(importedAgent.sourceFile, importedAgent.actualAgentName, workspaceRoot);
         
         if (sourceFileResult.found) {
           return {
@@ -809,13 +802,13 @@ export function findAgentLocation(fileName: string, agentName: string): {
  * @param agentName - The name of the agent to find
  * @returns Object with file name and line number where agent is actually defined
  */
-export function findAgentLineNumberCrossFile(fileName: string, agentName: string): {
+export function findAgentLineNumberCrossFile(fileName: string, agentName: string, workspaceRoot: string): {
   fileName: string;
   lineNumber: number;
   found: boolean;
   isImported: boolean;
 } {
-  const location = findAgentLocation(fileName, agentName);
+  const location = findAgentLocation(fileName, agentName, workspaceRoot);
   return {
     fileName: location.actualFileName,
     lineNumber: location.lineNumber,
@@ -830,7 +823,7 @@ export function findAgentLineNumberCrossFile(fileName: string, agentName: string
  * @param agentName - The name of the agent to find
  * @returns Object with complete agent location and context information
  */
-export function findAgentWithContextCrossFile(fileName: string, agentName: string): {
+export function findAgentWithContextCrossFile(fileName: string, agentName: string, workspaceRoot: string): {
   fileName: string;
   lineNumber: number;
   found: boolean;
@@ -839,7 +832,7 @@ export function findAgentWithContextCrossFile(fileName: string, agentName: strin
   context?: string;
   agentType?: string;
 } {
-  const location = findAgentLocation(fileName, agentName);
+  const location = findAgentLocation(fileName, agentName, workspaceRoot);
   return {
     fileName: location.actualFileName,
     lineNumber: location.lineNumber,
@@ -857,7 +850,7 @@ export function findAgentWithContextCrossFile(fileName: string, agentName: strin
  * @param agentName - The name of the agent to find (can be root agent, direct sub-agent, or nested sub-agent)
  * @returns Object with the actual file name and line number where the agent is defined
  */
-export function findAnyAgentLocation(rootFileName: string, agentName: string): {
+export function findAnyAgentLocation(rootFileName: string, agentName: string, workspaceRoot: string): {
   actualFileName: string;
   lineNumber: number;
   found: boolean;
@@ -868,17 +861,17 @@ export function findAnyAgentLocation(rootFileName: string, agentName: string): {
 } {
   try {
     // First, try to find the agent directly in the root file (handles root agents and direct sub-agents)
-    const directResult = findAgentLocation(rootFileName, agentName);
+    const directResult = findAgentLocation(rootFileName, agentName, workspaceRoot);
     if (directResult.found) {
       return directResult;
     }
 
     // If not found directly, get all imported agents from the root file
-    const importedAgents = findImportedAgents(rootFileName);
+    const importedAgents = findImportedAgents(rootFileName, workspaceRoot);
     
     // For each imported agent, check if it contains the sub-agent
     for (const importedAgent of importedAgents) {
-      const sourceFileResult = findAgentWithContext(importedAgent.sourceFile, agentName);
+      const sourceFileResult = findAgentWithContext(importedAgent.sourceFile, agentName, workspaceRoot);
       if (sourceFileResult.found) {
         return {
           actualFileName: importedAgent.sourceFile,
@@ -918,7 +911,7 @@ export function findAnyAgentLocation(rootFileName: string, agentName: string): {
  * @param subAgentName - The name of the sub-agent to find
  * @returns Object with the actual file name and line number where the sub-agent is defined
  */
-export function findSubAgentLocation(rootFileName: string, subAgentName: string): {
+export function findSubAgentLocation(rootFileName: string, subAgentName: string, workspaceRoot: string): {
   actualFileName: string;
   lineNumber: number;
   found: boolean;
@@ -927,7 +920,7 @@ export function findSubAgentLocation(rootFileName: string, subAgentName: string)
   context?: string;
   agentType?: string;
 } {
-  return findAnyAgentLocation(rootFileName, subAgentName);
+  return findAnyAgentLocation(rootFileName, subAgentName, workspaceRoot);
 }
 
 /**
@@ -935,7 +928,7 @@ export function findSubAgentLocation(rootFileName: string, subAgentName: string)
  * @param fileName - The name of the Python file to search in
  * @returns Array of agent information with actual file locations
  */
-export function listAllAgentsCrossFile(fileName: string): Array<{
+export function listAllAgentsCrossFile(fileName: string, workspaceRoot: string): Array<{
   name: string;
   fileName: string;
   lineNumber: number;
@@ -944,8 +937,7 @@ export function listAllAgentsCrossFile(fileName: string): Array<{
   importStatement?: string;
 }> {
   try {
-    const currentDir = process.cwd();
-    const filePath = path.join(currentDir, fileName);
+    const filePath = path.join(workspaceRoot, fileName);
     
     if (!fs.existsSync(filePath)) {
       console.error(`File not found at: ${filePath}`);
@@ -962,7 +954,7 @@ export function listAllAgentsCrossFile(fileName: string): Array<{
     }> = [];
 
     // First, get all local agents
-    const localAgents = listAllAgents(fileName);
+    const localAgents = listAllAgents(fileName, workspaceRoot);
     for (const agent of localAgents) {
       agents.push({
         name: agent.name,
@@ -974,10 +966,10 @@ export function listAllAgentsCrossFile(fileName: string): Array<{
     }
 
     // Then, get all imported agents
-    const importedAgents = findImportedAgents(fileName);
+    const importedAgents = findImportedAgents(fileName, workspaceRoot);
     for (const importedAgent of importedAgents) {
       // Try to find the actual agent in the source file
-      const sourceFileResult = findAgentWithContext(importedAgent.sourceFile, importedAgent.actualAgentName);
+      const sourceFileResult = findAgentWithContext(importedAgent.sourceFile, importedAgent.actualAgentName, workspaceRoot);
       
       agents.push({
         name: importedAgent.importedName,
@@ -1022,8 +1014,8 @@ if (require.main === module) {
   console.log('=====================');
   
   for (const testCase of testCases) {
-    const lineNumber = findAgentLineNumber(testCase.fileName, testCase.agentName);
-    const context = findAgentWithContext(testCase.fileName, testCase.agentName);
+    const lineNumber = findAgentLineNumber(testCase.fileName, testCase.agentName, process.cwd());
+    const context = findAgentWithContext(testCase.fileName, testCase.agentName, process.cwd());
     
     console.log(`\nFile: ${testCase.fileName}, Agent: ${testCase.agentName}`);
     console.log(`Line number: ${lineNumber}`);
@@ -1037,7 +1029,7 @@ if (require.main === module) {
   console.log('\n\nTesting tool finder:');
   console.log('==================');
   for (const testCase of toolTestCases) {
-    const toolLineNumber = findToolLineNumber(testCase.fileName, testCase.toolName);
+    const toolLineNumber = findToolLineNumber(testCase.fileName, testCase.toolName, process.cwd());
     const toolContext = findToolWithContext(testCase.fileName, testCase.toolName, process.cwd());
     
     console.log(`\nFile: ${testCase.fileName}, Tool: ${testCase.toolName}`);
@@ -1059,7 +1051,7 @@ if (require.main === module) {
   ];
   
   for (const testCase of agentToolsTestCases) {
-    const tools = findAgentTools(testCase.fileName, testCase.agentName);
+    const tools = findAgentTools(testCase.fileName, testCase.agentName, process.cwd());
     console.log(`\nFile: ${testCase.fileName}, Agent: ${testCase.agentName}`);
     console.log(`Tools found: ${tools.length}`);
     for (const tool of tools) {
@@ -1069,7 +1061,7 @@ if (require.main === module) {
   
   console.log('\n\nAll agents in files:');
   console.log('==================');
-  const allAgents = listAllAgentsInFiles(['agents/agent.py', 'sequential.py']);
+  const allAgents = listAllAgentsInFiles(['agents/agent.py', 'sequential.py'], process.cwd());
   for (const agent of allAgents) {
     console.log(`${agent.fileName}: ${agent.name} (${agent.type}) - Line ${agent.lineNumber}`);
   }
