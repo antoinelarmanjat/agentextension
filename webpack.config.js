@@ -44,7 +44,9 @@ const config = {
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: 'src/python', to: 'dist/python' }
+        { from: 'src/python', to: 'dist/python' },
+        { from: 'src/agent_with_dump/__init__.py', to: 'dist/agent_with_dump/__init__.py' },
+        { from: 'src/agent_with_dump/analysis.py', to: 'dist/agent_with_dump/analysis.py' }
       ]
     })
   ]

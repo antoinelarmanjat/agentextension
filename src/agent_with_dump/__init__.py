@@ -1,5 +1,6 @@
 import json
 import base64
+import logging
 
 from agent_with_dump.analysis import build_registry
 from google.adk.agents.callback_context import CallbackContext
@@ -38,6 +39,8 @@ async def dump_context_callback(callback_context: CallbackContext, agent_name: s
                 "timestamp": str(event.timestamp),
                 "author": event.author,
                 "content": event.content,
+                "invocation_id": event.invocation_id,
+                "long_running_tool_ids": event.long_running_tool_ids,
                 "actions": event.actions,
             }
             for event in session.events
@@ -73,9 +76,12 @@ def dynamic_import_agents(registry, patch_agent):
     imported_agents = {}
     i=0
     
+    # Configure logging
+    logging.basicConfig(filename='agent.log', level=logging.INFO,
+                        format='%(asctime)s - %(levelname)s - %(message)s')
     for agent_id, agent in registry["agents"].items():
         if i == 0:
-            print(agent)
+            logging.info(agent)
             file_path = Path(agent["file"])
             if not agent_id:
                 continue
@@ -85,7 +91,7 @@ def dynamic_import_agents(registry, patch_agent):
             module_path = rel_path.with_suffix("")  # drop .py
             module_str = module_path.as_posix().replace('/', '.')
 
-            print(module_str)
+            logging.info(module_str)
 
             # Import module
             module = importlib.import_module(module_str)
@@ -93,7 +99,7 @@ def dynamic_import_agents(registry, patch_agent):
             # Get the agent object
             obj = getattr(module, agent_id, None)
             if obj is None:
-                print(f"⚠️ Could not find {agent_id} in {module_str}")
+                logging.warning(f"⚠️ Could not find {agent_id} in {module_str}")
                 continue
 
             # Patch the agent
@@ -109,13 +115,20 @@ def dynamic_import_agents(registry, patch_agent):
 #booking_agent = patch_agent(booking_agent, "booking_agent")
 
 # Expose only root_agent as `agent` for ADK entrypoint
+import os
+import sys
+project_dir = os.environ.get('PROJECT_DIR')
+sys.path.append(project_dir)
+registry = build_registry(project_dir)['agents'].items()
+print("AAAAAAA")
+print(registry)
 
-registry = build_registry(".")['agents'].items()
 for item in registry:
     name = item[0]
     file = item[1]['file']
     kind = item[1]['kind']
     if (kind == 'agent') and (name =='root_agent'):
+        file=os.path.relpath(file,project_dir)
         file_path = Path(file)
         file_path_no_suffix_no_slash=file_path.with_suffix("").as_posix().replace('/','.')
         module = importlib.import_module(file_path_no_suffix_no_slash)
@@ -123,6 +136,7 @@ for item in registry:
         root_agent = patch_agent(root_agent, name)
     else: # If not root_agent, then it's another agent, so we need to import it and patch it
         if (kind == 'agent'):
+            file=os.path.relpath(file,project_dir)
             file_path = Path(file)
             file_path_no_suffix_no_slash=file_path.with_suffix("").as_posix().replace('/','.')
             module = importlib.import_module(file_path_no_suffix_no_slash)
@@ -137,5 +151,6 @@ for item in registry:
 #from travel_concierge.agent import root_agent
 #root_agent = patch_agent(root_agent, "root_agent")
 
+os.chdir(project_dir)
 agent = root_agent
 

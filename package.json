@@ -115,7 +115,7 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "webpack --mode production",
+    "vscode:prepublish": "webpack --mode production --no-cache",
     "compile": "webpack",
     "watch": "webpack --watch",
     "package": "vsce package",
