@@ -1,0 +1,287 @@
+[
+  {
+    "agent": "poi_agent",
+    "timestamp": "2025-09-08_10-12-23-800",
+    "state": {
+      "_time": "2025-09-08 10:12:16.056797",
+      "_itin_initialized": true,
+      "user_profile": {
+        "passport_nationality": "US Citizen",
+        "seat_preference": "window",
+        "food_preference": "vegan",
+        "allergies": [],
+        "likes": [],
+        "dislikes": [],
+        "price_sensitivity": [],
+        "home": {
+          "event_type": "home",
+          "address": "6420 Sequence Dr #400, San Diego, CA 92121, United States",
+          "local_prefer_mode": "drive"
+        }
+      },
+      "itinerary": {},
+      "origin": "",
+      "destination": "",
+      "start_date": "",
+      "end_date": "",
+      "outbound_flight_selection": "",
+      "outbound_seat_number": "",
+      "return_flight_selection": "",
+      "return_seat_number": "",
+      "hotel_selection": "",
+      "room_selection": "",
+      "poi": {
+        "places": [
+          {
+            "place_name": "Jemaa el-Fna",
+            "address": "Jemaa el-Fna, Marrakech 40000, Morocco",
+            "lat": "31.6278",
+            "long": "-7.9892",
+            "review_ratings": "4.6",
+            "highlights": "Vibrant main square, a UNESCO World Heritage site, famous for storytellers, snake charmers, musicians, and food stalls.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg/1920px-Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg",
+            "map_url": "",
+            "place_id": ""
+          },
+          {
+            "place_name": "Majorelle Garden",
+            "address": "Rue Yves Saint Laurent, Marrakech 40090, Morocco",
+            "lat": "31.6422",
+            "long": "-7.9920",
+            "review_ratings": "4.5",
+            "highlights": "A stunning botanical garden and artist's landscape garden, famous for its vibrant blue buildings and exotic plant collection.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Jardin_Majorelle.jpg/1920px-Jardin_Majorelle.jpg",
+            "map_url": "",
+            "place_id": ""
+          },
+          {
+            "place_name": "Bahia Palace",
+            "address": "Rue Riad Zitoun el Jdid, Marrakech 40000, Morocco",
+            "lat": "31.6247",
+            "long": "-7.9850",
+            "review_ratings": "4.4",
+            "highlights": "An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, courtyards, and gardens.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Bahia_Palace_Marrakech.jpg/1920px-Bahia_Palace_Marrakech.jpg",
+            "map_url": "",
+            "place_id": ""
+          },
+          {
+            "place_name": "Koutoubia Mosque",
+            "address": "Rue el Koutoubia, Marrakech 40000, Morocco",
+            "lat": "31.6272",
+            "long": "-7.9944",
+            "review_ratings": "4.6",
+            "highlights": "The largest mosque in Marrakech, known for its magnificent minaret, a prime example of Almohad architecture.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Koutoubia_mosque_marrakech.jpg/1920px-Koutoubia_mosque_marrakech.jpg",
+            "map_url": "",
+            "place_id": ""
+          },
+          {
+            "place_name": "Ben Youssef Madrasa",
+            "address": "Kaat Benahid, Marrakech 40000, Morocco",
+            "lat": "31.6315",
+            "long": "-7.9877",
+            "review_ratings": "4.5",
+            "highlights": "A historic Islamic college with stunning architecture, including intricate tilework, carved cedar, and stucco decorations.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ben_Youssef_Madrasa_Courtyard.jpg/1920px-Ben_Youssef_Madrasa_Courtyard.jpg",
+            "map_url": "",
+            "place_id": ""
+          }
+        ]
+      },
+      "itinerary_datetime": "",
+      "itinerary_start_date": "",
+      "itinerary_end_date": ""
+    }
+  },
+  {
+    "agent": "inspiration_agent",
+    "timestamp": "2025-09-08_10-12-27-161",
+    "state": {
+      "_time": "2025-09-08 10:12:16.056797",
+      "_itin_initialized": true,
+      "user_profile": {
+        "passport_nationality": "US Citizen",
+        "seat_preference": "window",
+        "food_preference": "vegan",
+        "allergies": [],
+        "likes": [],
+        "dislikes": [],
+        "price_sensitivity": [],
+        "home": {
+          "event_type": "home",
+          "address": "6420 Sequence Dr #400, San Diego, CA 92121, United States",
+          "local_prefer_mode": "drive"
+        }
+      },
+      "itinerary": {},
+      "origin": "",
+      "destination": "",
+      "start_date": "",
+      "end_date": "",
+      "outbound_flight_selection": "",
+      "outbound_seat_number": "",
+      "return_flight_selection": "",
+      "return_seat_number": "",
+      "hotel_selection": "",
+      "room_selection": "",
+      "poi": {
+        "places": [
+          {
+            "place_name": "Jemaa el-Fna",
+            "address": "Jemaa el-Fna, Marrakech 40000, Morocco",
+            "lat": "31.6278",
+            "long": "-7.9892",
+            "review_ratings": "4.6",
+            "highlights": "Vibrant main square, a UNESCO World Heritage site, famous for storytellers, snake charmers, musicians, and food stalls.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg/1920px-Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg",
+            "map_url": null,
+            "place_id": null
+          },
+          {
+            "place_name": "Majorelle Garden",
+            "address": "Rue Yves Saint Laurent, Marrakech 40090, Morocco",
+            "lat": "31.6422",
+            "long": "-7.9920",
+            "review_ratings": "4.5",
+            "highlights": "A stunning botanical garden and artist's landscape garden, famous for its vibrant blue buildings and exotic plant collection.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Jardin_Majorelle.jpg/1920px-Jardin_Majorelle.jpg",
+            "map_url": null,
+            "place_id": null
+          },
+          {
+            "place_name": "Bahia Palace",
+            "address": "Rue Riad Zitoun el Jdid, Marrakech 40000, Morocco",
+            "lat": "31.6247",
+            "long": "-7.9850",
+            "review_ratings": "4.4",
+            "highlights": "An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, courtyards, and gardens.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Bahia_Palace_Marrakech.jpg/1920px-Bahia_Palace_Marrakech.jpg",
+            "map_url": null,
+            "place_id": null
+          },
+          {
+            "place_name": "Koutoubia Mosque",
+            "address": "Rue el Koutoubia, Marrakech 40000, Morocco",
+            "lat": "31.6272",
+            "long": "-7.9944",
+            "review_ratings": "4.6",
+            "highlights": "The largest mosque in Marrakech, known for its magnificent minaret, a prime example of Almohad architecture.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Koutoubia_mosque_marrakech.jpg/1920px-Koutoubia_mosque_marrakech.jpg",
+            "map_url": null,
+            "place_id": null
+          },
+          {
+            "place_name": "Ben Youssef Madrasa",
+            "address": "Kaat Benahid, Marrakech 40000, Morocco",
+            "lat": "31.6315",
+            "long": "-7.9877",
+            "review_ratings": "4.5",
+            "highlights": "A historic Islamic college with stunning architecture, including intricate tilework, carved cedar, and stucco decorations.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ben_Youssef_Madrasa_Courtyard.jpg/1920px-Ben_Youssef_Madrasa_Courtyard.jpg",
+            "map_url": null,
+            "place_id": null
+          }
+        ]
+      },
+      "itinerary_datetime": "",
+      "itinerary_start_date": "",
+      "itinerary_end_date": ""
+    }
+  },
+  {
+    "agent": "root_agent",
+    "timestamp": "2025-09-08_10-12-27-165",
+    "state": {
+      "_time": "2025-09-08 10:12:16.056797",
+      "_itin_initialized": true,
+      "user_profile": {
+        "passport_nationality": "US Citizen",
+        "seat_preference": "window",
+        "food_preference": "vegan",
+        "allergies": [],
+        "likes": [],
+        "dislikes": [],
+        "price_sensitivity": [],
+        "home": {
+          "event_type": "home",
+          "address": "6420 Sequence Dr #400, San Diego, CA 92121, United States",
+          "local_prefer_mode": "drive"
+        }
+      },
+      "itinerary": {},
+      "origin": "",
+      "destination": "",
+      "start_date": "",
+      "end_date": "",
+      "outbound_flight_selection": "",
+      "outbound_seat_number": "",
+      "return_flight_selection": "",
+      "return_seat_number": "",
+      "hotel_selection": "",
+      "room_selection": "",
+      "poi": {
+        "places": [
+          {
+            "place_name": "Jemaa el-Fna",
+            "address": "Jemaa el-Fna, Marrakech 40000, Morocco",
+            "lat": "31.6278",
+            "long": "-7.9892",
+            "review_ratings": "4.6",
+            "highlights": "Vibrant main square, a UNESCO World Heritage site, famous for storytellers, snake charmers, musicians, and food stalls.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg/1920px-Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg",
+            "map_url": null,
+            "place_id": null
+          },
+          {
+            "place_name": "Majorelle Garden",
+            "address": "Rue Yves Saint Laurent, Marrakech 40090, Morocco",
+            "lat": "31.6422",
+            "long": "-7.9920",
+            "review_ratings": "4.5",
+            "highlights": "A stunning botanical garden and artist's landscape garden, famous for its vibrant blue buildings and exotic plant collection.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Jardin_Majorelle.jpg/1920px-Jardin_Majorelle.jpg",
+            "map_url": null,
+            "place_id": null
+          },
+          {
+            "place_name": "Bahia Palace",
+            "address": "Rue Riad Zitoun el Jdid, Marrakech 40000, Morocco",
+            "lat": "31.6247",
+            "long": "-7.9850",
+            "review_ratings": "4.4",
+            "highlights": "An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, courtyards, and gardens.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Bahia_Palace_Marrakech.jpg/1920px-Bahia_Palace_Marrakech.jpg",
+            "map_url": null,
+            "place_id": null
+          },
+          {
+            "place_name": "Koutoubia Mosque",
+            "address": "Rue el Koutoubia, Marrakech 40000, Morocco",
+            "lat": "31.6272",
+            "long": "-7.9944",
+            "review_ratings": "4.6",
+            "highlights": "The largest mosque in Marrakech, known for its magnificent minaret, a prime example of Almohad architecture.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Koutoubia_mosque_marrakech.jpg/1920px-Koutoubia_mosque_marrakech.jpg",
+            "map_url": null,
+            "place_id": null
+          },
+          {
+            "place_name": "Ben Youssef Madrasa",
+            "address": "Kaat Benahid, Marrakech 40000, Morocco",
+            "lat": "31.6315",
+            "long": "-7.9877",
+            "review_ratings": "4.5",
+            "highlights": "A historic Islamic college with stunning architecture, including intricate tilework, carved cedar, and stucco decorations.",
+            "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ben_Youssef_Madrasa_Courtyard.jpg/1920px-Ben_Youssef_Madrasa_Courtyard.jpg",
+            "map_url": null,
+            "place_id": null
+          }
+        ]
+      },
+      "itinerary_datetime": "",
+      "itinerary_start_date": "",
+      "itinerary_end_date": ""
+    }
+  }
+]

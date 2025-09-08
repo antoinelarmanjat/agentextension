@@ -1,0 +1,1196 @@
+[
+  {
+    "agent": "poi_agent",
+    "timestamp": "2025-09-08_10-12-23-800",
+    "events": [
+      {
+        "id": "c1b2276d-0a24-4bdb-a2d6-dad3f5573cd2",
+        "timestamp": "1757319138.320147",
+        "author": "user",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": null,
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": null,
+              "function_response": null,
+              "text": "Marrakech, Morocco"
+            }
+          ],
+          "role": "user"
+        },
+        "invocation_id": "e-b875a43e-a26b-4ebb-a3e3-6724f1ab7255",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "2711cf57-c147-43e7-996a-694c67c9cef9",
+        "timestamp": "1757319138.320607",
+        "author": "poi_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": null,
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": null,
+              "function_response": null,
+              "text": "{\"places\": [{\"place_name\": \"Jemaa el-Fna\", \"address\": \"Jemaa el-Fna, Marrakech 40000, Morocco\", \"lat\": \"31.6278\", \"long\": \"-7.9892\", \"review_ratings\": \"4.6\", \"highlights\": \"Vibrant main square, a UNESCO World Heritage site, famous for storytellers, snake charmers, musicians, and food stalls.\", \"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg/1920px-Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg\", \"map_url\": \"\", \"place_id\": \"\"}, {\"place_name\": \"Majorelle Garden\", \"address\": \"Rue Yves Saint Laurent, Marrakech 40090, Morocco\", \"lat\": \"31.6422\", \"long\": \"-7.9920\", \"review_ratings\": \"4.5\", \"highlights\": \"A stunning botanical garden and artist's landscape garden, famous for its vibrant blue buildings and exotic plant collection.\", \"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Jardin_Majorelle.jpg/1920px-Jardin_Majorelle.jpg\", \"map_url\": \"\", \"place_id\": \"\"}, {\"place_name\": \"Bahia Palace\", \"address\": \"Rue Riad Zitoun el Jdid, Marrakech 40000, Morocco\", \"lat\": \"31.6247\", \"long\": \"-7.9850\", \"review_ratings\": \"4.4\", \"highlights\": \"An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, courtyards, and gardens.\", \"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Bahia_Palace_Marrakech.jpg/1920px-Bahia_Palace_Marrakech.jpg\", \"map_url\": \"\", \"place_id\": \"\"}, {\"place_name\": \"Koutoubia Mosque\", \"address\": \"Rue el Koutoubia, Marrakech 40000, Morocco\", \"lat\": \"31.6272\", \"long\": \"-7.9944\", \"review_ratings\": \"4.6\", \"highlights\": \"The largest mosque in Marrakech, known for its magnificent minaret, a prime example of Almohad architecture.\", \"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Koutoubia_mosque_marrakech.jpg/1920px-Koutoubia_mosque_marrakech.jpg\", \"map_url\": \"\", \"place_id\": \"\"}, {\"place_name\": \"Ben Youssef Madrasa\", \"address\": \"Kaat Benahid, Marrakech 40000, Morocco\", \"lat\": \"31.6315\", \"long\": \"-7.9877\", \"review_ratings\": \"4.5\", \"highlights\": \"A historic Islamic college with stunning architecture, including intricate tilework, carved cedar, and stucco decorations.\", \"image_url\": \"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ben_Youssef_Madrasa_Courtyard.jpg/1920px-Ben_Youssef_Madrasa_Courtyard.jpg\", \"map_url\": \"\", \"place_id\": \"\"}]}"
+            }
+          ],
+          "role": "model"
+        },
+        "invocation_id": "e-b875a43e-a26b-4ebb-a3e3-6724f1ab7255",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {
+            "poi": {
+              "places": [
+                {
+                  "place_name": "Jemaa el-Fna",
+                  "address": "Jemaa el-Fna, Marrakech 40000, Morocco",
+                  "lat": "31.6278",
+                  "long": "-7.9892",
+                  "review_ratings": "4.6",
+                  "highlights": "Vibrant main square, a UNESCO World Heritage site, famous for storytellers, snake charmers, musicians, and food stalls.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg/1920px-Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg",
+                  "map_url": "",
+                  "place_id": ""
+                },
+                {
+                  "place_name": "Majorelle Garden",
+                  "address": "Rue Yves Saint Laurent, Marrakech 40090, Morocco",
+                  "lat": "31.6422",
+                  "long": "-7.9920",
+                  "review_ratings": "4.5",
+                  "highlights": "A stunning botanical garden and artist's landscape garden, famous for its vibrant blue buildings and exotic plant collection.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Jardin_Majorelle.jpg/1920px-Jardin_Majorelle.jpg",
+                  "map_url": "",
+                  "place_id": ""
+                },
+                {
+                  "place_name": "Bahia Palace",
+                  "address": "Rue Riad Zitoun el Jdid, Marrakech 40000, Morocco",
+                  "lat": "31.6247",
+                  "long": "-7.9850",
+                  "review_ratings": "4.4",
+                  "highlights": "An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, courtyards, and gardens.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Bahia_Palace_Marrakech.jpg/1920px-Bahia_Palace_Marrakech.jpg",
+                  "map_url": "",
+                  "place_id": ""
+                },
+                {
+                  "place_name": "Koutoubia Mosque",
+                  "address": "Rue el Koutoubia, Marrakech 40000, Morocco",
+                  "lat": "31.6272",
+                  "long": "-7.9944",
+                  "review_ratings": "4.6",
+                  "highlights": "The largest mosque in Marrakech, known for its magnificent minaret, a prime example of Almohad architecture.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Koutoubia_mosque_marrakech.jpg/1920px-Koutoubia_mosque_marrakech.jpg",
+                  "map_url": "",
+                  "place_id": ""
+                },
+                {
+                  "place_name": "Ben Youssef Madrasa",
+                  "address": "Kaat Benahid, Marrakech 40000, Morocco",
+                  "lat": "31.6315",
+                  "long": "-7.9877",
+                  "review_ratings": "4.5",
+                  "highlights": "A historic Islamic college with stunning architecture, including intricate tilework, carved cedar, and stucco decorations.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ben_Youssef_Madrasa_Courtyard.jpg/1920px-Ben_Youssef_Madrasa_Courtyard.jpg",
+                  "map_url": "",
+                  "place_id": ""
+                }
+              ]
+            }
+          },
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      }
+    ]
+  },
+  {
+    "agent": "inspiration_agent",
+    "timestamp": "2025-09-08_10-12-27-161",
+    "events": [
+      {
+        "id": "e20fc621-5bdb-4678-9c87-fab3692d45b8",
+        "timestamp": "1757319136.056491",
+        "author": "user",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": null,
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": null,
+              "function_response": null,
+              "text": "I would like to go to Marrakech in Morocco"
+            }
+          ],
+          "role": "user"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "baad036f-2e00-4fd7-bcbe-b02cc69626d1",
+        "timestamp": "1757319136.056819",
+        "author": "root_agent",
+        "content": null,
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {
+            "_time": "2025-09-08 10:12:16.056797",
+            "_itin_initialized": true,
+            "user_profile": {
+              "passport_nationality": "US Citizen",
+              "seat_preference": "window",
+              "food_preference": "vegan",
+              "allergies": [],
+              "likes": [],
+              "dislikes": [],
+              "price_sensitivity": [],
+              "home": {
+                "event_type": "home",
+                "address": "6420 Sequence Dr #400, San Diego, CA 92121, United States",
+                "local_prefer_mode": "drive"
+              }
+            },
+            "itinerary": {},
+            "origin": "",
+            "destination": "",
+            "start_date": "",
+            "end_date": "",
+            "outbound_flight_selection": "",
+            "outbound_seat_number": "",
+            "return_flight_selection": "",
+            "return_seat_number": "",
+            "hotel_selection": "",
+            "room_selection": "",
+            "poi": "",
+            "itinerary_datetime": "",
+            "itinerary_start_date": "",
+            "itinerary_end_date": ""
+          },
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "5d3ccb09-1607-4a20-9359-646b607d0072",
+        "timestamp": "1757319136.057273",
+        "author": "root_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": {
+                "__bytes__": "CqkGAdHtim8gOJP+vi/qfXa0ABFDBfFXcCufv0TkQaQg1d0KlyKUz61PPhBexqTK9h6EhsKP6khZjzdvWVWWavVWvxSxyaogBMt3T3U9SZKeVZKSPF36jlnKS6N/ajow+bYk5ED3e7GqTa7Zc14elz6EnrpEJrYST0TMviRYFrs5+RWVCHBJfJulZ11A277wAWkw9HDh7pZ34RS4Wlr0ObUkquKKDlAxt2DysZukNL92pZpZtHr+EMSiWPA74ymLDlNnC0c+qtmMMg3p62diCC/qAsiFic/Jw5S4Qy7jeq91HgyNR5V6qFQu1Xv5T4R9qjh3Jx8Z5Z9m78wUwWY8h0I9YHep2dVoN7zStHVIwYZgpx+CYyLC2iifgJIbEO+RTg5fN0IVHlEitGoqO8rNJdkTX0SehqG4p8QOkTTODcqyV1f2IOWK98E7E13SGMRnqWOh0/aMHWGHRmagUH0dWPquQq8qAkZouXoDXnrWH0EPXEOK8M+I/G3kGfZP1gEIy/5Z157fOPmU56QTGzt7LiCabZ3RnUQt2mr64w/0LYh0qYGBIkdHANBEok1v08L5o2qZ03O1+NBKPezfGMwKmv7b8Gn8YIvjPeNZxulSvWDs6PGQHzIp30ZjSWN2l84P/Is1TALn9Z0U7Bzck9gXLVYL++5va9rBxI6ydDOTXokR5Clti7DFuD95cQXNa9UTWU08jIFUEnO3vCe2KN+DP/0nVINnmwg2aDdT6Jl8w4q8oIIQNBuG0SHe4i2hYV/9QI94lxD2M42SCfg1Lz4QSQexjCtY4DpZ47NrPj/1NR0GNVmLb8Ao0vQUsCxl/OwqaTD8Lun+hW2AJ0rJT6im6WJGDdUQOnUTSErTBLH8Viim5d7bx6SOVNXQQtIUKfI7i/bdwGR7Fge/jsDwQQa2Lz1+7j62ix/ZECpnOHyiLUYqCK3h9F/ZPqCbpbmyNZuxWR3sOded921b3eK11W66/r0XIV3CVOSo/dR15PHAwYPr+Z7gRkWhQZ25lTxpLnlxiwRqZ/HZ/qSVbrP4XJ/qy5w8itr66Pid3Gbopfchf0RRT+fFDn1cTiNyPGk="
+              },
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": {
+                "id": "adk-8a3bb92e-cb4f-4eb3-b9db-6a9e462f7dd4",
+                "args": {
+                  "agent_name": "inspiration_agent"
+                },
+                "name": "transfer_to_agent"
+              },
+              "function_response": null,
+              "text": null
+            }
+          ],
+          "role": "model"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": "set()",
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "d1ddf118-d82a-4152-b0b0-7cea45ccff5b",
+        "timestamp": "1757319137.381465",
+        "author": "root_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": null,
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": null,
+              "function_response": {
+                "will_continue": null,
+                "scheduling": null,
+                "id": "adk-8a3bb92e-cb4f-4eb3-b9db-6a9e462f7dd4",
+                "name": "transfer_to_agent",
+                "response": {
+                  "result": null
+                }
+              },
+              "text": null
+            }
+          ],
+          "role": "user"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": "inspiration_agent",
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "13901511-7367-43e0-89ff-42b6ca434171",
+        "timestamp": "1757319137.384291",
+        "author": "inspiration_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": {
+                "__bytes__": "CooDAdHtim+VLiqafaB8YTNzqDa1b8F11LNCRPwoWgAeQ8K/OUBjvva8LDVOIqslTRw1guBsGWx43XOTxipyVzst/Rl67ygsT/wWotOzE+guKo9w70npkTd+ezAlQFL7TFHhbdqDCBfqPHJS4+QqYZW7/8nJ9EI3DgftqNEZNFEW684NdCv/w8OPRMDtjgaiJjcHlP/VY5tgNbqM2hpmDKofAT92up00xg9jKZnVRBWFf4jO4MYMZ98/JOOwjNBq7qVYBl4xSV1uWAoHD2/V5OH0BX/CeRQPrNPrLvU03d3TL3YYLiabXNWOptVgeuaPh0SvgFiSWXMV34qhzldDlhq94vkBjPbUd3/jqngP1I6xnj5IlMoHyFDDmlud4j2yRDNp2crKMvUuyUMgxOTaRzw6pThwTv9ABPuX5JWFY3qWz98SZOTpKdN61Wp426krbIwK2vVbKYboI0oO92mTJFlbCvhrKOCMIn1IZ2EwKZz1GzaCCjwjrBlNl17zejLkkpQ1g4u9LTeQsfK1Qg=="
+              },
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": {
+                "id": "adk-3d155066-d6a6-4bf5-a763-f3db119e57fb",
+                "args": {
+                  "request": "Marrakech, Morocco"
+                },
+                "name": "poi_agent"
+              },
+              "function_response": null,
+              "text": null
+            }
+          ],
+          "role": "model"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": "set()",
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "6f79e6f8-c4aa-47d2-9c77-5bad2e0f6c3e",
+        "timestamp": "1757319143.803217",
+        "author": "inspiration_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": null,
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": null,
+              "function_response": {
+                "will_continue": null,
+                "scheduling": null,
+                "id": "adk-3d155066-d6a6-4bf5-a763-f3db119e57fb",
+                "name": "poi_agent",
+                "response": {
+                  "places": [
+                    {
+                      "place_name": "Jemaa el-Fna",
+                      "address": "Jemaa el-Fna, Marrakech 40000, Morocco",
+                      "lat": "31.6278",
+                      "long": "-7.9892",
+                      "review_ratings": "4.6",
+                      "highlights": "Vibrant main square, a UNESCO World Heritage site, famous for storytellers, snake charmers, musicians, and food stalls.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg/1920px-Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg",
+                      "map_url": "",
+                      "place_id": ""
+                    },
+                    {
+                      "place_name": "Majorelle Garden",
+                      "address": "Rue Yves Saint Laurent, Marrakech 40090, Morocco",
+                      "lat": "31.6422",
+                      "long": "-7.9920",
+                      "review_ratings": "4.5",
+                      "highlights": "A stunning botanical garden and artist's landscape garden, famous for its vibrant blue buildings and exotic plant collection.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Jardin_Majorelle.jpg/1920px-Jardin_Majorelle.jpg",
+                      "map_url": "",
+                      "place_id": ""
+                    },
+                    {
+                      "place_name": "Bahia Palace",
+                      "address": "Rue Riad Zitoun el Jdid, Marrakech 40000, Morocco",
+                      "lat": "31.6247",
+                      "long": "-7.9850",
+                      "review_ratings": "4.4",
+                      "highlights": "An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, courtyards, and gardens.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Bahia_Palace_Marrakech.jpg/1920px-Bahia_Palace_Marrakech.jpg",
+                      "map_url": "",
+                      "place_id": ""
+                    },
+                    {
+                      "place_name": "Koutoubia Mosque",
+                      "address": "Rue el Koutoubia, Marrakech 40000, Morocco",
+                      "lat": "31.6272",
+                      "long": "-7.9944",
+                      "review_ratings": "4.6",
+                      "highlights": "The largest mosque in Marrakech, known for its magnificent minaret, a prime example of Almohad architecture.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Koutoubia_mosque_marrakech.jpg/1920px-Koutoubia_mosque_marrakech.jpg",
+                      "map_url": "",
+                      "place_id": ""
+                    },
+                    {
+                      "place_name": "Ben Youssef Madrasa",
+                      "address": "Kaat Benahid, Marrakech 40000, Morocco",
+                      "lat": "31.6315",
+                      "long": "-7.9877",
+                      "review_ratings": "4.5",
+                      "highlights": "A historic Islamic college with stunning architecture, including intricate tilework, carved cedar, and stucco decorations.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ben_Youssef_Madrasa_Courtyard.jpg/1920px-Ben_Youssef_Madrasa_Courtyard.jpg",
+                      "map_url": "",
+                      "place_id": ""
+                    }
+                  ]
+                }
+              },
+              "text": null
+            }
+          ],
+          "role": "user"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {
+            "poi": {
+              "places": [
+                {
+                  "place_name": "Jemaa el-Fna",
+                  "address": "Jemaa el-Fna, Marrakech 40000, Morocco",
+                  "lat": "31.6278",
+                  "long": "-7.9892",
+                  "review_ratings": "4.6",
+                  "highlights": "Vibrant main square, a UNESCO World Heritage site, famous for storytellers, snake charmers, musicians, and food stalls.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg/1920px-Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg",
+                  "map_url": null,
+                  "place_id": null
+                },
+                {
+                  "place_name": "Majorelle Garden",
+                  "address": "Rue Yves Saint Laurent, Marrakech 40090, Morocco",
+                  "lat": "31.6422",
+                  "long": "-7.9920",
+                  "review_ratings": "4.5",
+                  "highlights": "A stunning botanical garden and artist's landscape garden, famous for its vibrant blue buildings and exotic plant collection.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Jardin_Majorelle.jpg/1920px-Jardin_Majorelle.jpg",
+                  "map_url": null,
+                  "place_id": null
+                },
+                {
+                  "place_name": "Bahia Palace",
+                  "address": "Rue Riad Zitoun el Jdid, Marrakech 40000, Morocco",
+                  "lat": "31.6247",
+                  "long": "-7.9850",
+                  "review_ratings": "4.4",
+                  "highlights": "An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, courtyards, and gardens.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Bahia_Palace_Marrakech.jpg/1920px-Bahia_Palace_Marrakech.jpg",
+                  "map_url": null,
+                  "place_id": null
+                },
+                {
+                  "place_name": "Koutoubia Mosque",
+                  "address": "Rue el Koutoubia, Marrakech 40000, Morocco",
+                  "lat": "31.6272",
+                  "long": "-7.9944",
+                  "review_ratings": "4.6",
+                  "highlights": "The largest mosque in Marrakech, known for its magnificent minaret, a prime example of Almohad architecture.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Koutoubia_mosque_marrakech.jpg/1920px-Koutoubia_mosque_marrakech.jpg",
+                  "map_url": null,
+                  "place_id": null
+                },
+                {
+                  "place_name": "Ben Youssef Madrasa",
+                  "address": "Kaat Benahid, Marrakech 40000, Morocco",
+                  "lat": "31.6315",
+                  "long": "-7.9877",
+                  "review_ratings": "4.5",
+                  "highlights": "A historic Islamic college with stunning architecture, including intricate tilework, carved cedar, and stucco decorations.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ben_Youssef_Madrasa_Courtyard.jpg/1920px-Ben_Youssef_Madrasa_Courtyard.jpg",
+                  "map_url": null,
+                  "place_id": null
+                }
+              ]
+            }
+          },
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "c65fa9fa-4445-40a8-b8dd-b3abf11364b2",
+        "timestamp": "1757319143.807197",
+        "author": "inspiration_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": {
+                "__bytes__": "CvcBAdHtim9XdFrWSC4ZKJdJ/xshvhZZvtfeclgMKJS/4O4Diufl2ndMBTDayhgRBrFQmEt/hRvo02xrS1D7Bbia+rKBDjEI6dD7Ul9jx+Y1UNkW0b34xwkD9NQv2afNnWwR4Qq7irHzXFtD5rYmiLhwRHd6zol5OocnKta/OyLzquoqE/rt8Za+sLLDXpVH5PhdFxDcLczfwoHRuK0nK2EYPyu1s2XIuzGSH0lJh2e44yxMeJ5FVTfJM9YWN8sOrUkfu094aZ7Lyc7F8OLfGrZOfX+qI/FyCBCxDwUScEjuzLyvIdQ9ups6Ia1ifBaxMSto/wc8fQp9Cw=="
+              },
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": {
+                "id": "adk-860ae8fe-4bb5-4ebb-ada8-1ff9ba6e1416",
+                "args": {
+                  "key": "poi"
+                },
+                "name": "map_tool"
+              },
+              "function_response": null,
+              "text": null
+            }
+          ],
+          "role": "model"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": "set()",
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "23f86b04-50e5-449a-9506-b278225897cc",
+        "timestamp": "1757319145.270816",
+        "author": "inspiration_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": null,
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": null,
+              "function_response": {
+                "will_continue": null,
+                "scheduling": null,
+                "id": "adk-860ae8fe-4bb5-4ebb-ada8-1ff9ba6e1416",
+                "name": "map_tool",
+                "response": {
+                  "places": [
+                    {
+                      "place_name": "Jemaa el-Fna",
+                      "address": "Jemaa el-Fna, Marrakech 40000, Morocco",
+                      "lat": "31.6278",
+                      "long": "-7.9892",
+                      "review_ratings": "4.6",
+                      "highlights": "Vibrant main square, a UNESCO World Heritage site, famous for storytellers, snake charmers, musicians, and food stalls.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg/1920px-Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg",
+                      "map_url": null,
+                      "place_id": null
+                    },
+                    {
+                      "place_name": "Majorelle Garden",
+                      "address": "Rue Yves Saint Laurent, Marrakech 40090, Morocco",
+                      "lat": "31.6422",
+                      "long": "-7.9920",
+                      "review_ratings": "4.5",
+                      "highlights": "A stunning botanical garden and artist's landscape garden, famous for its vibrant blue buildings and exotic plant collection.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Jardin_Majorelle.jpg/1920px-Jardin_Majorelle.jpg",
+                      "map_url": null,
+                      "place_id": null
+                    },
+                    {
+                      "place_name": "Bahia Palace",
+                      "address": "Rue Riad Zitoun el Jdid, Marrakech 40000, Morocco",
+                      "lat": "31.6247",
+                      "long": "-7.9850",
+                      "review_ratings": "4.4",
+                      "highlights": "An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, courtyards, and gardens.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Bahia_Palace_Marrakech.jpg/1920px-Bahia_Palace_Marrakech.jpg",
+                      "map_url": null,
+                      "place_id": null
+                    },
+                    {
+                      "place_name": "Koutoubia Mosque",
+                      "address": "Rue el Koutoubia, Marrakech 40000, Morocco",
+                      "lat": "31.6272",
+                      "long": "-7.9944",
+                      "review_ratings": "4.6",
+                      "highlights": "The largest mosque in Marrakech, known for its magnificent minaret, a prime example of Almohad architecture.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Koutoubia_mosque_marrakech.jpg/1920px-Koutoubia_mosque_marrakech.jpg",
+                      "map_url": null,
+                      "place_id": null
+                    },
+                    {
+                      "place_name": "Ben Youssef Madrasa",
+                      "address": "Kaat Benahid, Marrakech 40000, Morocco",
+                      "lat": "31.6315",
+                      "long": "-7.9877",
+                      "review_ratings": "4.5",
+                      "highlights": "A historic Islamic college with stunning architecture, including intricate tilework, carved cedar, and stucco decorations.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ben_Youssef_Madrasa_Courtyard.jpg/1920px-Ben_Youssef_Madrasa_Courtyard.jpg",
+                      "map_url": null,
+                      "place_id": null
+                    }
+                  ]
+                }
+              },
+              "text": null
+            }
+          ],
+          "role": "user"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "c64f2b9a-b507-4c55-8e09-5bdaa1656b3e",
+        "timestamp": "1757319145.277684",
+        "author": "inspiration_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": {
+                "__bytes__": "Cp8DAdHtim9IhQ1xBMW7mPNEisCvutc8H9xT7jiYndSMEtnpwyVRu24YsSq0+VsFx8R0K+cdihkjuQkGDFNUv1wQb8ryC1TgN4RUKFotnEhk4NNSPUqzi8tbXAeqoqPAANky9jrp6cfjl8xHv9zhHHEralLQbLcqWCvC+ddSO57vq1FOeHMzh9xIaFp89pNRQtce40pRR7Se+miFnmj6IKjwfoE3uxOOVfZ6m32699lI/PYbjmQBe5MBmGufPn8Q0c0nkf34rf3o8UqBDNEyxiiRQ2Cdj76uFA6+IZHklfiDEJ2OZnq5LndRzXj6MIVZMyu9VnkiVofLExC2xUh9Sv8vFXHQCXCMVx8NloVgXSvbCb0Pme3BIUr+BwOskD2ZMnjnCJbxXAdjCHLBK3U8MwRFpzWfqebaeY+dyGWjzDUEijj8kXmMsaet8yvVDJkCwoadvbA8TFTCIzuYmNGXQYQfFAl3ORhzrYVQiN34LL5z1BD08wNGEFdrAFrtd0qJS/xJPA19wGzWJ6lLSgipHatpaMdl7yUgs2LXJME5jgll7g=="
+              },
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": null,
+              "function_response": null,
+              "text": "Marrakech, Morocco, sounds like a wonderful choice! Here are some fantastic places to explore and activities to enjoy in Marrakech:\n\n*   **Jemaa el-Fna**: This vibrant main square is a UNESCO World Heritage site, famous for its storytellers, snake charmers, musicians, and lively food stalls. It's truly the heart of Marrakech!\n*   **Majorelle Garden**: A stunning botanical and artist's landscape garden, known for its vibrant blue buildings and exotic plant collection. It's a serene oasis in the city.\n*   **Bahia Palace**: An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, beautiful courtyards, and lush gardens.\n*   **Koutoubia Mosque**: The largest mosque in Marrakech, renowned for its magnificent minaret, a prime example of Almohad architecture.\n*   **Ben Youssef Madrasa**: A historic Islamic college featuring stunning architecture, including intricate tilework, carved cedar, and stucco decorations.\n\nDo any of these pique your interest, or would you like to know more about a specific place?"
+            }
+          ],
+          "role": "model"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      }
+    ]
+  },
+  {
+    "agent": "root_agent",
+    "timestamp": "2025-09-08_10-12-27-165",
+    "events": [
+      {
+        "id": "e20fc621-5bdb-4678-9c87-fab3692d45b8",
+        "timestamp": "1757319136.056491",
+        "author": "user",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": null,
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": null,
+              "function_response": null,
+              "text": "I would like to go to Marrakech in Morocco"
+            }
+          ],
+          "role": "user"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "baad036f-2e00-4fd7-bcbe-b02cc69626d1",
+        "timestamp": "1757319136.056819",
+        "author": "root_agent",
+        "content": null,
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {
+            "_time": "2025-09-08 10:12:16.056797",
+            "_itin_initialized": true,
+            "user_profile": {
+              "passport_nationality": "US Citizen",
+              "seat_preference": "window",
+              "food_preference": "vegan",
+              "allergies": [],
+              "likes": [],
+              "dislikes": [],
+              "price_sensitivity": [],
+              "home": {
+                "event_type": "home",
+                "address": "6420 Sequence Dr #400, San Diego, CA 92121, United States",
+                "local_prefer_mode": "drive"
+              }
+            },
+            "itinerary": {},
+            "origin": "",
+            "destination": "",
+            "start_date": "",
+            "end_date": "",
+            "outbound_flight_selection": "",
+            "outbound_seat_number": "",
+            "return_flight_selection": "",
+            "return_seat_number": "",
+            "hotel_selection": "",
+            "room_selection": "",
+            "poi": "",
+            "itinerary_datetime": "",
+            "itinerary_start_date": "",
+            "itinerary_end_date": ""
+          },
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "5d3ccb09-1607-4a20-9359-646b607d0072",
+        "timestamp": "1757319136.057273",
+        "author": "root_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": {
+                "__bytes__": "CqkGAdHtim8gOJP+vi/qfXa0ABFDBfFXcCufv0TkQaQg1d0KlyKUz61PPhBexqTK9h6EhsKP6khZjzdvWVWWavVWvxSxyaogBMt3T3U9SZKeVZKSPF36jlnKS6N/ajow+bYk5ED3e7GqTa7Zc14elz6EnrpEJrYST0TMviRYFrs5+RWVCHBJfJulZ11A277wAWkw9HDh7pZ34RS4Wlr0ObUkquKKDlAxt2DysZukNL92pZpZtHr+EMSiWPA74ymLDlNnC0c+qtmMMg3p62diCC/qAsiFic/Jw5S4Qy7jeq91HgyNR5V6qFQu1Xv5T4R9qjh3Jx8Z5Z9m78wUwWY8h0I9YHep2dVoN7zStHVIwYZgpx+CYyLC2iifgJIbEO+RTg5fN0IVHlEitGoqO8rNJdkTX0SehqG4p8QOkTTODcqyV1f2IOWK98E7E13SGMRnqWOh0/aMHWGHRmagUH0dWPquQq8qAkZouXoDXnrWH0EPXEOK8M+I/G3kGfZP1gEIy/5Z157fOPmU56QTGzt7LiCabZ3RnUQt2mr64w/0LYh0qYGBIkdHANBEok1v08L5o2qZ03O1+NBKPezfGMwKmv7b8Gn8YIvjPeNZxulSvWDs6PGQHzIp30ZjSWN2l84P/Is1TALn9Z0U7Bzck9gXLVYL++5va9rBxI6ydDOTXokR5Clti7DFuD95cQXNa9UTWU08jIFUEnO3vCe2KN+DP/0nVINnmwg2aDdT6Jl8w4q8oIIQNBuG0SHe4i2hYV/9QI94lxD2M42SCfg1Lz4QSQexjCtY4DpZ47NrPj/1NR0GNVmLb8Ao0vQUsCxl/OwqaTD8Lun+hW2AJ0rJT6im6WJGDdUQOnUTSErTBLH8Viim5d7bx6SOVNXQQtIUKfI7i/bdwGR7Fge/jsDwQQa2Lz1+7j62ix/ZECpnOHyiLUYqCK3h9F/ZPqCbpbmyNZuxWR3sOded921b3eK11W66/r0XIV3CVOSo/dR15PHAwYPr+Z7gRkWhQZ25lTxpLnlxiwRqZ/HZ/qSVbrP4XJ/qy5w8itr66Pid3Gbopfchf0RRT+fFDn1cTiNyPGk="
+              },
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": {
+                "id": "adk-8a3bb92e-cb4f-4eb3-b9db-6a9e462f7dd4",
+                "args": {
+                  "agent_name": "inspiration_agent"
+                },
+                "name": "transfer_to_agent"
+              },
+              "function_response": null,
+              "text": null
+            }
+          ],
+          "role": "model"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": "set()",
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "d1ddf118-d82a-4152-b0b0-7cea45ccff5b",
+        "timestamp": "1757319137.381465",
+        "author": "root_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": null,
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": null,
+              "function_response": {
+                "will_continue": null,
+                "scheduling": null,
+                "id": "adk-8a3bb92e-cb4f-4eb3-b9db-6a9e462f7dd4",
+                "name": "transfer_to_agent",
+                "response": {
+                  "result": null
+                }
+              },
+              "text": null
+            }
+          ],
+          "role": "user"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": "inspiration_agent",
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "13901511-7367-43e0-89ff-42b6ca434171",
+        "timestamp": "1757319137.384291",
+        "author": "inspiration_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": {
+                "__bytes__": "CooDAdHtim+VLiqafaB8YTNzqDa1b8F11LNCRPwoWgAeQ8K/OUBjvva8LDVOIqslTRw1guBsGWx43XOTxipyVzst/Rl67ygsT/wWotOzE+guKo9w70npkTd+ezAlQFL7TFHhbdqDCBfqPHJS4+QqYZW7/8nJ9EI3DgftqNEZNFEW684NdCv/w8OPRMDtjgaiJjcHlP/VY5tgNbqM2hpmDKofAT92up00xg9jKZnVRBWFf4jO4MYMZ98/JOOwjNBq7qVYBl4xSV1uWAoHD2/V5OH0BX/CeRQPrNPrLvU03d3TL3YYLiabXNWOptVgeuaPh0SvgFiSWXMV34qhzldDlhq94vkBjPbUd3/jqngP1I6xnj5IlMoHyFDDmlud4j2yRDNp2crKMvUuyUMgxOTaRzw6pThwTv9ABPuX5JWFY3qWz98SZOTpKdN61Wp426krbIwK2vVbKYboI0oO92mTJFlbCvhrKOCMIn1IZ2EwKZz1GzaCCjwjrBlNl17zejLkkpQ1g4u9LTeQsfK1Qg=="
+              },
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": {
+                "id": "adk-3d155066-d6a6-4bf5-a763-f3db119e57fb",
+                "args": {
+                  "request": "Marrakech, Morocco"
+                },
+                "name": "poi_agent"
+              },
+              "function_response": null,
+              "text": null
+            }
+          ],
+          "role": "model"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": "set()",
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "6f79e6f8-c4aa-47d2-9c77-5bad2e0f6c3e",
+        "timestamp": "1757319143.803217",
+        "author": "inspiration_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": null,
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": null,
+              "function_response": {
+                "will_continue": null,
+                "scheduling": null,
+                "id": "adk-3d155066-d6a6-4bf5-a763-f3db119e57fb",
+                "name": "poi_agent",
+                "response": {
+                  "places": [
+                    {
+                      "place_name": "Jemaa el-Fna",
+                      "address": "Jemaa el-Fna, Marrakech 40000, Morocco",
+                      "lat": "31.6278",
+                      "long": "-7.9892",
+                      "review_ratings": "4.6",
+                      "highlights": "Vibrant main square, a UNESCO World Heritage site, famous for storytellers, snake charmers, musicians, and food stalls.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg/1920px-Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg",
+                      "map_url": "",
+                      "place_id": ""
+                    },
+                    {
+                      "place_name": "Majorelle Garden",
+                      "address": "Rue Yves Saint Laurent, Marrakech 40090, Morocco",
+                      "lat": "31.6422",
+                      "long": "-7.9920",
+                      "review_ratings": "4.5",
+                      "highlights": "A stunning botanical garden and artist's landscape garden, famous for its vibrant blue buildings and exotic plant collection.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Jardin_Majorelle.jpg/1920px-Jardin_Majorelle.jpg",
+                      "map_url": "",
+                      "place_id": ""
+                    },
+                    {
+                      "place_name": "Bahia Palace",
+                      "address": "Rue Riad Zitoun el Jdid, Marrakech 40000, Morocco",
+                      "lat": "31.6247",
+                      "long": "-7.9850",
+                      "review_ratings": "4.4",
+                      "highlights": "An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, courtyards, and gardens.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Bahia_Palace_Marrakech.jpg/1920px-Bahia_Palace_Marrakech.jpg",
+                      "map_url": "",
+                      "place_id": ""
+                    },
+                    {
+                      "place_name": "Koutoubia Mosque",
+                      "address": "Rue el Koutoubia, Marrakech 40000, Morocco",
+                      "lat": "31.6272",
+                      "long": "-7.9944",
+                      "review_ratings": "4.6",
+                      "highlights": "The largest mosque in Marrakech, known for its magnificent minaret, a prime example of Almohad architecture.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Koutoubia_mosque_marrakech.jpg/1920px-Koutoubia_mosque_marrakech.jpg",
+                      "map_url": "",
+                      "place_id": ""
+                    },
+                    {
+                      "place_name": "Ben Youssef Madrasa",
+                      "address": "Kaat Benahid, Marrakech 40000, Morocco",
+                      "lat": "31.6315",
+                      "long": "-7.9877",
+                      "review_ratings": "4.5",
+                      "highlights": "A historic Islamic college with stunning architecture, including intricate tilework, carved cedar, and stucco decorations.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ben_Youssef_Madrasa_Courtyard.jpg/1920px-Ben_Youssef_Madrasa_Courtyard.jpg",
+                      "map_url": "",
+                      "place_id": ""
+                    }
+                  ]
+                }
+              },
+              "text": null
+            }
+          ],
+          "role": "user"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {
+            "poi": {
+              "places": [
+                {
+                  "place_name": "Jemaa el-Fna",
+                  "address": "Jemaa el-Fna, Marrakech 40000, Morocco",
+                  "lat": "31.6278",
+                  "long": "-7.9892",
+                  "review_ratings": "4.6",
+                  "highlights": "Vibrant main square, a UNESCO World Heritage site, famous for storytellers, snake charmers, musicians, and food stalls.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg/1920px-Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg",
+                  "map_url": null,
+                  "place_id": null
+                },
+                {
+                  "place_name": "Majorelle Garden",
+                  "address": "Rue Yves Saint Laurent, Marrakech 40090, Morocco",
+                  "lat": "31.6422",
+                  "long": "-7.9920",
+                  "review_ratings": "4.5",
+                  "highlights": "A stunning botanical garden and artist's landscape garden, famous for its vibrant blue buildings and exotic plant collection.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Jardin_Majorelle.jpg/1920px-Jardin_Majorelle.jpg",
+                  "map_url": null,
+                  "place_id": null
+                },
+                {
+                  "place_name": "Bahia Palace",
+                  "address": "Rue Riad Zitoun el Jdid, Marrakech 40000, Morocco",
+                  "lat": "31.6247",
+                  "long": "-7.9850",
+                  "review_ratings": "4.4",
+                  "highlights": "An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, courtyards, and gardens.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Bahia_Palace_Marrakech.jpg/1920px-Bahia_Palace_Marrakech.jpg",
+                  "map_url": null,
+                  "place_id": null
+                },
+                {
+                  "place_name": "Koutoubia Mosque",
+                  "address": "Rue el Koutoubia, Marrakech 40000, Morocco",
+                  "lat": "31.6272",
+                  "long": "-7.9944",
+                  "review_ratings": "4.6",
+                  "highlights": "The largest mosque in Marrakech, known for its magnificent minaret, a prime example of Almohad architecture.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Koutoubia_mosque_marrakech.jpg/1920px-Koutoubia_mosque_marrakech.jpg",
+                  "map_url": null,
+                  "place_id": null
+                },
+                {
+                  "place_name": "Ben Youssef Madrasa",
+                  "address": "Kaat Benahid, Marrakech 40000, Morocco",
+                  "lat": "31.6315",
+                  "long": "-7.9877",
+                  "review_ratings": "4.5",
+                  "highlights": "A historic Islamic college with stunning architecture, including intricate tilework, carved cedar, and stucco decorations.",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ben_Youssef_Madrasa_Courtyard.jpg/1920px-Ben_Youssef_Madrasa_Courtyard.jpg",
+                  "map_url": null,
+                  "place_id": null
+                }
+              ]
+            }
+          },
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "c65fa9fa-4445-40a8-b8dd-b3abf11364b2",
+        "timestamp": "1757319143.807197",
+        "author": "inspiration_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": {
+                "__bytes__": "CvcBAdHtim9XdFrWSC4ZKJdJ/xshvhZZvtfeclgMKJS/4O4Diufl2ndMBTDayhgRBrFQmEt/hRvo02xrS1D7Bbia+rKBDjEI6dD7Ul9jx+Y1UNkW0b34xwkD9NQv2afNnWwR4Qq7irHzXFtD5rYmiLhwRHd6zol5OocnKta/OyLzquoqE/rt8Za+sLLDXpVH5PhdFxDcLczfwoHRuK0nK2EYPyu1s2XIuzGSH0lJh2e44yxMeJ5FVTfJM9YWN8sOrUkfu094aZ7Lyc7F8OLfGrZOfX+qI/FyCBCxDwUScEjuzLyvIdQ9ups6Ia1ifBaxMSto/wc8fQp9Cw=="
+              },
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": {
+                "id": "adk-860ae8fe-4bb5-4ebb-ada8-1ff9ba6e1416",
+                "args": {
+                  "key": "poi"
+                },
+                "name": "map_tool"
+              },
+              "function_response": null,
+              "text": null
+            }
+          ],
+          "role": "model"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": "set()",
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "23f86b04-50e5-449a-9506-b278225897cc",
+        "timestamp": "1757319145.270816",
+        "author": "inspiration_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": null,
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": null,
+              "function_response": {
+                "will_continue": null,
+                "scheduling": null,
+                "id": "adk-860ae8fe-4bb5-4ebb-ada8-1ff9ba6e1416",
+                "name": "map_tool",
+                "response": {
+                  "places": [
+                    {
+                      "place_name": "Jemaa el-Fna",
+                      "address": "Jemaa el-Fna, Marrakech 40000, Morocco",
+                      "lat": "31.6278",
+                      "long": "-7.9892",
+                      "review_ratings": "4.6",
+                      "highlights": "Vibrant main square, a UNESCO World Heritage site, famous for storytellers, snake charmers, musicians, and food stalls.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg/1920px-Djemaa_el-Fna_-_Marrakech_-_Morocco.jpg",
+                      "map_url": null,
+                      "place_id": null
+                    },
+                    {
+                      "place_name": "Majorelle Garden",
+                      "address": "Rue Yves Saint Laurent, Marrakech 40090, Morocco",
+                      "lat": "31.6422",
+                      "long": "-7.9920",
+                      "review_ratings": "4.5",
+                      "highlights": "A stunning botanical garden and artist's landscape garden, famous for its vibrant blue buildings and exotic plant collection.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Jardin_Majorelle.jpg/1920px-Jardin_Majorelle.jpg",
+                      "map_url": null,
+                      "place_id": null
+                    },
+                    {
+                      "place_name": "Bahia Palace",
+                      "address": "Rue Riad Zitoun el Jdid, Marrakech 40000, Morocco",
+                      "lat": "31.6247",
+                      "long": "-7.9850",
+                      "review_ratings": "4.4",
+                      "highlights": "An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, courtyards, and gardens.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Bahia_Palace_Marrakech.jpg/1920px-Bahia_Palace_Marrakech.jpg",
+                      "map_url": null,
+                      "place_id": null
+                    },
+                    {
+                      "place_name": "Koutoubia Mosque",
+                      "address": "Rue el Koutoubia, Marrakech 40000, Morocco",
+                      "lat": "31.6272",
+                      "long": "-7.9944",
+                      "review_ratings": "4.6",
+                      "highlights": "The largest mosque in Marrakech, known for its magnificent minaret, a prime example of Almohad architecture.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Koutoubia_mosque_marrakech.jpg/1920px-Koutoubia_mosque_marrakech.jpg",
+                      "map_url": null,
+                      "place_id": null
+                    },
+                    {
+                      "place_name": "Ben Youssef Madrasa",
+                      "address": "Kaat Benahid, Marrakech 40000, Morocco",
+                      "lat": "31.6315",
+                      "long": "-7.9877",
+                      "review_ratings": "4.5",
+                      "highlights": "A historic Islamic college with stunning architecture, including intricate tilework, carved cedar, and stucco decorations.",
+                      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ben_Youssef_Madrasa_Courtyard.jpg/1920px-Ben_Youssef_Madrasa_Courtyard.jpg",
+                      "map_url": null,
+                      "place_id": null
+                    }
+                  ]
+                }
+              },
+              "text": null
+            }
+          ],
+          "role": "user"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      },
+      {
+        "id": "c64f2b9a-b507-4c55-8e09-5bdaa1656b3e",
+        "timestamp": "1757319145.277684",
+        "author": "inspiration_agent",
+        "content": {
+          "parts": [
+            {
+              "video_metadata": null,
+              "thought": null,
+              "inline_data": null,
+              "file_data": null,
+              "thought_signature": {
+                "__bytes__": "Cp8DAdHtim9IhQ1xBMW7mPNEisCvutc8H9xT7jiYndSMEtnpwyVRu24YsSq0+VsFx8R0K+cdihkjuQkGDFNUv1wQb8ryC1TgN4RUKFotnEhk4NNSPUqzi8tbXAeqoqPAANky9jrp6cfjl8xHv9zhHHEralLQbLcqWCvC+ddSO57vq1FOeHMzh9xIaFp89pNRQtce40pRR7Se+miFnmj6IKjwfoE3uxOOVfZ6m32699lI/PYbjmQBe5MBmGufPn8Q0c0nkf34rf3o8UqBDNEyxiiRQ2Cdj76uFA6+IZHklfiDEJ2OZnq5LndRzXj6MIVZMyu9VnkiVofLExC2xUh9Sv8vFXHQCXCMVx8NloVgXSvbCb0Pme3BIUr+BwOskD2ZMnjnCJbxXAdjCHLBK3U8MwRFpzWfqebaeY+dyGWjzDUEijj8kXmMsaet8yvVDJkCwoadvbA8TFTCIzuYmNGXQYQfFAl3ORhzrYVQiN34LL5z1BD08wNGEFdrAFrtd0qJS/xJPA19wGzWJ6lLSgipHatpaMdl7yUgs2LXJME5jgll7g=="
+              },
+              "code_execution_result": null,
+              "executable_code": null,
+              "function_call": null,
+              "function_response": null,
+              "text": "Marrakech, Morocco, sounds like a wonderful choice! Here are some fantastic places to explore and activities to enjoy in Marrakech:\n\n*   **Jemaa el-Fna**: This vibrant main square is a UNESCO World Heritage site, famous for its storytellers, snake charmers, musicians, and lively food stalls. It's truly the heart of Marrakech!\n*   **Majorelle Garden**: A stunning botanical and artist's landscape garden, known for its vibrant blue buildings and exotic plant collection. It's a serene oasis in the city.\n*   **Bahia Palace**: An opulent 19th-century palace showcasing intricate Islamic and Moroccan architecture, beautiful courtyards, and lush gardens.\n*   **Koutoubia Mosque**: The largest mosque in Marrakech, renowned for its magnificent minaret, a prime example of Almohad architecture.\n*   **Ben Youssef Madrasa**: A historic Islamic college featuring stunning architecture, including intricate tilework, carved cedar, and stucco decorations.\n\nDo any of these pique your interest, or would you like to know more about a specific place?"
+            }
+          ],
+          "role": "model"
+        },
+        "invocation_id": "e-2e05797d-a3e1-4bd4-aea5-975632742e4c",
+        "long_running_tool_ids": null,
+        "actions": {
+          "skip_summarization": null,
+          "state_delta": {},
+          "artifact_delta": {},
+          "transfer_to_agent": null,
+          "escalate": null,
+          "requested_auth_configs": {}
+        }
+      }
+    ]
+  }
+]

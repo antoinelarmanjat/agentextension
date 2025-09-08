@@ -29,11 +29,40 @@ def safe_serialize(obj):
 async def dump_context_callback(callback_context: CallbackContext, agent_name: str):
     """Dump session state/events of a given agent into its own file."""
     session = callback_context._invocation_context.session
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')[:-3]
     raw_output = {
         "agent": agent_name,
+        "timestamp": timestamp,
         "session_id": session.id,
+        
+        #"state": session.state.to_dict() if hasattr(session.state, "to_dict") else dict(session.state),
+        #"events": [
+        #    {
+        #        "id": event.id,
+        #        "timestamp": str(event.timestamp),
+        #        "author": event.author,
+        #        "content": event.content,
+        #        "invocation_id": event.invocation_id,
+        #        "long_running_tool_ids": event.long_running_tool_ids,
+        #        "actions": event.actions,
+        #    }
+        #    for event in session.events
+        #],
+    }
+    output = safe_serialize(raw_output)
+
+    raw_output_state = {
+        "agent": agent_name,
+        "timestamp": timestamp,
         "state": session.state.to_dict() if hasattr(session.state, "to_dict") else dict(session.state),
-        "events": [
+    }
+
+    output_state = safe_serialize(raw_output_state)
+
+    raw_output_events = {
+        "agent": agent_name,
+        "timestamp": timestamp,
+         "events": [
             {
                 "id": event.id,
                 "timestamp": str(event.timestamp),
@@ -46,11 +75,62 @@ async def dump_context_callback(callback_context: CallbackContext, agent_name: s
             for event in session.events
         ],
     }
-    output = safe_serialize(raw_output)
 
-    filename = f"{str(datetime.now())}_agent_session_dump_{agent_name}.json"
-    with open(filename, "w") as f:
-        json.dump(output, f, indent=2)
+    output_events = safe_serialize(raw_output_events)
+
+    filename = os.path.join(log_dir, f"{agent_name}.json")
+    #with open(filename, "a") as f:
+    #    json.dump(output, f, indent=2)
+
+    if os.path.exists(filename):
+        with open(filename, "r+") as f:
+            try:
+                data = json.load(f)   # load existing list
+            except json.JSONDecodeError:
+                data = []  # file empty or corrupted
+            data.append(output)
+            f.seek(0)  # rewind
+            json.dump(data, f, indent=2)
+            f.truncate()  # remove leftover if new content is shorter
+    else:
+        with open(filename, "w") as f:
+            json.dump([output], f, indent=2)
+
+    filename_state = os.path.join(log_dir, f"state.json")
+    #with open(filename_state, "a") as f:
+    #    json.dump(output_state, f, indent=2)
+
+    if os.path.exists(filename_state):
+        with open(filename_state, "r+") as f:
+            try:
+                data = json.load(f)   # load existing list
+            except json.JSONDecodeError:
+                data = []  # file empty or corrupted
+            data.append(output_state)
+            f.seek(0)  # rewind
+            json.dump(data, f, indent=2)
+            f.truncate()  # remove leftover if new content is shorter
+    else:
+        with open(filename_state, "w") as f:
+            json.dump([output_state], f, indent=2)
+
+    filename_events = os.path.join(log_dir, f"events.json")
+    #with open(filename_events, "a") as f:
+    #    json.dump(output_events, f, indent=2)
+
+    if os.path.exists(filename_events):
+        with open(filename_events, "r+") as f:
+            try:
+                data = json.load(f)   # load existing list
+            except json.JSONDecodeError:
+                data = []  # file empty or corrupted
+            data.append(output_events)
+            f.seek(0)  # rewind
+            json.dump(data, f, indent=2)
+            f.truncate()  # remove leftover if new content is shorter
+    else:
+        with open(filename_events, "w") as f:
+            json.dump([output_events], f, indent=2)
 
 import importlib
 from pathlib import Path  
@@ -118,6 +198,9 @@ def dynamic_import_agents(registry, patch_agent):
 import os
 import sys
 project_dir = os.environ.get('PROJECT_DIR')
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+log_dir = os.path.join(project_dir, "logs", timestamp)
+os.makedirs(log_dir, exist_ok=True)
 sys.path.append(project_dir)
 registry = build_registry(project_dir)['agents'].items()
 print("AAAAAAA")
