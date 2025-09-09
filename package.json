@@ -64,6 +64,10 @@
         "title": "Refresh Agent Definitions",
         "category": "Agent Inspector",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "agent-inspector.viewLogsWebview",
+        "title": "View Logs JSON Viewer"
       }
     ],
     "views": {
