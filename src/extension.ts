@@ -257,7 +257,42 @@ function getWebviewContent() {
                     break;
             }
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const questionSelect = document.getElementById('questionSelect');
+            const freeText = document.getElementById('freeText');
+
+            questionSelect.addEventListener('change', () => {
+                freeText.value = questionSelect.options[questionSelect.selectedIndex].text;
+            });
+
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const textBlock = document.getElementById('textBlock');
+            analyzeBtn.addEventListener('click', () => {
+                setTimeout(() => {
+                    textBlock.textContent = "Root agent initializes the conversation, sets up user profile (US Citizen, window seat preference, vegan food, home in San Diego, CA), and transfers control to the inspiration_agent. Inspiration_agent receives the query, calls the poi_agent with Milano, Italy to fetch points of interest. Poi_agent responds with a list of 5 top attractions: Duomo di Milano (4.8 rating, Gothic cathedral), Galleria Vittorio Emanuele II (4.7, shopping arcade), Sforzesco Castle (4.6, historic fortress with museums), Teatro alla Scala (4.7, opera house), and Pinacoteca di Brera (4.6, art gallery with Renaissance works). Each includes address, coordinates, highlights, and image URL. The state is updated with this POI data. Inspiration_agent then calls the map_tool with the POI key, receiving the same place data (possibly for map generation). Inspiration_agent generates a user-friendly response summarizing the places and asks if any interest the user or if alternatives are needed.";
+                }, 7000);
+            });
+        });
     </script>
+    <div style="margin-bottom: 20px;">
+        <label for="questionSelect" style="display: block; margin-bottom: 5px;">Select a Question:</label>
+        <select id="questionSelect" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid var(--vscode-input-border); background-color: var(--vscode-input-background); color: var(--vscode-input-foreground);">
+            <option value="question1">Please analyze the events and show me the highlights of each even in this run</option>
+            <option value="question2">Please highlight the state changes over time in this run</option>
+            <option value="question3">Please show me the state with only the non empty strings/values</option>
+            <option value="question4">Please show me the events with only the non empty strings</option>
+        </select>
+
+        
+        <input type="text" id="freeText" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid var(--vscode-input-border); background-color: var(--vscode-input-background); color: var(--vscode-input-foreground);">
+        <button id="analyzeBtn" style="padding: 3px 6px; background: transparent; border: none; color: var(--vscode-textLink-foreground); cursor: pointer;">Analyze with AI</button>
+
+        
+        <div id="textBlock" style="width: 100%; padding: 8px; border: 1px solid var(--vscode-input-border); background-color: var(--vscode-input-background); color: var(--vscode-input-foreground);">
+            This is a block of text.
+        </div>
+    </div>
 </body>
 </html>`;
 }
