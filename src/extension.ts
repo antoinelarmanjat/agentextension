@@ -218,6 +218,12 @@ function getWebviewContent() {
             const message = event.data;
             switch (message.command) {
                 case 'filesList':
+                case 'analysisResult':
+                    const textBlock = document.getElementById('textBlock');
+                    if (message.command === 'analysisResult') {
+                        textBlock.textContent = message.result || "No result received.";
+                        return;
+                    }
                     const fileListDiv = document.getElementById('fileList');
                     fileListDiv.innerHTML = '<h3>Select a log directory and JSON file:</h3>';
                     message.sessions.forEach(ses => {
@@ -269,9 +275,17 @@ function getWebviewContent() {
             const analyzeBtn = document.getElementById('analyzeBtn');
             const textBlock = document.getElementById('textBlock');
             analyzeBtn.addEventListener('click', () => {
-                setTimeout(() => {
-                    textBlock.textContent = "Root agent initializes the conversation, sets up user profile (US Citizen, window seat preference, vegan food, home in San Diego, CA), and transfers control to the inspiration_agent. Inspiration_agent receives the query, calls the poi_agent with Milano, Italy to fetch points of interest. Poi_agent responds with a list of 5 top attractions: Duomo di Milano (4.8 rating, Gothic cathedral), Galleria Vittorio Emanuele II (4.7, shopping arcade), Sforzesco Castle (4.6, historic fortress with museums), Teatro alla Scala (4.7, opera house), and Pinacoteca di Brera (4.6, art gallery with Renaissance works). Each includes address, coordinates, highlights, and image URL. The state is updated with this POI data. Inspiration_agent then calls the map_tool with the POI key, receiving the same place data (possibly for map generation). Inspiration_agent generates a user-friendly response summarizing the places and asks if any interest the user or if alternatives are needed.";
-                }, 7000);
+                if (!selectedFile) {
+                    textBlock.textContent = "Please select a file first.";
+                    return;
+                }
+                const prompt = freeText.value.trim();
+                if (!prompt) {
+                    textBlock.textContent = "Please enter a prompt.";
+                    return;
+                }
+                textBlock.textContent = "Analyzing...";
+                vscode.postMessage({ command: 'analyze', prompt: prompt, filePath: selectedFile });
             });
         });
     </script>
@@ -289,9 +303,9 @@ function getWebviewContent() {
         <button id="analyzeBtn" style="padding: 3px 6px; background: transparent; border: none; color: var(--vscode-textLink-foreground); cursor: pointer;">Analyze with AI</button>
 
         
-        <div id="textBlock" style="width: 100%; padding: 8px; border: 1px solid var(--vscode-input-border); background-color: var(--vscode-input-background); color: var(--vscode-input-foreground);">
-            This is a block of text.
-        </div>
+        <pre id="textBlock" style="width: 100%; padding: 8px; border: 1px solid var(--vscode-input-border); background-color: var(--vscode-input-background); color: var(--vscode-input-foreground); white-space: pre-wrap; overflow: auto; max-height: 400px;">
+             
+        </pre>
     </div>
 </body>
 </html>`;
@@ -596,6 +610,14 @@ ${agentToolName} = Agent(
     });
     context.subscriptions.push(stopAdkWebCommand);
 
+    // Create status bar item for viewing logs
+    let logsStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 99);
+    logsStatusBarItem.command = 'agent-inspector.viewLogsWebview';
+    logsStatusBarItem.text = '$(eye) View Logs';
+    logsStatusBarItem.tooltip = 'Open the Logs JSON Viewer';
+    context.subscriptions.push(logsStatusBarItem);
+    logsStatusBarItem.show();
+
     let logsPanel: vscode.WebviewPanel | undefined = undefined;
 
     const viewLogsWebviewCommand = vscode.commands.registerCommand('agent-inspector.viewLogsWebview', async () => {
@@ -690,6 +712,58 @@ ${agentToolName} = Agent(
                         } catch (err) {
                             console.error('Error reading file:', err);
                             logsPanel?.webview.postMessage({ command: 'error', text: `Failed to load file ${message.path}: ${(err as Error).message}` });
+                        }
+                        break;
+                    case 'analyze':
+                        try {
+                            outputChannel.show(true);
+                            const prompt = message.prompt;
+                            const filePath = message.filePath;
+                            outputChannel.appendLine(`Starting AI analysis for file: ${filePath}`);
+                            outputChannel.appendLine(`Prompt: ${prompt}`);
+                            if (!prompt || !filePath) {
+                                outputChannel.appendLine('Error: Missing prompt or filePath.');
+                                logsPanel?.webview.postMessage({ command: 'error', text: 'Missing prompt or filePath.' });
+                                break;
+                            }
+                            const envPath = path.join(rootPath, '.env');
+                            const envConfig = dotenv.parse(fs.readFileSync(envPath));
+                            const spawnEnv = { ...process.env };
+                            for (const [key, value] of Object.entries(envConfig)) {
+                                spawnEnv[key] = value;
+                            }
+                            const pythonPath = 'python3';
+                            const scriptPath = 'src/gemini_utils.py';
+                            const fullFilePath = path.join(rootPath, filePath);
+                            outputChannel.appendLine(`Spawning: ${pythonPath} ${scriptPath} "${prompt}" "${fullFilePath}"`);
+                            const child = spawn(pythonPath, [scriptPath, prompt, fullFilePath], { cwd: context.extensionPath, stdio: ['pipe', 'pipe', 'pipe'], env: spawnEnv });
+                            let result = '';
+                            let errorOutput = '';
+                            child.stdout.on('data', (data) => {
+                                const chunk = data.toString();
+                                result += chunk;
+                                outputChannel.appendLine(`Python stdout: ${chunk.trim()}`);
+                            });
+                            child.stderr.on('data', (data) => {
+                                const chunk = data.toString();
+                                errorOutput += chunk;
+                                outputChannel.appendLine(`Python stderr: ${chunk.trim()}`);
+                            });
+                            child.on('close', (code) => {
+                                outputChannel.appendLine(`Python process exited with code: ${code}`);
+                                if (code === 0) {
+                                    logsPanel?.webview.postMessage({ command: 'analysisResult', result: result.trim() });
+                                    outputChannel.appendLine('Analysis completed successfully.');
+                                } else {
+                                    console.error('Python error:', errorOutput);
+                                    logsPanel?.webview.postMessage({ command: 'error', text: `Analysis failed: ${errorOutput.trim()}` });
+                                    outputChannel.appendLine(`Analysis failed with error: ${errorOutput.trim()}`);
+                                }
+                            });
+                        } catch (err) {
+                            console.error('Error spawning python:', err);
+                            outputChannel.appendLine(`Error spawning python: ${(err as Error).message}`);
+                            logsPanel?.webview.postMessage({ command: 'error', text: `Failed to run analysis: ${(err as Error).message}` });
                         }
                         break;
                 }
