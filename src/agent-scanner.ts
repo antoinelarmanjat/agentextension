@@ -30,7 +30,7 @@ export interface AgentInfo {
         [key: string]: any;
     };
 }
-
+ 
 export function scanAndComplementAgents(workspaceRoot: string, extensionPath: string): Promise<AgentInfo[]> {
     return new Promise((resolve, reject) => {
         const requirementsPath = path.join(extensionPath, 'src', 'requirements.txt');
