@@ -10,6 +10,7 @@ import * as dotenv from 'dotenv';
 
  
 let fileLastLengths: Map<string, number> = new Map();
+let currentSelectedFile: string | null = null;  // NEW: Track currently viewed file
 
 let adkProcess: (ChildProcess | vscode.Terminal) | null = null;
 
@@ -43,238 +44,157 @@ function getWebviewContent() {
     <div id="jsonTree"></div>
     <div id="error" class="error" style="display: none;"></div>
     <script>
-        const vscode = acquireVsCodeApi();
-        let pollInterval = null;
-        let selectedFile = vscode.getState()?.selectedFile || null;
-        let expandedPaths = new Set();
+    const vscode = acquireVsCodeApi();
+    let pollInterval = null;
+    let selectedFile = vscode.getState()?.selectedFile || null;
+    let expandedPaths = new Set();
 
-        function showError(text) {
-            const errorDiv = document.getElementById('error');
-            errorDiv.textContent = text;
-            errorDiv.style.display = 'block';
-            setTimeout(() => { errorDiv.style.display = 'none'; }, 50000);
-        }
+    function showError(text) {
+        const errorDiv = document.getElementById('error');
+        errorDiv.textContent = text;
+        errorDiv.style.display = 'block';
+        setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+    }
 
-        function refreshFiles() {
-            vscode.postMessage({ command: 'getFiles' });
-            if (selectedFile && pollInterval) {
-                clearInterval(pollInterval);
-                pollInterval = setInterval(() => vscode.postMessage({ command: 'loadFile', path: selectedFile }), 50000);
-            }
-        }
-
-        function renderJson(obj, container, currentPath = '') {
-            container.innerHTML = '';
-            if (obj === null) {
-                container.textContent = 'null';
-                return;
-            }
-            if (Array.isArray(obj)) {
-                const details = document.createElement('details');
-                details.open = true;
-                const path = currentPath ? \`\${currentPath}[\${obj.length}]\` : \`[\${obj.length}]\`;
-                details.dataset.path = path;
-                details.innerHTML = \`<summary class="key">Array [\${obj.length}]</summary>\`;
-                if (expandedPaths.has(path)) {
-                    details.open = true;
-                }
-                const div = document.createElement('div');
-                details.appendChild(div);
-                obj.forEach((item, index) => {
-                    const itemDetails = document.createElement('details');
-                    const summary = document.createElement('summary');
-                    summary.className = 'key';
-                    summary.textContent = \`[\${index}]\`;
-                    itemDetails.appendChild(summary);
-                    const itemDiv = document.createElement('div');
-                    itemDetails.appendChild(itemDiv);
-                    renderJson(item, itemDiv, \`\${path}[\${index}]\`);
-                    details.appendChild(itemDetails);
-                });
-                container.appendChild(details);
-            } else if (typeof obj === 'object') {
-                const details = document.createElement('details');
-                details.open = true;
-                const keys = Object.keys(obj);
-                const path = currentPath ? \`\${currentPath}.\${keys.length}\` : \`\${keys.length}\`;
-                details.dataset.path = path;
-                details.innerHTML = \`<summary class="key">Object {\${keys.length}} keys</summary>\`;
-                if (expandedPaths.has(path)) {
-                    details.open = true;
-                }
-                const div = document.createElement('div');
-                details.appendChild(div);
-                keys.forEach(key => {
-                    const keyDetails = document.createElement('details');
-                    const summary = document.createElement('summary');
-                    summary.innerHTML = \`<span class="key">\${key}:</span>\`;
-                    keyDetails.appendChild(summary);
-                    const valueDiv = document.createElement('div');
-                    keyDetails.appendChild(valueDiv);
-                    renderJson(obj[key], valueDiv, currentPath ? \`\${currentPath}.\${key}\` : key);
-                    details.appendChild(keyDetails);
-                });
-                container.appendChild(details);
-            } else {
-                const span = document.createElement('span');
-                span.className = 'primitive';
-                span.textContent = JSON.stringify(obj);
-                container.appendChild(span);
-            }
-        }
-
-        function appendItems(items) {
-            const jsonTree = document.getElementById('jsonTree');
-            const contentDiv = jsonTree.querySelector('#jsonContent');
-            if (!contentDiv) return;
-            const arrayDetails = contentDiv.querySelector('details');
-            if (!arrayDetails) return;
-            const childrenDiv = arrayDetails.querySelector('div');
-            if (!childrenDiv) return;
-            let currentLength = childrenDiv.querySelectorAll('details').length;
-            const summary = arrayDetails.querySelector('summary');
-            items.forEach((item, index) => {
-                const globalIndex = currentLength + index;
-                const itemPath = '[' + globalIndex + ']';
-                const itemDetails = document.createElement('details');
-                itemDetails.dataset.path = itemPath;
-                const itemSummary = document.createElement('summary');
-                itemSummary.className = 'key';
-                itemSummary.textContent = '[' + globalIndex + ']';
-                itemDetails.appendChild(itemSummary);
-                const itemDiv = document.createElement('div');
-                itemDetails.appendChild(itemDiv);
-                renderJson(item, itemDiv, itemPath);
-                childrenDiv.appendChild(itemDetails);
-            });
-            if (summary && summary.textContent.includes('Array ')) {
-                const newLen = currentLength + items.length;
-                summary.textContent = 'Array [' + newLen + ']';
-            }
-        }
-
-        function appendItems(items) {
-            const jsonTree = document.getElementById('jsonTree');
-            const contentDiv = jsonTree.querySelector('#jsonContent');
-            if (!contentDiv) return;
-            const arrayDetails = contentDiv.querySelector('details');
-            if (!arrayDetails) return;
-            const childrenDiv = arrayDetails.querySelector('div');
-            if (!childrenDiv) return;
-            let currentLength = childrenDiv.querySelectorAll('details').length;
-            const summary = arrayDetails.querySelector('summary');
-            const rootPath = arrayDetails.dataset.path || '';
-            items.forEach((item, index) => {
-                const globalIndex = currentLength + index;
-                const itemPath = rootPath ? rootPath + '[' + globalIndex + ']' : '[' + globalIndex + ']';
-                const itemDetails = document.createElement('details');
-                itemDetails.dataset.path = itemPath;
-                const itemSummary = document.createElement('summary');
-                itemSummary.className = 'key';
-                itemSummary.textContent = '[' + globalIndex + ']';
-                itemDetails.appendChild(itemSummary);
-                const itemDiv = document.createElement('div');
-                itemDetails.appendChild(itemDiv);
-                renderJson(item, itemDiv, itemPath);
-                childrenDiv.appendChild(itemDetails);
-            });
-            if (summary && summary.textContent.indexOf('Array [') >= 0) {
-                const newLen = currentLength + items.length;
-                summary.textContent = 'Array [' + newLen + ']';
-            }
-            // Ensure root is expanded if previously was
-            if (expandedPaths.has(rootPath)) {
-                arrayDetails.open = true;
-            }
-        }
-
-        function loadFile(path) {
-            selectedFile = path;
-            vscode.postMessage({ command: 'loadFile', path: path });
-            if (pollInterval) clearInterval(pollInterval);
+    function refreshFiles() {
+        vscode.postMessage({ command: 'getFiles' });
+        if (selectedFile && pollInterval) {
+            clearInterval(pollInterval);
             pollInterval = setInterval(() => {
                 if (selectedFile) vscode.postMessage({ command: 'loadFile', path: selectedFile });
             }, 50000);
         }
+    }
 
-        // Initial load
-        window.addEventListener('DOMContentLoaded', () => {
-            refreshFiles();
-            // Listen for toggle events to update expanded state
-            document.addEventListener('toggle', (e) => {
-                if (e.target instanceof HTMLDetailsElement) {
-                    const path = e.target.dataset.path || '';
-                    if (e.target.open) {
-                        expandedPaths.add(path);
-                    } else {
-                        expandedPaths.delete(path);
-                    }
+    function renderJson(obj, container, currentPath) {
+        container.innerHTML = '';
+        if (obj === null) {
+            container.textContent = 'null';
+            return;
+        }
+        if (Array.isArray(obj)) {
+            const details = document.createElement('details');
+            details.open = expandedPaths.has(currentPath);
+            const path = currentPath;
+            details.dataset.path = path;
+            // FIXED: Use string concatenation instead of template literal
+            details.innerHTML = '<summary class="key">Array [' + obj.length + ']</summary>';
+            const div = document.createElement('div');
+            details.appendChild(div);
+            obj.forEach(function(item, index) {  // Use function() for older JS compatibility if needed
+                const itemDetails = document.createElement('details');
+                const summary = document.createElement('summary');
+                summary.className = 'key';
+                summary.textContent = '[' + index + ']';
+                itemDetails.appendChild(summary);
+                const itemDiv = document.createElement('div');
+                itemDetails.appendChild(itemDiv);
+                var itemPath = currentPath ? currentPath + '[' + index + ']' : '[' + index + ']';  // FIXED: String concat
+                itemDetails.dataset.path = itemPath;
+                renderJson(item, itemDiv, itemPath);
+                details.appendChild(itemDetails);
+            });
+            container.appendChild(details);
+        } else if (typeof obj === 'object') {
+            const details = document.createElement('details');
+            details.open = expandedPaths.has(currentPath);
+            const keys = Object.keys(obj);
+            const path = currentPath;
+            details.dataset.path = path;
+            // FIXED: Use string concatenation
+            details.innerHTML = '<summary class="key">Object {' + keys.length + '} keys</summary>';
+            const div = document.createElement('div');
+            details.appendChild(div);
+            keys.forEach(function(key) {  // Use function() for compatibility
+                const keyDetails = document.createElement('details');
+                const summary = document.createElement('summary');
+                summary.innerHTML = '<span class="key">' + key + ':</span>';  // FIXED: String concat
+                keyDetails.appendChild(summary);
+                const valueDiv = document.createElement('div');
+                keyDetails.appendChild(valueDiv);
+                var keyPath = currentPath ? currentPath + '.' + key : key;  // FIXED: String concat
+                keyDetails.dataset.path = keyPath;
+                renderJson(obj[key], valueDiv, keyPath);
+                details.appendChild(keyDetails);
+            });
+            container.appendChild(details);
+        } else {
+            const span = document.createElement('span');
+            span.className = 'primitive';
+            span.textContent = JSON.stringify(obj);
+            container.appendChild(span);
+        }
+    }
+
+    function appendItems(items) {
+        const jsonTree = document.getElementById('jsonTree');
+        const contentDiv = jsonTree.querySelector('#jsonContent');
+        if (!contentDiv) return;
+        const arrayDetails = contentDiv.querySelector('details');
+        if (!arrayDetails) return;
+        const childrenDiv = arrayDetails.querySelector('div');
+        if (!childrenDiv) return;
+        var currentLength = childrenDiv.querySelectorAll('details').length;  // var for compatibility
+        const summary = arrayDetails.querySelector('summary');
+        const rootPath = arrayDetails.dataset.path || '';
+        items.forEach(function(item, index) {  // Use function()
+            const globalIndex = currentLength + index;
+            var itemPath = rootPath ? rootPath + '[' + globalIndex + ']' : '[' + globalIndex + ']';  // FIXED: String concat
+            const itemDetails = document.createElement('details');
+            itemDetails.dataset.path = itemPath;
+            const itemSummary = document.createElement('summary');
+            itemSummary.className = 'key';
+            itemSummary.textContent = '[' + globalIndex + ']';
+            itemDetails.appendChild(itemSummary);
+            const itemDiv = document.createElement('div');
+            itemDetails.appendChild(itemDiv);
+            renderJson(item, itemDiv, itemPath);
+            childrenDiv.appendChild(itemDetails);
+        });
+        if (summary && summary.textContent.indexOf('Array [') >= 0) {
+            const newLen = currentLength + items.length;
+            // FIXED: Use string concatenation for summary update
+            summary.textContent = 'Array [' + newLen + ']';
+        }
+        if (expandedPaths.has(rootPath)) {
+            arrayDetails.open = true;
+        }
+    }
+
+    function loadFile(path) {
+        selectedFile = path;
+        vscode.setState({ selectedFile });
+        vscode.postMessage({ command: 'loadFile', path: path });
+        if (pollInterval) clearInterval(pollInterval);
+        pollInterval = setInterval(function() {  // Use function() for compatibility
+            if (selectedFile) vscode.postMessage({ command: 'loadFile', path: selectedFile });
+        }, 50000);
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {  // Use function()
+        refreshFiles();
+        document.addEventListener('toggle', function(e) {  // Use function()
+            if (e.target instanceof HTMLDetailsElement) {
+                const path = e.target.dataset.path || '';
+                if (e.target.open) {
+                    expandedPaths.add(path);
+                } else {
+                    expandedPaths.delete(path);
                 }
-            }, true);
-        });
-
-       // Handle messages
-       window.addEventListener('message', event => {
-            const message = event.data;
-            switch (message.command) {
-                case 'filesList':
-                case 'analysisResult':
-                    const textBlock = document.getElementById('textBlock');
-                    if (message.command === 'analysisResult') {
-                        textBlock.textContent = message.result || "No result received.";
-                        return;
-                    }
-                    const fileListDiv = document.getElementById('fileList');
-                    fileListDiv.innerHTML = '<h3>Select a log directory and JSON file:</h3>';
-                    message.sessions.forEach(ses => {
-                        const details = document.createElement('details');
-                        details.open = true;
-                        const summary = document.createElement('summary');
-                        summary.textContent = ses.dir;
-                        summary.style.fontWeight = 'bold';
-                        details.appendChild(summary);
-                        const filesDiv = document.createElement('div');
-                        filesDiv.style.paddingLeft = '20px';
-                        ses.files.forEach(file => {
-                            const btn = document.createElement('button');
-                            btn.textContent = file.name;
-                            btn.onclick = () => loadFile(file.path);
-                            btn.style.display = 'inline-block';
-                            btn.style.marginRight = '5px';
-                            btn.style.marginBottom = '5px';
-                            filesDiv.appendChild(btn);
-                        });
-                        details.appendChild(filesDiv);
-                        fileListDiv.appendChild(details);
-                    });
-                    break;
-                case 'fileContent':
-                    const jsonTree = document.getElementById('jsonTree');
-                    const fileName = selectedFile ? selectedFile.split('/').pop() || selectedFile : 'Unknown file';
-                    jsonTree.innerHTML = '<h3 style="margin-top: 0; margin-bottom: 10px; color: var(--vscode-textLink-foreground);">Viewing: ' + fileName + '</h3><div id="jsonContent"></div>';
-                    renderJson(message.content, document.getElementById('jsonContent'), '');
-                    document.getElementById('error').style.display = 'none';
-                    break;
-                case 'append':
-                    appendItems(message.items);
-                    break;
-                case 'error':
-                    showError(message.text);
-                    break;
             }
-        });
+        }, true);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const questionSelect = document.getElementById('questionSelect');
-            const freeText = document.getElementById('freeText');
-
-            questionSelect.addEventListener('change', () => {
+        const questionSelect = document.getElementById('questionSelect');
+        const freeText = document.getElementById('freeText');
+        if (questionSelect && freeText) {
+            questionSelect.addEventListener('change', function() {
                 freeText.value = questionSelect.options[questionSelect.selectedIndex].text;
             });
-
-            const analyzeBtn = document.getElementById('analyzeBtn');
-            const textBlock = document.getElementById('textBlock');
-            analyzeBtn.addEventListener('click', () => {
+        }
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const textBlock = document.getElementById('textBlock');
+        if (analyzeBtn && textBlock) {
+            analyzeBtn.addEventListener('click', function() {
                 if (!selectedFile) {
                     textBlock.textContent = "Please select a file first.";
                     return;
@@ -287,8 +207,58 @@ function getWebviewContent() {
                 textBlock.textContent = "Analyzing...";
                 vscode.postMessage({ command: 'analyze', prompt: prompt, filePath: selectedFile });
             });
-        });
-    </script>
+        }
+    });
+
+    window.addEventListener('message', function(event) {  // Use function()
+        const message = event.data;
+        switch (message.command) {
+            case 'filesList':
+                const fileListDiv = document.getElementById('fileList');
+                fileListDiv.innerHTML = '<h3>Select a log directory and JSON file:</h3>';
+                message.sessions.forEach(function(ses) {
+                    const details = document.createElement('details');
+                    details.open = true;
+                    const summary = document.createElement('summary');
+                    summary.textContent = ses.dir;
+                    summary.style.fontWeight = 'bold';
+                    details.appendChild(summary);
+                    const filesDiv = document.createElement('div');
+                    filesDiv.style.paddingLeft = '20px';
+                    ses.files.forEach(function(file) {
+                        const btn = document.createElement('button');
+                        btn.textContent = file.name;
+                        btn.onclick = function() { loadFile(file.path); };  // Use function()
+                        btn.style.display = 'inline-block';
+                        btn.style.marginRight = '5px';
+                        btn.style.marginBottom = '5px';
+                        filesDiv.appendChild(btn);
+                    });
+                    details.appendChild(filesDiv);
+                    fileListDiv.appendChild(details);
+                });
+                break;
+            case 'analysisResult':
+                const textBlock = document.getElementById('textBlock');
+                textBlock.textContent = message.result || "No result received.";
+                break;
+            case 'fileContent':
+                const jsonTree = document.getElementById('jsonTree');
+                var fileName = selectedFile ? selectedFile.split('/').pop() || selectedFile : 'Unknown file';  // var + concat
+                // FIXED: Use string concatenation for heading
+                jsonTree.innerHTML = '<h3 style="margin-top: 0; margin-bottom: 10px; color: var(--vscode-textLink-foreground);">Viewing: ' + fileName + '</h3><div id="jsonContent"></div>';
+                renderJson(message.content, document.getElementById('jsonContent'), '');
+                document.getElementById('error').style.display = 'none';
+                break;
+            case 'append':
+                appendItems(message.items);
+                break;
+            case 'error':
+                showError(message.text);
+                break;
+        }
+    });
+</script>
     <div style="margin-bottom: 20px;">
         <label for="questionSelect" style="display: block; margin-bottom: 5px;">Select a Question:</label>
         <select id="questionSelect" style="width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid var(--vscode-input-border); background-color: var(--vscode-input-background); color: var(--vscode-input-foreground);">
@@ -697,18 +667,32 @@ ${agentToolName} = Agent(
                             const jsonString = new TextDecoder().decode(fileData);
                             const jsonObj = JSON.parse(jsonString);
                             const filePath = message.path;
-                            let lastLength = fileLastLengths.get(filePath) || 0;
                             const isArray = Array.isArray(jsonObj);
-                            if (!isArray || lastLength === 0) {
+
+                            const isSwitchOrFresh = filePath !== currentSelectedFile || currentSelectedFile === null;
+
+                            if (isSwitchOrFresh) {
+                                // Always send full content on switch or first load (updates tree + heading)
+                                currentSelectedFile = filePath;
                                 logsPanel?.webview.postMessage({ command: 'fileContent', content: jsonObj });
                                 if (isArray) {
                                     fileLastLengths.set(filePath, jsonObj.length);
                                 }
-                            } else if (isArray && jsonObj.length > lastLength) {
-                                const newItems = jsonObj.slice(lastLength);
-                                logsPanel?.webview.postMessage({ command: 'append', items: newItems });
-                                fileLastLengths.set(filePath, jsonObj.length);
-                            } // else do nothing to preserve state
+                            } else {
+                                // Poll for same file: append if grown (arrays only); reload full otherwise
+                                if (!isArray) {
+                                    // Non-arrays: always reload full (in case content changed)
+                                    logsPanel?.webview.postMessage({ command: 'fileContent', content: jsonObj });
+                                } else {
+                                    let lastLength = fileLastLengths.get(filePath) || 0;
+                                    if (jsonObj.length > lastLength) {
+                                        const newItems = jsonObj.slice(lastLength);
+                                        logsPanel?.webview.postMessage({ command: 'append', items: newItems });
+                                        fileLastLengths.set(filePath, jsonObj.length);
+                                    }
+                                    // Else: up-to-date, do nothing (tree stays as-is)
+                                }
+                            }
                         } catch (err) {
                             console.error('Error reading file:', err);
                             logsPanel?.webview.postMessage({ command: 'error', text: `Failed to load file ${message.path}: ${(err as Error).message}` });
@@ -771,6 +755,7 @@ ${agentToolName} = Agent(
 
             logsPanel.onDidDispose(() => {
                 logsPanel = undefined;
+                currentSelectedFile = null;  // NEW: Reset on close/restart
             }, undefined, context.subscriptions);
         }
     });
