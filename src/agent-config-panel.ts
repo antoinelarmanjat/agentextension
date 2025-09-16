@@ -315,9 +315,9 @@ export class AgentConfigPanel {
       <div class="col">
         <label for="agentModel">Model</label>
         <select id="agentModel">
-          <option value="gemini-2.0">gemini-2.0</option>
-          <option value="gemini-1.5-pro">gemini-1.5-pro</option>
-          <option value="llama3.1-405b">llama3.1-405b</option>
+          <option value="gemini-2.5-pro">gemini-2.5-pro</option>
+          <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+          <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
         </select>
       </div>
     </div>
