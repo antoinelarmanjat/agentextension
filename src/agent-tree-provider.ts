@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { scanAndComplementAgents } from './agent-scanner';
 import type { AgentInfo, AgentReference } from './agent-scanner';
-import * as path from 'path';
 
 export class AgentTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
   private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void> = new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
@@ -78,7 +77,10 @@ export class AgentTreeDataProvider implements vscode.TreeDataProvider<vscode.Tre
         
         const children: vscode.TreeItem[] = [...properties];
         if (agent.args.tools && agent.args.tools.length > 0) {
-            children.push(new ToolsTreeItem('tools', agent.args.tools.map((t: any) => t.id || t.ref).filter((name: string | undefined) => name !== undefined) as string[], element.filePath));
+            const toolNames = (agent.args.tools as Array<{ id?: string; ref?: string }>)
+                .map(t => t.id ?? t.ref)
+                .filter((name): name is string => typeof name === 'string');
+            children.push(new ToolsTreeItem('tools', toolNames, element.filePath));
         }
 
         if (agent.args.sub_agents && agent.args.sub_agents.length > 0) {
@@ -162,9 +164,14 @@ class AgentVarTreeItem extends vscode.TreeItem {
         this.id = this.varName;
         this.iconPath = new vscode.ThemeIcon('robot');
         this.command = {
-            command: 'agent-inspector.findAgent',
-            title: 'Find Agent',
-            arguments: [this.filePath, this.varName]
+            command: 'agentConfigurator.openAgentConfig',
+            title: 'Open Agent Config',
+            arguments: [
+                {
+                    name: (typeof this.label === 'string' ? this.label : (this.label as vscode.TreeItemLabel | undefined)?.label) || this.varName,
+                    path: this.filePath
+                }
+            ]
         };
         this.contextValue = 'agentItem';
     }

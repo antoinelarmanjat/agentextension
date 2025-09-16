@@ -68,13 +68,79 @@
       {
         "command": "agent-inspector.viewLogsWebview",
         "title": "View Logs JSON Viewer"
+      },
+      {
+        "command": "agentConfigurator.openAgentConfig",
+        "title": "Open Agent Config",
+        "category": "Agent Configurator"
+      },
+      {
+        "command": "agentConfigurator.deployAgent",
+        "title": "Deploy Agent",
+        "category": "Agent Configurator"
+      },
+      {
+        "command": "agentConfigurator.stopAgent",
+        "title": "Stop Agent",
+        "category": "Agent Configurator"
+      },
+      {
+        "command": "agentConfigurator.switchProject",
+        "title": "Switch GCP Project",
+        "category": "Agent Configurator"
+      },
+      {
+        "command": "agentConfigurator.generateAgentCard",
+        "title": "Generate Agent Card",
+        "category": "Agent Configurator"
+      },
+      {
+        "command": "agentConfigurator.checkCompatibility",
+        "title": "Check Agent Compatibility",
+        "category": "Agent Configurator"
+      },
+      {
+        "command": "agentConfigurator.attachMemory",
+        "title": "Attach Existing Engine…",
+        "category": "Agent Configurator"
+      },
+      {
+        "command": "agentConfigurator.openMemoryConsole",
+        "title": "Open Memory Console",
+        "category": "Agent Configurator"
+      },
+      {
+        "command": "agentConfigurator.gcloudLogin",
+        "title": "Sign in (gcloud ADC)"
+      },
+      {
+        "command": "agentConfigurator.signOut",
+        "title": "Sign out"
+      },
+      {
+        "command": "agentConfigurator.refreshAuthStatus",
+        "title": "Refresh GCP Auth Status"
       }
     ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "agentConfigurator",
+          "title": "Agents",
+          "icon": "src/adk-icon.png"
+        }
+      ]
+    },
     "views": {
-      "explorer": [
+      "agentConfigurator": [
         {
           "id": "agent-inspector.agentTree",
           "name": "Agent Definitions"
+        },
+        {
+          "type": "webview",
+          "id": "agentConfigurator.config",
+          "name": "Agent Config"
         }
       ]
     },

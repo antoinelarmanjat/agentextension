@@ -1,3 +1,19 @@
+Progress Tracker (Phase 1) — This section is auto-updated as features land.
+- [x] Activity Bar container and move Agent Definitions
+- [x] Sidebar Agent Config webview scaffold
+- [x] Clicking an agent focuses config and loads data
+- [x] Message passing scaffold and stubs (deploy/stop/card/check)
+- [x] Commands contributed and registered
+- [x] Status bar placeholder for GCP auth
+- [x] State persistence scaffolding
+- [x] Output Channel
+- [x] Python/SDK deployment
+- [x] ADC detection and project picker
+  - New commands: Sign in (gcloud ADC), Sign out, Refresh GCP Auth Status; dynamic status bar with account/project; project picker persists to workspace state; Agent Config webview header shows Account/Project and updates live.
+- [x] Memory Bank UI (attach existing, open console)
+- [x] A2A generation and validation
+- [x] Restore context on activation (verify engine IDs)
+
 Implementation Plan for "Agent Configurator" VS Code Extension
 ==============================================================
 

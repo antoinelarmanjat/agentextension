@@ -4,15 +4,20 @@ import * as fs from 'fs';
 import { findAnyAgentLocation } from './agent-finder';
 import { findToolLocation } from './agent-finder';
 import { AgentTreeDataProvider } from './agent-tree-provider';
+import { AgentConfigViewProvider } from './agent-config-view';
 import { spawn, ChildProcess } from 'child_process';
 import * as dotenv from 'dotenv';
+import { exec } from 'child_process';
+import { detectAuth, listProjects, type AuthDetection } from './auth-manager';
+import { generateAgentCard, checkA2A } from './a2a-manager';
 
 
  
-let fileLastLengths: Map<string, number> = new Map();
+const fileLastLengths: Map<string, number> = new Map();
 let currentSelectedFile: string | null = null;  // NEW: Track currently viewed file
 
 let adkProcess: (ChildProcess | vscode.Terminal) | null = null;
+let agentConfigProvider: AgentConfigViewProvider | undefined;
 
 // Function to get webview content
 function getWebviewContent() {
@@ -284,8 +289,177 @@ function getWebviewContent() {
 // This method is called when your extension is activated
 // This method is called when your extension is activated
 export function activate(context: vscode.ExtensionContext) {
-    let myStatusBarItem: vscode.StatusBarItem;
     const outputChannel = vscode.window.createOutputChannel("ADK Web");
+    const agentOutput = vscode.window.createOutputChannel("Agent Configurator");
+
+    // Initialize default state scaffolding
+    if (!context.workspaceState.get('agentConfigurator.region')) {
+        void context.workspaceState.update('agentConfigurator.region', 'us-central1');
+    }
+    if (!context.globalState.get('agentConfigurator.authMode')) {
+        void context.globalState.update('agentConfigurator.authMode', 'None');
+    }
+
+    // Dynamic GCP status bar and auth management
+    const gcpStatus = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1000);
+    gcpStatus.text = 'GCP: Not Authenticated';
+    gcpStatus.tooltip = 'Google Cloud authentication and project';
+    gcpStatus.command = 'agentConfigurator.statusMenu';
+    context.subscriptions.push(gcpStatus);
+    gcpStatus.show();
+
+    let currentAuth: AuthDetection | undefined;
+
+    const postContextToWebview = (account?: string, project?: string) => {
+        try {
+            agentConfigProvider?.postMessage({ type: 'context', data: { account, project } });
+        } catch (e) {
+            agentOutput.appendLine(`[Context] Failed to post context: ${(e as Error).message}`);
+        }
+    };
+
+    const formatStatus = (auth: AuthDetection, projectId?: string): string => {
+        const projText = projectId && projectId.trim().length > 0 ? projectId.trim() : '(no project)';
+        if (auth.mode === 'ServiceAccount') {
+            const email = auth.account || 'Service Account';
+            return `GCP: Service Account • ${email} • ${projText}`;
+        }
+        if (auth.mode === 'ADC') {
+            const email = auth.account || 'User';
+            return `GCP: ${email} • ${projText}`;
+        }
+        return 'GCP: Not Authenticated';
+    };
+
+    const refreshAuthAndStatus = async (initial = false) => {
+        try {
+            agentOutput.appendLine(`[Auth] Refreshing auth status${initial ? ' (on activate)' : ''}...`);
+            const existingProject = (context.workspaceState.get('agentConfigurator.projectId') as string | undefined) || undefined;
+
+            const detected = await detectAuth(existingProject);
+            currentAuth = detected;
+
+            // Persist auth mode
+            await context.globalState.update('agentConfigurator.authMode', detected.mode);
+
+            // Determine project to use
+            let projectToUse = existingProject;
+            if (initial) {
+                projectToUse = detected.project?.trim() || existingProject;
+                if (projectToUse !== existingProject) {
+                    await context.workspaceState.update('agentConfigurator.projectId', projectToUse);
+                }
+            }
+            // For subsequent refreshes, prefer workspace-state selection over gcloud default
+            const preferredProject = (context.workspaceState.get('agentConfigurator.projectId') as string | undefined) || projectToUse;
+
+            gcpStatus.text = formatStatus(detected, preferredProject);
+            postContextToWebview(detected.account, preferredProject);
+            agentOutput.appendLine(`[Auth] Mode=${detected.mode} Account=${detected.account ?? '-'} Project=${preferredProject ?? '-'}`);
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            agentOutput.appendLine(`[Auth] Error refreshing auth: ${msg}`);
+            gcpStatus.text = 'GCP: Not Authenticated';
+            postContextToWebview(undefined, (context.workspaceState.get('agentConfigurator.projectId') as string | undefined));
+        }
+    };
+
+    // Status bar QuickPick menu
+    context.subscriptions.push(
+        vscode.commands.registerCommand('agentConfigurator.statusMenu', async () => {
+            const notAuth = !currentAuth || currentAuth.mode === 'None';
+            const options = notAuth
+                ? [
+                    { label: 'Sign in (gcloud ADC)', action: 'login' as const }
+                  ]
+                : [
+                    { label: 'Refresh status', action: 'refresh' as const },
+                    { label: 'Switch project', action: 'switch' as const },
+                    { label: 'Sign out', action: 'signout' as const }
+                  ];
+            const pick = await vscode.window.showQuickPick(options.map(o => o.label), { placeHolder: 'Google Cloud' });
+            const chosen = options.find(o => o.label === pick);
+            if (!chosen) { return; }
+            switch (chosen.action) {
+                case 'login':
+                    await vscode.commands.executeCommand('agentConfigurator.gcloudLogin');
+                    break;
+                case 'refresh':
+                    await vscode.commands.executeCommand('agentConfigurator.refreshAuthStatus');
+                    break;
+                case 'switch':
+                    await vscode.commands.executeCommand('agentConfigurator.switchProject');
+                    break;
+                case 'signout':
+                    await vscode.commands.executeCommand('agentConfigurator.signOut');
+                    break;
+            }
+        })
+    );
+
+    // Verify any stored engine IDs against live list
+    const verifyStoredEngines = async () => {
+        try {
+            const ws = context.workspaceState;
+            const projectId = (ws.get('agentConfigurator.projectId') as string) || '';
+            const region = (ws.get('agentConfigurator.region') as string) || 'us-central1';
+        void region;
+            const engineIds = (ws.get('agentConfigurator.engineIds') as Record<string, string>) || {};
+            const names = Object.values(engineIds);
+            if (!projectId || names.length === 0) {
+                return;
+            }
+            const scriptPath = context.asAbsolutePath(path.join('src', 'python', 'list_agent_engines.py'));
+            const env: NodeJS.ProcessEnv = {
+                ...process.env,
+                PYTHONPATH: [rootPath, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter),
+            };
+            const child = spawn('python3', [scriptPath, '--project', projectId, '--region', region], { cwd: rootPath, env });
+            let out = '';
+            let err = '';
+            child.stdout.on('data', (d) => { out += d.toString(); });
+            child.stderr.on('data', (d) => { err += d.toString(); });
+            child.on('close', async (code) => {
+                if (code !== 0) {
+                    agentOutput.appendLine(`[Verify] list engines failed: ${err.trim()}`);
+                    return;
+                }
+                try {
+                    const arr = JSON.parse(out) as Array<{ name: string; displayName?: string }>;
+                    const live = new Set(arr.map(e => e.name));
+                    let changed = false;
+                    for (const [k, v] of Object.entries(engineIds)) {
+                        if (!live.has(v)) {
+                            agentOutput.appendLine(`[Verify] Removing stale engineId for agent "${k}": ${v}`);
+                            delete engineIds[k];
+                            changed = true;
+                        }
+                    }
+                    if (changed) {
+                        await ws.update('agentConfigurator.engineIds', engineIds);
+                    }
+                    const active = (ws.get('agentConfigurator.activeAgent') as { name: string; path?: string } | undefined);
+                    if (active?.name) {
+                        const eid = engineIds[active.name];
+                        const valid = eid ? live.has(eid) : false;
+                        agentConfigProvider?.postMessage({ type: 'deploymentVerified', data: { engineIdValid: !!valid } });
+                    }
+                } catch (e) {
+                    agentOutput.appendLine(`[Verify] Failed to parse engine list: ${(e as Error).message}`);
+                }
+            });
+        } catch (e) {
+            agentOutput.appendLine(`[Verify] Exception: ${(e as Error).message}`);
+        }
+    };
+
+    // Initial detection
+    void refreshAuthAndStatus(true);
+    void verifyStoredEngines();// Register Agent Config webview view provider
+    agentConfigProvider = new AgentConfigViewProvider(context, agentOutput);
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(AgentConfigViewProvider.viewId, agentConfigProvider)
+    );
 
 
     console.log('Congratulations, your extension "agent-inspector" is now active!');
@@ -303,6 +477,444 @@ export function activate(context: vscode.ExtensionContext) {
     const agentTreeDataProvider = new AgentTreeDataProvider(rootPath, context);
     vscode.window.registerTreeDataProvider('agent-inspector.agentTree', agentTreeDataProvider);
 
+    // Agent Configurator commands (stubs)
+    const openAgentConfigCmd = vscode.commands.registerCommand('agentConfigurator.openAgentConfig', async (agent?: { name: string; path?: string }) => {
+        if (agent && typeof agent.name === 'string') {
+            void context.workspaceState.update('agentConfigurator.activeAgent', agent);
+        }
+        await vscode.commands.executeCommand('workbench.view.extension.agentConfigurator');
+        await vscode.commands.executeCommand('agentConfigurator.config.focus');
+
+        if (agentConfigProvider) {
+            const ws = context.workspaceState;
+            const active = (ws.get('agentConfigurator.activeAgent') as { name: string; path?: string } | undefined) ?? agent ?? { name: '', path: undefined };
+            const name = active?.name || '';
+            const configs = (ws.get('agentConfigurator.agentConfigs') as Record<string, { name: string; description: string; model: string }>) || {};
+            const engineIds = (ws.get('agentConfigurator.engineIds') as Record<string, string>) || {};
+            const projectId = (ws.get('agentConfigurator.projectId') as string) || '';
+            const region = (ws.get('agentConfigurator.region') as string) || 'us-central1';
+        void region;
+            const cfg = (name && configs[name]) || { name, description: '', model: 'gemini-2.0' };
+            const engineId = name ? engineIds[name] : undefined;
+
+            agentConfigProvider.postMessage({
+                type: 'init',
+                data: {
+                    ...cfg,
+                    engineId,
+                    memory: { attached: !!engineId },
+                    a2a: { hasCard: false, skillsCount: 0 },
+                    projectId,
+                    region,
+                    account: (currentAuth?.account) || undefined,
+                    project: projectId || undefined
+                }
+            });
+        }
+    });
+    context.subscriptions.push(openAgentConfigCmd);
+
+    const deployCmd = vscode.commands.registerCommand('agentConfigurator.deployAgent', async () => {
+        await vscode.window.withProgress(
+            { location: vscode.ProgressLocation.Notification, cancellable: true, title: 'Deploying agent to Vertex AI Agent Engine…' },
+            async (_progress, token) => {
+                try {
+                    const ws = context.workspaceState;
+                    const active = ws.get('agentConfigurator.activeAgent') as { name: string; path?: string } | undefined;
+                    if (!active?.name) {
+                        void vscode.window.showErrorMessage('No active agent selected.');
+                        return;
+                    }
+
+                    // Resolve module/symbol
+                    const moduleSymbols = (ws.get('agentConfigurator.moduleSymbols') as Record<string, { module: string; symbol: string }>) || {};
+                    let modulePath = moduleSymbols[active.name]?.module;
+                    let symbol = (moduleSymbols[active.name]?.symbol || 'agent').trim();
+
+                    const ensureModuleFromPath = () => {
+                        if (modulePath && modulePath.trim()) return;
+                        const fp = active.path;
+                        if (fp) {
+                            const abs = path.isAbsolute(fp) ? fp : path.join(rootPath, fp);
+                            let rel = path.relative(rootPath, abs).replace(/\\/g, '/');
+                            if (rel.toLowerCase().endsWith('.py')) {
+                                rel = rel.slice(0, -3);
+                            }
+                            modulePath = rel.replace(/\//g, '.');
+                        }
+                    };
+                    ensureModuleFromPath();
+
+                    // Resolve project/region/bucket
+                    let projectId = (ws.get('agentConfigurator.projectId') as string) || '';
+                    if (!projectId) {
+                        projectId = (await vscode.window.showInputBox({
+                            prompt: 'Enter GCP Project ID',
+                            ignoreFocusOut: true,
+                            validateInput: (v) => v.trim() ? undefined : 'Project ID required',
+                        })) || '';
+                        if (!projectId) { return; }
+                        await ws.update('agentConfigurator.projectId', projectId);
+                    }
+                    let region = (ws.get('agentConfigurator.region') as string) || 'us-central1';
+                    if (!region) {
+                        region = (await vscode.window.showInputBox({
+                            prompt: 'Enter region (e.g. us-central1)',
+                            value: 'us-central1',
+                            ignoreFocusOut: true,
+                        })) || 'us-central1';
+                        await ws.update('agentConfigurator.region', region);
+                    }
+                    let bucket = (ws.get('agentConfigurator.bucket') as string) || '';
+                    if (!bucket) {
+                        bucket = (await vscode.window.showInputBox({
+                            prompt: 'Enter GCS staging bucket (gs://bucket)',
+                            placeHolder: 'gs://my-staging-bucket',
+                            ignoreFocusOut: true,
+                            validateInput: (v) => v.startsWith('gs://') ? undefined : 'Must start with gs://',
+                        })) || '';
+                        if (!bucket) { return; }
+                        await ws.update('agentConfigurator.bucket', bucket);
+                    }
+
+                    if (!modulePath || !modulePath.trim()) {
+                        modulePath = await vscode.window.showInputBox({
+                            prompt: 'Enter Python module path for the agent (e.g. pkg.agent)',
+                            ignoreFocusOut: true,
+                            validateInput: (v) => v.trim() ? undefined : 'Module path required',
+                        }) || '';
+                        if (!modulePath) { return; }
+                    }
+                    if (!symbol || !symbol.trim()) {
+                        symbol = await vscode.window.showInputBox({
+                            prompt: 'Enter agent symbol (callable or object)',
+                            value: 'agent',
+                            ignoreFocusOut: true,
+                        }) || 'agent';
+                    }
+
+                    const engineIds = (ws.get('agentConfigurator.engineIds') as Record<string, string>) || {};
+                    const prevEngine = engineIds[active.name];
+
+                    const scriptPath = context.asAbsolutePath(path.join('src', 'python', 'deploy_agent_engine.py'));
+                    const args = [
+                        scriptPath,
+                        '--project', projectId,
+                        '--region', region,
+                        '--staging-bucket', bucket,
+                        '--module', modulePath,
+                        '--symbol', symbol,
+                    ];
+                    if (prevEngine) {
+                        args.push('--engine-id', prevEngine);
+                    }
+
+                    const env: NodeJS.ProcessEnv = {
+                        ...process.env,
+                        PYTHONPATH: [rootPath, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter),
+                    };
+
+                    agentOutput.appendLine(`[Deploy] Spawning python3 ${args.map(a => (a.includes(' ') ? `"${a}"` : a)).join(' ')}`);
+                    const child = spawn('python3', args, { cwd: rootPath, env });
+
+                    token.onCancellationRequested(() => {
+                        try { child.kill(); } catch { /* noop */ }
+                    });
+
+                    let stderrBuf = '';
+                    let engineId: string | undefined;
+
+                    child.stdout.on('data', (data) => {
+                        const text = data.toString();
+                        
+                        agentOutput.appendLine(text.trim());
+                        const m = text.match(/ENGINE_ID:\s*(.+)\s*$/m);
+                        if (m) {
+                            engineId = m[1].trim();
+                        }
+                    });
+                    child.stderr.on('data', (data) => {
+                        const text = data.toString();
+                        stderrBuf += text;
+                        agentOutput.appendLine(text.trim());
+                    });
+
+                    const exitCode: number = await new Promise((resolve) => child.on('close', resolve));
+                    if (exitCode === 0 && engineId) {
+                        engineIds[active.name] = engineId;
+                        await ws.update('agentConfigurator.engineIds', engineIds);
+
+                        // Persist the resolved module/symbol for future deploys
+                        const msKey = 'agentConfigurator.moduleSymbols';
+                        const existing = (ws.get(msKey) as Record<string, { module: string; symbol: string }>) || {};
+                        existing[active.name] = { module: modulePath, symbol };
+                        await ws.update(msKey, existing);
+
+                        agentConfigProvider?.postMessage({ type: 'deploymentComplete', data: { engineId } });
+                        void vscode.window.showInformationMessage(`Agent deployed: ${engineId}`);
+                    } else {
+                        // If import error, offer override for module/symbol and suggest retry
+                        if (stderrBuf.toLowerCase().includes('no module named') || stderrBuf.toLowerCase().includes('symbol') || stderrBuf.toLowerCase().includes('attributeerror')) {
+                            const choice = await vscode.window.showWarningMessage('Deploy failed importing module/symbol. Configure module and symbol?', 'Configure');
+                            if (choice === 'Configure') {
+                                const newModule = await vscode.window.showInputBox({ prompt: 'Python module path (e.g. pkg.agent)', value: modulePath, ignoreFocusOut: true }) || modulePath;
+                                const newSymbol = await vscode.window.showInputBox({ prompt: 'Agent symbol', value: symbol, ignoreFocusOut: true }) || symbol;
+                                const msKey = 'agentConfigurator.moduleSymbols';
+                                const existing = (ws.get(msKey) as Record<string, { module: string; symbol: string }>) || {};
+                                existing[active.name] = { module: newModule, symbol: newSymbol };
+                                await ws.update(msKey, existing);
+                                void vscode.window.showInformationMessage('Module/symbol saved. Run Deploy again.');
+                            }
+                        }
+                        void vscode.window.showErrorMessage('Deployment failed. See "Agent Configurator" output for details.');
+                    }
+                } catch (err) {
+                    const msg = err instanceof Error ? err.message : String(err);
+                    agentOutput.appendLine(`[Deploy] Error: ${msg}`);
+                    void vscode.window.showErrorMessage(`Deploy failed: ${msg}`);
+                }
+            }
+        );
+    });
+    context.subscriptions.push(deployCmd);
+
+    const stopCmd = vscode.commands.registerCommand('agentConfigurator.stopAgent', async () => {
+        try {
+            const ws = context.workspaceState;
+            const active = ws.get('agentConfigurator.activeAgent') as { name: string; path?: string } | undefined;
+            if (!active?.name) {
+                void vscode.window.showInformationMessage('No active agent selected.');
+                return;
+            }
+            const engineIds = (ws.get('agentConfigurator.engineIds') as Record<string, string>) || {};
+            const engineId = engineIds[active.name];
+            if (!engineId) {
+                void vscode.window.showInformationMessage('Agent is not deployed.');
+                return;
+            }
+            const confirm = await vscode.window.showWarningMessage(`Delete Agent Engine?\n${engineId}`, { modal: true }, 'Yes');
+            if (confirm !== 'Yes') { return; }
+
+            await vscode.window.withProgress(
+                { location: vscode.ProgressLocation.Notification, cancellable: true, title: 'Stopping agent (deleting Engine)…' },
+                async (_p, token) => {
+                    const projectId = (ws.get('agentConfigurator.projectId') as string) || '';
+                    const region = (ws.get('agentConfigurator.region') as string) || 'us-central1';
+        void region;
+                    const scriptPath = context.asAbsolutePath(path.join('src', 'python', 'delete_agent_engine.py'));
+                    const args = [scriptPath, '--project', projectId, '--region', region, '--engine-id', engineId, '--force', 'true'];
+
+                    const env: NodeJS.ProcessEnv = {
+                        ...process.env,
+                        PYTHONPATH: [rootPath, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter),
+                    };
+
+                    agentOutput.appendLine(`[Stop] Spawning python3 ${args.join(' ')}`);
+                    const child = spawn('python3', args, { cwd: rootPath, env });
+                    token.onCancellationRequested(() => { try { child.kill(); } catch { /* noop */ } });
+
+                    let stderrBuf = '';
+                    child.stdout.on('data', (d) => agentOutput.appendLine(d.toString().trim()));
+                    child.stderr.on('data', (d) => { stderrBuf += d.toString(); agentOutput.appendLine(d.toString().trim()); });
+
+                    const code: number = await new Promise(resolve => child.on('close', resolve));
+                    if (code === 0) {
+                        delete engineIds[active.name];
+                        await ws.update('agentConfigurator.engineIds', engineIds);
+                        agentConfigProvider?.postMessage({ type: 'stopped', data: { engineIdCleared: true } });
+                        void vscode.window.showInformationMessage('Agent Engine deleted.');
+                    } else {
+                        void vscode.window.showErrorMessage('Failed to delete Agent Engine. See "Agent Configurator" output for details.');
+                        if (stderrBuf.trim()) {
+                            agentOutput.appendLine(`[Stop] Error: ${stderrBuf.trim()}`);
+                        }
+                    }
+                }
+            );
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            agentOutput.appendLine(`[Stop] Error: ${msg}`);
+            void vscode.window.showErrorMessage(`Stop failed: ${msg}`);
+        }
+    });
+    context.subscriptions.push(stopCmd);
+
+    const genCardCmd = vscode.commands.registerCommand('agentConfigurator.generateAgentCard', async () => {
+        try {
+            const res = await generateAgentCard(context);
+            agentOutput.appendLine(`[A2A] Agent card written to: ${res.filePath}`);
+            void vscode.window.showInformationMessage('Agent Card generated.');
+            agentConfigProvider?.postMessage({ type: 'a2aUpdated', data: { hasCard: true, skillsCount: res.skillsCount } });
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            agentOutput.appendLine(`[A2A] Generate failed: ${msg}`);
+            void vscode.window.showErrorMessage(`Failed to generate Agent Card: ${msg}`);
+        }
+    });
+    context.subscriptions.push(genCardCmd);
+
+    const checkCompatCmd = vscode.commands.registerCommand('agentConfigurator.checkCompatibility', async () => {
+        try {
+            const res = await checkA2A(context);
+            agentOutput.appendLine(`[A2A] Card present=${res.hasCard} skills=${res.skillsCount}`);
+            agentConfigProvider?.postMessage({ type: 'a2aUpdated', data: { hasCard: res.hasCard, skillsCount: res.skillsCount } });
+            void vscode.window.showInformationMessage(res.hasCard ? 'Agent Card found.' : 'Agent Card not found.');
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            agentOutput.appendLine(`[A2A] Check failed: ${msg}`);
+            void vscode.window.showErrorMessage(`A2A check failed: ${msg}`);
+        }
+    });
+    context.subscriptions.push(checkCompatCmd);
+
+    const attachMemCmd = vscode.commands.registerCommand('agentConfigurator.attachMemory', async () => {
+        try {
+            const ws = context.workspaceState;
+            const active = ws.get('agentConfigurator.activeAgent') as { name: string; path?: string } | undefined;
+            if (!active?.name) {
+                void vscode.window.showInformationMessage('No active agent selected.');
+                return;
+            }
+            const projectId = (ws.get('agentConfigurator.projectId') as string) || '';
+            const region = (ws.get('agentConfigurator.region') as string) || 'us-central1';
+        void region;
+            if (!projectId) {
+                void vscode.window.showWarningMessage('Set a GCP project before attaching an engine.');
+                return;
+            }
+            const scriptPath = context.asAbsolutePath(path.join('src', 'python', 'list_agent_engines.py'));
+            const env: NodeJS.ProcessEnv = {
+                ...process.env,
+                PYTHONPATH: [rootPath, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter),
+            };
+            const child = spawn('python3', [scriptPath, '--project', projectId, '--region', region], { cwd: rootPath, env });
+            let out = '';
+            let err = '';
+            child.stdout.on('data', (d) => { out += d.toString(); });
+            child.stderr.on('data', (d) => { err += d.toString(); });
+            child.on('close', async (code) => {
+                if (code !== 0) {
+                    agentOutput.appendLine(`[Memory] list engines failed: ${err.trim()}`);
+                    void vscode.window.showErrorMessage('Failed to list engines.');
+                    return;
+                }
+                try {
+                    const arr = JSON.parse(out) as Array<{ name: string; displayName?: string }>;
+                    if (arr.length === 0) {
+                        void vscode.window.showInformationMessage('No Agent Engines found in this project/region.');
+                        return;
+                    }
+                    const items = arr.map(e => ({ label: e.displayName || e.name, description: e.name, value: e.name }));
+                    const pick = await vscode.window.showQuickPick(items, { placeHolder: 'Select an Agent Engine to attach' });
+                    if (!pick) { return; }
+                    const engineIds = (ws.get('agentConfigurator.engineIds') as Record<string, string>) || {};
+                    engineIds[active.name] = pick.value;
+                    await ws.update('agentConfigurator.engineIds', engineIds);
+                    agentConfigProvider?.postMessage({ type: 'engineLinked', data: { engineId: pick.value } });
+                    void vscode.window.showInformationMessage(`Attached engine: ${pick.value}`);
+                } catch (e) {
+                    agentOutput.appendLine(`[Memory] Parse failed: ${(e as Error).message}`);
+                    void vscode.window.showErrorMessage('Failed to parse engine list.');
+                }
+            });
+        } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            agentOutput.appendLine(`[Memory] Attach error: ${msg}`);
+        }
+    });
+    context.subscriptions.push(attachMemCmd);
+
+    const openMemCmd = vscode.commands.registerCommand('agentConfigurator.openMemoryConsole', async () => {
+        const ws = context.workspaceState;
+        const active = ws.get('agentConfigurator.activeAgent') as { name: string; path?: string } | undefined;
+        const projectId = (ws.get('agentConfigurator.projectId') as string) || '';
+        const region = (ws.get('agentConfigurator.region') as string) || 'us-central1';
+        void region;
+        const engineIds = (ws.get('agentConfigurator.engineIds') as Record<string, string>) || {};
+        const engineId = active?.name ? engineIds[active.name] : undefined;
+
+        let url = `https://console.cloud.google.com/vertex-ai/agent-engines?project=${encodeURIComponent(projectId)}`;
+        if (engineId) {
+            url = `https://console.cloud.google.com/vertex-ai/agent-engines/instances/${encodeURIComponent(engineId)}?project=${encodeURIComponent(projectId)}`;
+        }
+        await vscode.env.openExternal(vscode.Uri.parse(url));
+    });
+    context.subscriptions.push(openMemCmd);
+
+    const switchProjectCmd = vscode.commands.registerCommand('agentConfigurator.switchProject', async () => {
+        try {
+            agentOutput.appendLine('[Project] Switch project requested.');
+            const projects = await listProjects();
+            let selected: string | undefined;
+            if (projects.length === 0) {
+                agentOutput.appendLine('[Project] No projects from gcloud. Prompting manual entry.');
+                selected = await vscode.window.showInputBox({
+                    prompt: 'Enter GCP Project ID',
+                    ignoreFocusOut: true,
+                    validateInput: (v) => v.trim() ? undefined : 'Project ID required'
+                });
+            } else {
+                const pick = await vscode.window.showQuickPick(projects.map(p => p.id), { placeHolder: 'Select a GCP Project' });
+                selected = pick;
+            }
+            if (!selected) {
+                return;
+            }
+            await context.workspaceState.update('agentConfigurator.projectId', selected);
+            agentOutput.appendLine(`[Project] Active project set to ${selected}`);
+            // Update status and webview immediately
+            if (currentAuth) {
+                gcpStatus.text = formatStatus(currentAuth, selected);
+            }
+            postContextToWebview(currentAuth?.account, selected);
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            agentOutput.appendLine(`[Project] Error switching project: ${msg}`);
+            vscode.window.showErrorMessage(`Failed to switch project: ${msg}`);
+        }
+    });
+    context.subscriptions.push(switchProjectCmd);
+
+    const loginCmd = vscode.commands.registerCommand('agentConfigurator.gcloudLogin', () => {
+        agentOutput.appendLine('[Auth] Opening gcloud ADC login in terminal...');
+        const term = vscode.window.createTerminal({ name: 'GCloud Auth' });
+        term.sendText('gcloud auth application-default login');
+        term.show();
+    });
+    context.subscriptions.push(loginCmd);
+
+    const signOutCmd = vscode.commands.registerCommand('agentConfigurator.signOut', async () => {
+        agentOutput.appendLine('[Auth] Revoking ADC via gcloud...');
+        try {
+            exec('gcloud auth application-default revoke', { timeout: 10000 }, async (error, stdout, stderr) => {
+                if (stdout?.trim()) {
+                    agentOutput.appendLine(`[Auth] gcloud stdout: ${stdout.trim()}`);
+                }
+                if (stderr?.trim()) {
+                    agentOutput.appendLine(`[Auth] gcloud stderr: ${stderr.trim()}`);
+                }
+                if (error) {
+                    agentOutput.appendLine(`[Auth] Revoke failed: ${(error as Error).message}`);
+                    void vscode.window.showErrorMessage('Failed to sign out (revoke ADC). See "Agent Configurator" output for details.');
+                } else {
+                    agentOutput.appendLine('[Auth] ADC revoked successfully.');
+                }
+                // Refresh regardless of success to update UI
+                await vscode.commands.executeCommand('agentConfigurator.refreshAuthStatus');
+            });
+        } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            agentOutput.appendLine(`[Auth] Exception during revoke: ${msg}`);
+            await vscode.commands.executeCommand('agentConfigurator.refreshAuthStatus');
+        }
+    });
+    context.subscriptions.push(signOutCmd);
+
+    const refreshAuthCmd = vscode.commands.registerCommand('agentConfigurator.refreshAuthStatus', async () => {
+        await refreshAuthAndStatus(false);
+    });
+    context.subscriptions.push(refreshAuthCmd);
+
     const disposable = vscode.commands.registerCommand('agent-inspector.helloWorld', () => {
         vscode.window.showInformationMessage('Hello World from AgentDesigner!');
     });
@@ -311,7 +923,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Hello');
     });
     context.subscriptions.push(sayHelloCommand);
-    const addToolCommand = vscode.commands.registerCommand('agent-inspector.addTool', async (item: any) => {
+    const addToolCommand = vscode.commands.registerCommand('agent-inspector.addTool', async (item?: { filePath?: string }) => {
         let filePath: string | undefined;
 
         if (item && item.filePath) {
@@ -353,7 +965,7 @@ def ${toolName}():
         }
     });
     context.subscriptions.push(addToolCommand);
-    const addAgentCommand = vscode.commands.registerCommand('agent-inspector.addAgentTool', async (item: any) => {
+    const addAgentCommand = vscode.commands.registerCommand('agent-inspector.addAgentTool', async (item?: { filePath?: string }) => {
         let filePath: string | undefined;
 
         if (item && item.filePath) {
@@ -455,8 +1067,6 @@ ${agentToolName} = Agent(
         if (!agent) {
             return;
         }
-
-        const absolutePath = path.isAbsolute(fileName) ? fileName : path.join(rootPath, fileName);
 
         const location = findAnyAgentLocation(fileName, agent, rootPath);
 
@@ -566,8 +1176,9 @@ ${agentToolName} = Agent(
   if (pid !== undefined){
                     try {
                         process.kill(-pid);
-                    } catch (e: any) {
-                        vscode.window.showErrorMessage(`Error stopping ADK Web process: ${e.message}`);
+                    } catch (e: unknown) {
+                        const msg = e instanceof Error ? e.message : String(e);
+                        vscode.window.showErrorMessage(`Error stopping ADK Web process: ${msg}`);
                     }
   }
             }
@@ -581,7 +1192,7 @@ ${agentToolName} = Agent(
     context.subscriptions.push(stopAdkWebCommand);
 
     // Create status bar item for viewing logs
-    let logsStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 99);
+    const logsStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 99);
     logsStatusBarItem.command = 'agent-inspector.viewLogsWebview';
     logsStatusBarItem.text = '$(eye) View Logs';
     logsStatusBarItem.tooltip = 'Open the Logs JSON Viewer';
@@ -684,7 +1295,7 @@ ${agentToolName} = Agent(
                                     // Non-arrays: always reload full (in case content changed)
                                     logsPanel?.webview.postMessage({ command: 'fileContent', content: jsonObj });
                                 } else {
-                                    let lastLength = fileLastLengths.get(filePath) || 0;
+                                    const lastLength = fileLastLengths.get(filePath) || 0;
                                     if (jsonObj.length > lastLength) {
                                         const newItems = jsonObj.slice(lastLength);
                                         logsPanel?.webview.postMessage({ command: 'append', items: newItems });
