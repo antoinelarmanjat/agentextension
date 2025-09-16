@@ -5,6 +5,7 @@ import { findAnyAgentLocation } from './agent-finder';
 import { findToolLocation } from './agent-finder';
 import { AgentTreeDataProvider } from './agent-tree-provider';
 import { AgentConfigViewProvider } from './agent-config-view';
+import { AgentConfigPanel } from './agent-config-panel';
 import { spawn, ChildProcess } from 'child_process';
 import * as dotenv from 'dotenv';
 import { exec } from 'child_process';
@@ -313,6 +314,7 @@ export function activate(context: vscode.ExtensionContext) {
     const postContextToWebview = (account?: string, project?: string) => {
         try {
             agentConfigProvider?.postMessage({ type: 'context', data: { account, project } });
+            AgentConfigPanel.postMessage({ type: 'context', data: { account, project } });
         } catch (e) {
             agentOutput.appendLine(`[Context] Failed to post context: ${(e as Error).message}`);
         }
@@ -443,6 +445,7 @@ export function activate(context: vscode.ExtensionContext) {
                         const eid = engineIds[active.name];
                         const valid = eid ? live.has(eid) : false;
                         agentConfigProvider?.postMessage({ type: 'deploymentVerified', data: { engineIdValid: !!valid } });
+                        AgentConfigPanel.postMessage({ type: 'deploymentVerified', data: { engineIdValid: !!valid } });
                     }
                 } catch (e) {
                     agentOutput.appendLine(`[Verify] Failed to parse engine list: ${(e as Error).message}`);
@@ -482,35 +485,37 @@ export function activate(context: vscode.ExtensionContext) {
         if (agent && typeof agent.name === 'string') {
             void context.workspaceState.update('agentConfigurator.activeAgent', agent);
         }
-        await vscode.commands.executeCommand('workbench.view.extension.agentConfigurator');
-        await vscode.commands.executeCommand('agentConfigurator.config.focus');
 
-        if (agentConfigProvider) {
-            const ws = context.workspaceState;
-            const active = (ws.get('agentConfigurator.activeAgent') as { name: string; path?: string } | undefined) ?? agent ?? { name: '', path: undefined };
-            const name = active?.name || '';
-            const configs = (ws.get('agentConfigurator.agentConfigs') as Record<string, { name: string; description: string; model: string }>) || {};
-            const engineIds = (ws.get('agentConfigurator.engineIds') as Record<string, string>) || {};
-            const projectId = (ws.get('agentConfigurator.projectId') as string) || '';
-            const region = (ws.get('agentConfigurator.region') as string) || 'us-central1';
-        void region;
-            const cfg = (name && configs[name]) || { name, description: '', model: 'gemini-2.0' };
-            const engineId = name ? engineIds[name] : undefined;
+        // Open or reveal the editor WebviewPanel
+        AgentConfigPanel.createOrShow(context, agentOutput, context.workspaceState);
 
-            agentConfigProvider.postMessage({
-                type: 'init',
-                data: {
-                    ...cfg,
-                    engineId,
-                    memory: { attached: !!engineId },
-                    a2a: { hasCard: false, skillsCount: 0 },
-                    projectId,
-                    region,
-                    account: (currentAuth?.account) || undefined,
-                    project: projectId || undefined
-                }
-            });
-        }
+        // Build and post init/context to keep UI in sync with selection
+        const ws = context.workspaceState;
+        const active = (ws.get('agentConfigurator.activeAgent') as { name: string; path?: string } | undefined) ?? agent ?? { name: '', path: undefined };
+        const name = active?.name || '';
+        const configs = (ws.get('agentConfigurator.agentConfigs') as Record<string, { name: string; description: string; model: string }>) || {};
+        const engineIds = (ws.get('agentConfigurator.engineIds') as Record<string, string>) || {};
+        const projectId = (ws.get('agentConfigurator.projectId') as string) || '';
+        const region = (ws.get('agentConfigurator.region') as string) || 'us-central1';
+        const cfg = (name && configs[name]) || { name, description: '', model: 'gemini-2.0' };
+        const engineId = name ? engineIds[name] : undefined;
+
+        const initMsg = {
+            type: 'init' as const,
+            data: {
+                ...cfg,
+                engineId,
+                memory: { attached: !!engineId },
+                a2a: { hasCard: false, skillsCount: 0 },
+                projectId,
+                region,
+                account: (currentAuth?.account) || undefined,
+                project: projectId || undefined
+            }
+        };
+
+        agentConfigProvider?.postMessage(initMsg);
+        AgentConfigPanel.postMessage(initMsg);
     });
     context.subscriptions.push(openAgentConfigCmd);
 
@@ -651,6 +656,7 @@ export function activate(context: vscode.ExtensionContext) {
                         await ws.update(msKey, existing);
 
                         agentConfigProvider?.postMessage({ type: 'deploymentComplete', data: { engineId } });
+                        AgentConfigPanel.postMessage({ type: 'deploymentComplete', data: { engineId } });
                         void vscode.window.showInformationMessage(`Agent deployed: ${engineId}`);
                     } else {
                         // If import error, offer override for module/symbol and suggest retry
@@ -722,6 +728,7 @@ export function activate(context: vscode.ExtensionContext) {
                         delete engineIds[active.name];
                         await ws.update('agentConfigurator.engineIds', engineIds);
                         agentConfigProvider?.postMessage({ type: 'stopped', data: { engineIdCleared: true } });
+                        AgentConfigPanel.postMessage({ type: 'stopped', data: { engineIdCleared: true } });
                         void vscode.window.showInformationMessage('Agent Engine deleted.');
                     } else {
                         void vscode.window.showErrorMessage('Failed to delete Agent Engine. See "Agent Configurator" output for details.');
@@ -745,6 +752,7 @@ export function activate(context: vscode.ExtensionContext) {
             agentOutput.appendLine(`[A2A] Agent card written to: ${res.filePath}`);
             void vscode.window.showInformationMessage('Agent Card generated.');
             agentConfigProvider?.postMessage({ type: 'a2aUpdated', data: { hasCard: true, skillsCount: res.skillsCount } });
+            AgentConfigPanel.postMessage({ type: 'a2aUpdated', data: { hasCard: true, skillsCount: res.skillsCount } });
         } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
             agentOutput.appendLine(`[A2A] Generate failed: ${msg}`);
@@ -758,6 +766,7 @@ export function activate(context: vscode.ExtensionContext) {
             const res = await checkA2A(context);
             agentOutput.appendLine(`[A2A] Card present=${res.hasCard} skills=${res.skillsCount}`);
             agentConfigProvider?.postMessage({ type: 'a2aUpdated', data: { hasCard: res.hasCard, skillsCount: res.skillsCount } });
+            AgentConfigPanel.postMessage({ type: 'a2aUpdated', data: { hasCard: res.hasCard, skillsCount: res.skillsCount } });
             void vscode.window.showInformationMessage(res.hasCard ? 'Agent Card found.' : 'Agent Card not found.');
         } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
@@ -811,6 +820,7 @@ export function activate(context: vscode.ExtensionContext) {
                     engineIds[active.name] = pick.value;
                     await ws.update('agentConfigurator.engineIds', engineIds);
                     agentConfigProvider?.postMessage({ type: 'engineLinked', data: { engineId: pick.value } });
+                    AgentConfigPanel.postMessage({ type: 'engineLinked', data: { engineId: pick.value } });
                     void vscode.window.showInformationMessage(`Attached engine: ${pick.value}`);
                 } catch (e) {
                     agentOutput.appendLine(`[Memory] Parse failed: ${(e as Error).message}`);

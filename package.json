@@ -136,11 +136,6 @@
         {
           "id": "agent-inspector.agentTree",
           "name": "Agent Definitions"
-        },
-        {
-          "type": "webview",
-          "id": "agentConfigurator.config",
-          "name": "Agent Config"
         }
       ]
     },

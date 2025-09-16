@@ -1,4 +1,5 @@
 Progress Tracker (Phase 1) — This section is auto-updated as features land.
+- [x] Agent Config UI relocated to main editor (WebviewPanel)
 - [x] Activity Bar container and move Agent Definitions
 - [x] Sidebar Agent Config webview scaffold
 - [x] Clicking an agent focuses config and loads data
