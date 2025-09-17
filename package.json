@@ -120,6 +120,16 @@
       {
         "command": "agentConfigurator.refreshAuthStatus",
         "title": "Refresh GCP Auth Status"
+      },
+      {
+        "command": "agentConfigurator.verifyPython",
+        "title": "Agent Configurator: Verify Python Dependencies",
+        "category": "Agent Configurator"
+      },
+      {
+        "command": "agentConfigurator.setupWorkspaceVenv",
+        "title": "Agent Configurator: Use Workspace venv (.venv) and Install Dependencies",
+        "category": "Agent Configurator"
       }
     ],
     "viewsContainers": {
@@ -177,6 +187,16 @@
           "group": "inline"
         }
       ]
+    },
+    "configuration": {
+      "title": "Agent Configurator",
+      "properties": {
+        "agentConfigurator.pythonPath": {
+          "type": "string",
+          "default": "python3",
+          "description": "Path to Python interpreter used for deploy/list actions. Example: /usr/bin/python3 or path of your venv’s python."
+        }
+      }
     }
   },
   "scripts": {

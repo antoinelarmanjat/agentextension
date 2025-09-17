@@ -119,12 +119,17 @@ export class AgentConfigViewProvider implements vscode.WebviewViewProvider {
               vscode.window.showWarningMessage('No active agent selected.');
               break;
             }
-            const pair = { module: (message.data?.module || '').trim(), symbol: (message.data?.symbol || 'agent').trim() };
+            const moduleVal = (message.data?.module || '').trim();
+            const symbolVal = (message.data?.symbol || 'agent').trim();
+            if (!moduleVal) {
+              vscode.window.showWarningMessage('Module cannot be empty. Not saved.');
+              break;
+            }
             const key = 'agentConfigurator.moduleSymbols';
             const existing = (this._context.workspaceState.get(key) as Record<string, { module: string; symbol: string }>) || {};
-            existing[activeName] = pair;
+            existing[activeName] = { module: moduleVal, symbol: symbolVal || 'agent' };
             await this._context.workspaceState.update(key, existing);
-            this._output.appendLine(`[Deploy] Saved module/symbol for "${activeName}" => ${pair.module}:${pair.symbol}`);
+            this._output.appendLine(`[Deploy] Saved module/symbol for "${activeName}" => ${moduleVal}:${symbolVal || 'agent'}`);
             vscode.window.showInformationMessage('Module and symbol saved.');
             break;
           }

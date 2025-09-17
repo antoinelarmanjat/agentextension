@@ -9,7 +9,7 @@ import { AgentConfigPanel } from './agent-config-panel';
 import { spawn, ChildProcess } from 'child_process';
 import * as dotenv from 'dotenv';
 import { exec } from 'child_process';
-import { detectAuth, listProjects, type AuthDetection } from './auth-manager';
+import { detectAuth, listProjects, type AuthDetection, getGcloudAdcPath, getGcloudAdcDirPath } from './auth-manager';
 import { generateAgentCard, checkA2A } from './a2a-manager';
 
 
@@ -19,6 +19,127 @@ let currentSelectedFile: string | null = null;  // NEW: Track currently viewed f
 
 let adkProcess: (ChildProcess | vscode.Terminal) | null = null;
 let agentConfigProvider: AgentConfigViewProvider | undefined;
+
+// Python dependency installation guard state
+let pythonInstallInProgress = false;
+let pythonSetupTerminal: vscode.Terminal | undefined;
+const SETUP_TERMINAL_NAME = 'Agent Configurator: Python Setup';
+const PY_INSTALL_KEY = 'agentConfigurator.pythonInstallInProgress';
+
+type PendingAction = { kind: 'deploy' | 'attachMemory' | 'stop' | 'verify' };
+let pendingAction: PendingAction | null = null;
+function setPendingAction(kind: PendingAction['kind']) { pendingAction = { kind }; }
+function clearPendingAction() { pendingAction = null; }
+async function resumePendingAction(): Promise<void> {
+    const act = pendingAction; if (!act) return; clearPendingAction();
+    switch (act.kind) {
+        case 'deploy': await vscode.commands.executeCommand('agentConfigurator.deployAgent'); break;
+        case 'attachMemory': await vscode.commands.executeCommand('agentConfigurator.attachMemory'); break;
+        case 'stop': await vscode.commands.executeCommand('agentConfigurator.stopAgent'); break;
+        case 'verify': await vscode.commands.executeCommand('agentConfigurator.verifyPython'); break;
+    }
+}
+
+// Auth auto-refresh constants and runtime state
+const POLL_INTERVAL_MS = 2000;
+const MAX_POLL_MS = 90_000;
+const ADC_WATCH_DEBOUNCE_MS = 500;
+
+let loginTerminal: vscode.Terminal | undefined;
+const debounceTimers = new Map<string, NodeJS.Timeout>();
+let adcWatcher: fs.FSWatcher | undefined;
+
+// Spinner state for login waiting UI
+let isWaitingForSignIn = false;
+
+// AuthRefreshCoordinator: dir watcher + stat-based fallback polling
+const AuthRefreshCoordinator = (() => {
+    let dirWatcher: fs.FSWatcher | undefined;
+    let statTimer: NodeJS.Timeout | undefined;
+    let lastSeenMtimeMs: number | undefined;
+    let onRefresh: ((reason: string) => Promise<void>) | undefined;
+    let out: vscode.OutputChannel | undefined;
+
+    function init(context: vscode.ExtensionContext, refreshFn: (reason: string) => Promise<void>, output: vscode.OutputChannel) {
+        onRefresh = refreshFn;
+        out = output;
+        try {
+            const dir = getGcloudAdcDirPath();
+            if (fs.existsSync(dir)) {
+                try {
+                    if (dirWatcher) { try { dirWatcher.close(); } catch { /* noop */ } dirWatcher = undefined; }
+                    dirWatcher = fs.watch(dir, { persistent: false }, (event, filename) => {
+                        try {
+                            if ((event === 'rename' || event === 'change') && filename === 'application_default_credentials.json') {
+                                debounceKey('adc-dir', () => { void onRefresh?.('adc-dir-watch'); }, ADC_WATCH_DEBOUNCE_MS);
+                            }
+                        } catch {
+                            // ignore single event errors
+                        }
+                    });
+                    context.subscriptions.push({
+                        dispose: () => { try { dirWatcher?.close(); } catch { /* noop */ } dirWatcher = undefined; }
+                    });
+                    out.appendLine(`[Auth] ADC dir watcher active: ${dir}`);
+                } catch (e) {
+                    out.appendLine(`[Auth] Warning: fs.watch failed for ADC dir: ${(e as Error).message}`);
+                }
+            }
+        } catch (e) {
+            out?.appendLine(`[Auth] Warning: ADC dir watch setup exception: ${(e as Error).message}`);
+        }
+    }
+
+    function startStatPoll() {
+        const adcPath = getGcloudAdcPath();
+        if (statTimer) { clearInterval(statTimer); statTimer = undefined; }
+        lastSeenMtimeMs = undefined;
+        try {
+            const st = fs.statSync(adcPath);
+            lastSeenMtimeMs = st.mtimeMs;
+        } catch {
+            lastSeenMtimeMs = undefined;
+        }
+        const deadline = Date.now() + MAX_POLL_MS;
+        statTimer = setInterval(() => {
+            fs.stat(adcPath, (err, st) => {
+                if (!err && st) {
+                    const m = st.mtimeMs;
+                    const changed = typeof lastSeenMtimeMs !== 'number' || m !== lastSeenMtimeMs;
+                    if (changed) {
+                        lastSeenMtimeMs = m;
+                        if (statTimer) { clearInterval(statTimer); statTimer = undefined; }
+                        debounceKey('adc-stat', () => { void onRefresh?.('adc-stat-poll'); }, 50);
+                        return;
+                    }
+                }
+                if (Date.now() >= deadline) {
+                    if (statTimer) { clearInterval(statTimer); statTimer = undefined; }
+                }
+            });
+        }, POLL_INTERVAL_MS);
+    }
+
+    function dispose() {
+        try { dirWatcher?.close(); } catch { /* noop */ }
+        dirWatcher = undefined;
+        if (statTimer) { clearInterval(statTimer); statTimer = undefined; }
+    }
+
+    return { init, startStatPoll, dispose };
+})();
+
+function debounceKey(key: string, fn: () => void, delay: number) {
+    const prev = debounceTimers.get(key);
+    if (prev) {
+        clearTimeout(prev);
+    }
+    const t = setTimeout(() => {
+        debounceTimers.delete(key);
+        try { fn(); } catch { /* noop */ }
+    }, delay);
+    debounceTimers.set(key, t);
+}
 
 // Function to get webview content
 function getWebviewContent() {
@@ -293,6 +414,360 @@ export function activate(context: vscode.ExtensionContext) {
     const outputChannel = vscode.window.createOutputChannel("ADK Web");
     const agentOutput = vscode.window.createOutputChannel("Agent Configurator");
 
+    // Rehydrate persisted python install sentinel and reconcile with live terminals
+    try {
+        const persistedInstalling = context.globalState.get<boolean>(PY_INSTALL_KEY) === true;
+        const existingSetup = vscode.window.terminals.find(t => t.name === SETUP_TERMINAL_NAME);
+        if (persistedInstalling) {
+            if (existingSetup) {
+                pythonInstallInProgress = true;
+                pythonSetupTerminal = existingSetup;
+                agentOutput.appendLine('[Python] Install-in-progress detected (persisted). Guard is active until setup terminal closes.');
+            } else {
+                void context.globalState.update(PY_INSTALL_KEY, false);
+                pythonInstallInProgress = false;
+                agentOutput.appendLine('[Python] Cleared stale install-in-progress sentinel.');
+            }
+        }
+    } catch { /* noop */ }
+
+// Python environment helpers: interpreter discovery, availability, dependency checks, and guided install
+async function getPythonPath(): Promise<string> {
+    try {
+        const cfg = vscode.workspace.getConfiguration();
+        const inspected = cfg.inspect<string>('agentConfigurator.pythonPath');
+        const explicit = (inspected?.workspaceFolderValue ?? inspected?.workspaceValue ?? inspected?.globalValue) as string | undefined;
+        const explicitTrimmed = (explicit ?? '').trim();
+        if (explicitTrimmed) {
+            return explicitTrimmed;
+        }
+
+        // Auto-detect common virtualenv interpreters
+        const wsFolder = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0
+            ? vscode.workspace.workspaceFolders[0].uri.fsPath
+            : undefined;
+
+        if (wsFolder) {
+            const candidates: string[] = [];
+            if (process.platform === 'win32') {
+                candidates.push(path.join(wsFolder, '.venv', 'Scripts', 'python.exe'));
+                candidates.push(path.join(wsFolder, 'venv', 'Scripts', 'python.exe'));
+            } else {
+                candidates.push(path.join(wsFolder, '.venv', 'bin', 'python'));
+                candidates.push(path.join(wsFolder, 'venv', 'bin', 'python'));
+            }
+            const detected = candidates.find(p => {
+                try { return fs.existsSync(p); } catch { return false; }
+            });
+            if (detected) {
+                try { agentOutput.appendLine(`[Python] Using detected venv interpreter: ${detected}`); } catch { /* noop */ }
+                const toastKey = 'agentConfigurator.venvDetectedNotified';
+                const shown = context.globalState.get<boolean>(toastKey) === true;
+                if (!shown) {
+                    void context.globalState.update(toastKey, true);
+                    void vscode.window.showInformationMessage(`Using detected interpreter: ${detected}. You can change it in Settings: agentConfigurator.pythonPath.`);
+                }
+                return detected;
+            }
+        }
+
+        return 'python3';
+    } catch {
+        return 'python3';
+    }
+}
+
+async function checkPythonAvailable(pythonPath: string): Promise<boolean> {
+    return new Promise((resolve) => {
+        exec(`${pythonPath} -c "import sys; print(sys.version)"`, { timeout: 10000 }, (error) => {
+            resolve(!error);
+        });
+    });
+}
+
+async function checkPythonDeps(pythonPath: string): Promise<{ ok: boolean; reason?: string }> {
+    return new Promise((resolve) => {
+        // Check for required packages - google-cloud-aiplatform with agent_engines and adk extras
+        // We check for the base packages that should be available with these extras
+        const cmd = `${pythonPath} -c "import google.cloud.aiplatform; import vertexai; import google.adk"`;
+        exec(cmd, { timeout: 20000 }, (error) => {
+            if (!error) {
+                resolve({ ok: true });
+            } else {
+                resolve({ ok: false, reason: 'missing_deps' });
+            }
+        });
+    });
+}
+
+// Types and helpers for non-interactive installation
+type InstallOpts = {
+    useVenv: boolean;
+    pythonPath: string;
+    workspaceRoot: string;
+    output: vscode.OutputChannel;
+};
+
+/**
+ * Promise-based spawn wrapper with output piped to the provided OutputChannel.
+ * Returns exit code and captured stdio. Does not use a shell; args are passed as-is.
+ */
+function runCommand(
+    cmd: string,
+    args: string[],
+    opts: { cwd?: string; env?: NodeJS.ProcessEnv; output?: vscode.OutputChannel; label?: string } = {}
+): Promise<{ code: number; stdout: string; stderr: string }> {
+    return new Promise((resolve) => {
+        try {
+            const child = spawn(cmd, args, { cwd: opts.cwd, env: opts.env, shell: false });
+            let stdout = '';
+            let stderr = '';
+            child.stdout.on('data', (d: Buffer) => {
+                const text = d.toString('utf8');
+                stdout += text;
+                try { opts.output?.appendLine(text.trimEnd()); } catch { /* noop */ }
+            });
+            child.stderr.on('data', (d: Buffer) => {
+                const text = d.toString('utf8');
+                stderr += text;
+                try { opts.output?.appendLine(text.trimEnd()); } catch { /* noop */ }
+            });
+            child.on('close', (code) => {
+                resolve({ code: typeof code === 'number' ? code : -1, stdout, stderr });
+            });
+            child.on('error', (err) => {
+                try { opts.output?.appendLine(`[runCommand] Failed to spawn ${cmd}: ${(err as Error).message}`); } catch { /* noop */ }
+                resolve({ code: -1, stdout, stderr: (err as Error).message });
+            });
+        } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            try { opts.output?.appendLine(`[runCommand] Exception for ${cmd}: ${msg}`); } catch { /* noop */ }
+            resolve({ code: -1, stdout: '', stderr: msg });
+        }
+    });
+}
+
+/**
+ * Non-interactive installer for Python deps with auto-resume on success.
+ * Sets and clears the same sentinels used by the terminal-based flow.
+ */
+async function installDepsNonInteractive(opts: InstallOpts): Promise<boolean> {
+    const { useVenv, pythonPath, workspaceRoot, output } = opts;
+
+    // Set install sentinel immediately (memory + global)
+    try {
+        pythonInstallInProgress = true;
+        await context.globalState.update(PY_INSTALL_KEY, true);
+    } catch {
+        pythonInstallInProgress = true;
+    }
+
+    try {
+        let resolvedPy = pythonPath;
+        let venvPy = '';
+
+        if (useVenv) {
+            venvPy = process.platform === 'win32'
+                ? path.join(workspaceRoot, '.venv', 'Scripts', 'python.exe')
+                : path.join(workspaceRoot, '.venv', 'bin', 'python');
+
+            // Create .venv if interpreter missing
+            let venvExists = false;
+            try { venvExists = fs.existsSync(venvPy); } catch { venvExists = false; }
+
+            if (!venvExists) {
+                output.appendLine('[Python] Creating workspace .venv (non-interactive)…');
+                if (process.platform === 'win32') {
+                    let res = await runCommand('py', ['-3', '-m', 'venv', '.venv'], { cwd: workspaceRoot, output });
+                    if (res.code !== 0) {
+                        res = await runCommand('python', ['-m', 'venv', '.venv'], { cwd: workspaceRoot, output });
+                        if (res.code !== 0) { throw new Error('Failed to create .venv'); }
+                    }
+                } else {
+                    let res = await runCommand('python3', ['-m', 'venv', '.venv'], { cwd: workspaceRoot, output });
+                    if (res.code !== 0) {
+                        res = await runCommand('python', ['-m', 'venv', '.venv'], { cwd: workspaceRoot, output });
+                        if (res.code !== 0) { throw new Error('Failed to create .venv'); }
+                    }
+                }
+                // Re-check presence
+                try { venvExists = fs.existsSync(venvPy); } catch { venvExists = false; }
+                if (!venvExists) {
+                    // Continue anyway; resolved interpreter path is still venvPy
+                }
+            }
+            resolvedPy = venvPy;
+        }
+
+        // Upgrade pip
+        output.appendLine(`[Python] Upgrading pip using: ${resolvedPy}`);
+        const up = await runCommand(resolvedPy, ['-m', 'pip', 'install', '--upgrade', 'pip'], {
+            cwd: workspaceRoot, output
+        });
+        if (up.code !== 0) {
+            throw new Error('pip upgrade failed');
+        }
+
+        // Install required extras
+        output.appendLine('[Python] Installing google-cloud-aiplatform[agent_engines,adk]…');
+        const install = await runCommand(resolvedPy, ['-m', 'pip', 'install', 'google-cloud-aiplatform[agent_engines,adk]'], {
+            cwd: workspaceRoot, output
+        });
+        if (install.code !== 0) {
+            throw new Error('Dependency install failed');
+        }
+
+        if (useVenv) {
+            try {
+                await vscode.workspace.getConfiguration('agentConfigurator')
+                    .update('pythonPath', resolvedPy, vscode.ConfigurationTarget.Workspace);
+                output.appendLine(`[Python] Using workspace venv interpreter: ${resolvedPy}`);
+            } catch { /* noop */ }
+        }
+
+        // Verify deps using existing helper
+        output.appendLine('[Python] Verifying dependencies...');
+        const deps = await checkPythonDeps(resolvedPy);
+        if (!deps.ok) {
+            output.appendLine('[Python] Dependency verification failed - packages may not be fully installed');
+            throw new Error('Dependency verification failed');
+        }
+
+        // Clear sentinel and resume pending action
+        try {
+            pythonInstallInProgress = false;
+            await context.globalState.update(PY_INSTALL_KEY, false);
+        } catch {
+            pythonInstallInProgress = false;
+        }
+        output.appendLine('[Python] Dependencies ready (non-interactive).');
+        await resumePendingAction();
+        return true;
+    } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        try { output.appendLine(`[Python] Non-interactive install failed: ${msg}`); } catch { /* noop */ }
+        try {
+            pythonInstallInProgress = false;
+            await context.globalState.update(PY_INSTALL_KEY, false);
+        } catch {
+            pythonInstallInProgress = false;
+        }
+        void vscode.window.showWarningMessage('Python dependencies still missing. Run "Verify Python Dependencies".');
+        return false;
+    }
+}
+
+async function offerInstallPythonDeps(pythonPath: string, resumeKind?: PendingAction['kind']): Promise<void> {
+    // If installation is already in progress, just inform and (if provided) remember the pending action
+    if (pythonInstallInProgress || vscode.window.terminals.some(t => t.name === SETUP_TERMINAL_NAME)) {
+        await vscode.window.showInformationMessage(
+            'Python dependencies are currently installing… Wait for the "Agent Configurator: Python Setup" terminal to finish, then retry.'
+        );
+        if (resumeKind) { setPendingAction(resumeKind); }
+        return;
+    }
+
+    if (resumeKind) { setPendingAction(resumeKind); }
+
+    const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (!root) {
+        void vscode.window.showErrorMessage('Open a workspace/folder to install dependencies.');
+        return;
+    }
+
+    const options = [
+        'Use workspace venv (.venv) [auto-install and resume]',
+        `Install into current interpreter (${pythonPath}) [auto-install and resume]`,
+        'Use workspace venv (.venv) via terminal',
+        `Install into current interpreter (${pythonPath}) via terminal`,
+        'Cancel'
+    ];
+    const pick = await vscode.window.showQuickPick(options, { placeHolder: 'Set up Python dependencies for Vertex AI Agent Engine' });
+    if (!pick || pick === 'Cancel') {
+        return;
+    }
+
+    // Handle non-interactive auto-install options
+    if (pick.startsWith('Use workspace venv (.venv) [auto-install')) {
+        await installDepsNonInteractive({
+            useVenv: true,
+            pythonPath,
+            workspaceRoot: root,
+            output: agentOutput
+        });
+        return;
+    }
+
+    if (pick.startsWith(`Install into current interpreter (${pythonPath}) [auto-install`)) {
+        await installDepsNonInteractive({
+            useVenv: false,
+            pythonPath,
+            workspaceRoot: root,
+            output: agentOutput
+        });
+        return;
+    }
+
+    // Handle legacy terminal-based options
+    if (pick === 'Use workspace venv (.venv) via terminal') {
+        await vscode.commands.executeCommand('agentConfigurator.setupWorkspaceVenv');
+        // setupWorkspaceVenv sets sentinels and verification runs on terminal close
+        return;
+    }
+
+    // Install into current interpreter via terminal
+    // Set both in-memory and persistent sentinels BEFORE sending pip commands
+    pythonInstallInProgress = true;
+    void context.globalState.update(PY_INSTALL_KEY, true);
+
+    // Open or reuse a terminal named exactly SETUP_TERMINAL_NAME
+    let term = vscode.window.terminals.find(t => t.name === SETUP_TERMINAL_NAME);
+    if (!term) {
+        term = vscode.window.createTerminal({ name: SETUP_TERMINAL_NAME });
+    }
+    pythonSetupTerminal = term;
+
+    const q = pythonPath.includes(' ') ? `"${pythonPath}"` : pythonPath;
+    term.sendText(`${q} -m pip install --upgrade pip`);
+    term.sendText(`${q} -m pip install "google-cloud-aiplatform[agent_engines,adk]"`);
+    term.show();
+
+    void vscode.window.showInformationMessage(`Installing dependencies into ${pythonPath}… Actions are blocked until setup finishes.`);
+    try {
+        agentOutput.appendLine(`[Python] Started dependency installation using ${pythonPath}. Actions are blocked until setup finishes.`);
+    } catch { /* noop */ }
+}
+// Guard before any Python-based command
+async function ensurePythonReady(pythonPath: string, resumeKind?: PendingAction['kind']): Promise<boolean> {
+   // Hard guard: block while setup terminal is present or sentinel is set
+   const hasSetupTerminal = vscode.window.terminals.some(t => t.name === SETUP_TERMINAL_NAME);
+   if (pythonInstallInProgress || hasSetupTerminal) {
+       void vscode.window.showInformationMessage('Python dependencies are currently installing… Wait for the "Agent Configurator: Python Setup" terminal to finish, then retry.');
+       if (resumeKind) { setPendingAction(resumeKind); }
+       return false;
+   }
+
+   const available = await checkPythonAvailable(pythonPath);
+   if (!available) {
+       const action = await vscode.window.showErrorMessage(`Python interpreter not found: ${pythonPath}`, 'Open settings');
+       if (action === 'Open settings') {
+           await vscode.commands.executeCommand('workbench.action.openSettings', 'agentConfigurator.pythonPath');
+       }
+       return false;
+   }
+   const deps = await checkPythonDeps(pythonPath);
+   if (!deps.ok) {
+       await offerInstallPythonDeps(pythonPath, resumeKind);
+       return false;
+   }
+   // Successful import check means installs (if any) have completed
+   if (pythonInstallInProgress) {
+       pythonInstallInProgress = false;
+       // Best-effort: clear persisted flag if any
+       void context.globalState.update(PY_INSTALL_KEY, false);
+   }
+   return true;
+}
     // Initialize default state scaffolding
     if (!context.workspaceState.get('agentConfigurator.region')) {
         void context.workspaceState.update('agentConfigurator.region', 'us-central1');
@@ -327,41 +802,135 @@ export function activate(context: vscode.ExtensionContext) {
             return `GCP: Service Account • ${email} • ${projText}`;
         }
         if (auth.mode === 'ADC') {
-            const email = auth.account || 'User';
-            return `GCP: ${email} • ${projText}`;
+            // If we couldn't resolve an email from gcloud, detectAuth() sets 'ADC user'
+            let label = 'Application Default';
+            const acct = (auth.account || '').trim();
+            if (acct) {
+                label = acct === 'ADC user' ? 'ADC user' : acct;
+            }
+            return `GCP: ${label} • ${projText}`;
         }
         return 'GCP: Not Authenticated';
     };
 
-    const refreshAuthAndStatus = async (initial = false) => {
+    // Final ADC probe: attempts to get an access token via gcloud as ground truth
+    async function probeAdcToken(timeoutMs = 8000): Promise<boolean> {
+        return new Promise<boolean>((resolve) => {
+            try {
+                exec('gcloud auth application-default print-access-token', { timeout: timeoutMs }, (error, stdout, stderr) => {
+                    const out = (stdout || '').trim();
+                    if (!error && out.length > 0) {
+                        try { agentOutput.appendLine('[Auth] token-probe: success'); } catch { /* noop */ }
+                        resolve(true);
+                    } else {
+                        try {
+                            const msg = error ? (error as Error).message : (stderr || '').trim();
+                            agentOutput.appendLine('[Auth] token-probe: failed' + (msg ? ` (${msg.split('\n')[0]})` : ''));
+                        } catch { /* noop */ }
+                        resolve(false);
+                    }
+                });
+            } catch {
+                try { agentOutput.appendLine('[Auth] token-probe: failed (exec threw)'); } catch { /* noop */ }
+                resolve(false);
+            }
+        });
+    }
+
+    const refreshAuthUI = async (reason?: string) => {
         try {
-            agentOutput.appendLine(`[Auth] Refreshing auth status${initial ? ' (on activate)' : ''}...`);
-            const existingProject = (context.workspaceState.get('agentConfigurator.projectId') as string | undefined) || undefined;
+            agentOutput.appendLine(`[Auth] Refreshing auth status${reason ? ` (${reason})` : ''}...`);
+            const ws = context.workspaceState;
+            const gs = context.globalState;
 
-            const detected = await detectAuth(existingProject);
-            currentAuth = detected;
+            const existingProject = (ws.get('agentConfigurator.projectId') as string | undefined) || undefined;
 
-            // Persist auth mode
-            await context.globalState.update('agentConfigurator.authMode', detected.mode);
+            let detected = await detectAuth(existingProject);
 
-            // Determine project to use
-            let projectToUse = existingProject;
-            if (initial) {
-                projectToUse = detected.project?.trim() || existingProject;
-                if (projectToUse !== existingProject) {
-                    await context.workspaceState.update('agentConfigurator.projectId', projectToUse);
+            // If detection failed, try the final ADC token probe as a ground truth
+            if (detected.mode === 'None') {
+                const probeOk = await probeAdcToken();
+                if (probeOk) {
+                    agentOutput.appendLine('[Auth] ADC token probe succeeded; treating as authenticated ADC');
+                    // Try detectAuth again (credentials may have just landed)
+                    let detected2 = await detectAuth(existingProject);
+                    if (detected2.mode === 'None') {
+                        // Synthesize ADC state with best-effort project adoption
+                        let adoptedProject: string | undefined = existingProject;
+                        if (!adoptedProject || adoptedProject.trim().length === 0) {
+                            try {
+                                const adcPath = getGcloudAdcPath();
+                                const raw = fs.readFileSync(adcPath, 'utf8');
+                                const json = JSON.parse(raw) as { quota_project_id?: string };
+                                const qp = (json.quota_project_id || '').trim();
+                                if (qp) {
+                                    adoptedProject = qp;
+                                    await ws.update('agentConfigurator.projectId', adoptedProject);
+                                    agentOutput.appendLine(`[Auth] using ADC quota_project_id=${adoptedProject}`);
+                                }
+                            } catch {
+                                // ignore read/parse errors
+                            }
+                        }
+                        detected2 = { mode: 'ADC', account: 'ADC user', project: adoptedProject };
+                    }
+                    detected = detected2;
+                    // Clear spinner once we consider ADC authenticated
+                    if (isWaitingForSignIn) {
+                        isWaitingForSignIn = false;
+                    }
                 }
             }
-            // For subsequent refreshes, prefer workspace-state selection over gcloud default
-            const preferredProject = (context.workspaceState.get('agentConfigurator.projectId') as string | undefined) || projectToUse;
 
-            gcpStatus.text = formatStatus(detected, preferredProject);
-            postContextToWebview(detected.account, preferredProject);
-            agentOutput.appendLine(`[Auth] Mode=${detected.mode} Account=${detected.account ?? '-'} Project=${preferredProject ?? '-'}`);
+            currentAuth = detected;
+
+            // Persist auth mode (may have transitioned from None -> ADC due to probe)
+            await gs.update('agentConfigurator.authMode', detected.mode);
+
+            // If no workspace project is set and detectAuth provided one, adopt it
+            let projectToUse = existingProject;
+            if ((!existingProject || existingProject.trim().length === 0) && detected.project && detected.project.trim().length > 0) {
+                projectToUse = detected.project.trim();
+                await ws.update('agentConfigurator.projectId', projectToUse);
+            }
+
+            // Short, non-sensitive log indicating which auth path was used
+            try {
+                const sa = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+                const adcPath = getGcloudAdcPath();
+                let pathMsg = 'detected None';
+                if (detected.mode === 'ServiceAccount' && sa && fs.existsSync(sa)) {
+                    pathMsg = 'detected Service Account via GOOGLE_APPLICATION_CREDENTIALS';
+                } else if (detected.mode === 'ADC') {
+                    pathMsg = fs.existsSync(adcPath) ? 'detected ADC via ADC file' : 'detected ADC via gcloud CLI';
+                }
+                agentOutput.appendLine(`[Auth] ${pathMsg}`);
+            } catch {
+                // ignore logging errors
+            }
+
+            if (isWaitingForSignIn && detected.mode === 'None') {
+                // Keep spinner visible while waiting for sign-in to complete
+                gcpStatus.text = '$(sync~spin) GCP: Waiting for sign-in…';
+                gcpStatus.tooltip = 'Completing gcloud ADC sign-in';
+            } else {
+                // Clear waiting state once we have a valid auth mode
+                if (isWaitingForSignIn && detected.mode !== 'None') {
+                    isWaitingForSignIn = false;
+                }
+                gcpStatus.text = formatStatus(detected, projectToUse);
+                gcpStatus.tooltip = detected.mode !== 'None'
+                    ? `Google Cloud\nAccount: ${detected.account ?? '-'}\nProject: ${projectToUse ?? '(no project)'}`
+                    : 'Google Cloud authentication and project';
+            }
+
+            postContextToWebview(detected.account, projectToUse);
+            agentOutput.appendLine(`[Auth] Mode=${detected.mode} Account=${detected.account ?? '-'} Project=${projectToUse ?? '-'}`);
         } catch (err) {
             const msg = err instanceof Error ? err.message : String(err);
             agentOutput.appendLine(`[Auth] Error refreshing auth: ${msg}`);
             gcpStatus.text = 'GCP: Not Authenticated';
+            gcpStatus.tooltip = 'Google Cloud authentication and project';
             postContextToWebview(undefined, (context.workspaceState.get('agentConfigurator.projectId') as string | undefined));
         }
     };
@@ -405,22 +974,39 @@ export function activate(context: vscode.ExtensionContext) {
             const ws = context.workspaceState;
             const projectId = (ws.get('agentConfigurator.projectId') as string) || '';
             const region = (ws.get('agentConfigurator.region') as string) || 'us-central1';
-        void region;
             const engineIds = (ws.get('agentConfigurator.engineIds') as Record<string, string>) || {};
             const names = Object.values(engineIds);
             if (!projectId || names.length === 0) {
                 return;
             }
+
+            const pythonPath = await getPythonPath();
+            const ready = await ensurePythonReady(pythonPath);
+            if (!ready) {
+                agentOutput.appendLine(`[Memory] skip verify: python deps missing`);
+                return;
+            }
+
             const scriptPath = context.asAbsolutePath(path.join('src', 'python', 'list_agent_engines.py'));
             const env: NodeJS.ProcessEnv = {
                 ...process.env,
                 PYTHONPATH: [rootPath, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter),
             };
-            const child = spawn('python3', [scriptPath, '--project', projectId, '--region', region], { cwd: rootPath, env });
+            agentOutput.appendLine(`[Verify] Python: ${pythonPath}`);
+            const child = spawn(pythonPath, [scriptPath, '--project', projectId, '--region', region], { cwd: rootPath, env });
             let out = '';
             let err = '';
+            let offeredInstall = false;
             child.stdout.on('data', (d) => { out += d.toString(); });
-            child.stderr.on('data', (d) => { err += d.toString(); });
+            child.stderr.on('data', async (d) => {
+                const text = d.toString();
+                err += text;
+                if (!offeredInstall && text.toLowerCase().includes('google-cloud-aiplatform') && text.toLowerCase().includes('not installed')) {
+                    offeredInstall = true;
+                    const choice = await vscode.window.showInformationMessage('Python dependency google-cloud-aiplatform is not installed.', 'Install now', 'Dismiss');
+                    if (choice === 'Install now') { await offerInstallPythonDeps(pythonPath); }
+                }
+            });
             child.on('close', async (code) => {
                 if (code !== 0) {
                     agentOutput.appendLine(`[Verify] list engines failed: ${err.trim()}`);
@@ -457,9 +1043,41 @@ export function activate(context: vscode.ExtensionContext) {
     };
 
     // Initial detection
-    void refreshAuthAndStatus(true);
+    void refreshAuthUI('activate');
     void verifyStoredEngines();// Register Agent Config webview view provider
     agentConfigProvider = new AgentConfigViewProvider(context, agentOutput);
+ 
+    // Initialize robust ADC dir watcher + stat-based fallback polling
+    AuthRefreshCoordinator.init(context, refreshAuthUI, agentOutput);
+
+    // ADC credentials file watcher
+    try {
+        const adcPath = getGcloudAdcPath();
+        const adcDir = path.dirname(adcPath);
+        if (fs.existsSync(adcDir)) {
+            try {
+                if (adcWatcher) { try { adcWatcher.close(); } catch { /* noop */ } adcWatcher = undefined; }
+                adcWatcher = fs.watch(adcPath, { persistent: false }, (event) => {
+                    // On 'change' or 'rename', trigger a debounced refresh
+                    if (event === 'change' || event === 'rename') {
+                        debounceKey('adc-file', () => { void refreshAuthUI('adc-file-changed'); }, ADC_WATCH_DEBOUNCE_MS);
+                    } else {
+                        debounceKey('adc-file', () => { void refreshAuthUI('adc-file-changed'); }, ADC_WATCH_DEBOUNCE_MS);
+                    }
+                });
+                context.subscriptions.push({
+                    dispose: () => { try { adcWatcher?.close(); } catch { /* noop */ } adcWatcher = undefined; }
+                });
+                agentOutput.appendLine(`[Auth] ADC watcher active: ${adcPath}`);
+            } catch (e) {
+                agentOutput.appendLine(`[Auth] Warning: fs.watch failed for ADC file: ${(e as Error).message}`);
+            }
+        } else {
+            agentOutput.appendLine('[Auth] ADC dir not found; skipping ADC file watch.');
+        }
+    } catch (e) {
+        agentOutput.appendLine(`[Auth] Warning: ADC watch setup exception: ${(e as Error).message}`);
+    }
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(AgentConfigViewProvider.viewId, agentConfigProvider)
     );
@@ -531,6 +1149,21 @@ export function activate(context: vscode.ExtensionContext) {
                         return;
                     }
 
+                    if (pythonInstallInProgress) {
+                        void vscode.window.showInformationMessage('Python dependencies are currently installing… Wait for the "Agent Configurator: Python Setup" terminal to finish, then retry.');
+                        agentOutput.appendLine('[Deploy] Blocked because dependency installation is in progress.');
+                        return;
+                    }
+
+                    // Python preflight
+                    const pythonPath = await getPythonPath();
+                    agentOutput.appendLine(`[Deploy] Python: ${pythonPath}`);
+                    const ready = await ensurePythonReady(pythonPath, 'deploy');
+                    if (!ready) {
+                        agentOutput.appendLine('[Deploy] Aborted due to missing Python environment/dependencies.');
+                        return;
+                    }
+
                     // Resolve module/symbol
                     const moduleSymbols = (ws.get('agentConfigurator.moduleSymbols') as Record<string, { module: string; symbol: string }>) || {};
                     let modulePath = moduleSymbols[active.name]?.module;
@@ -549,6 +1182,33 @@ export function activate(context: vscode.ExtensionContext) {
                         }
                     };
                     ensureModuleFromPath();
+                    if ((modulePath || '').trim() === 'agent') {
+                        const fp2 = active.path;
+                        if (fp2) {
+                            const abs2 = path.isAbsolute(fp2) ? fp2 : path.join(rootPath, fp2);
+                            const dir2 = path.dirname(abs2);
+                            let pkgDir: string | undefined;
+                            let cur = dir2;
+                            while (cur.startsWith(rootPath)) {
+                                const initPath = path.join(cur, '__init__.py');
+                                try {
+                                    if (fs.existsSync(initPath)) { pkgDir = cur; break; }
+                                } catch { /* noop */ }
+                                const parent = path.dirname(cur);
+                                if (parent === cur) break;
+                                cur = parent;
+                            }
+                            if (pkgDir) {
+                                const rel2 = path.relative(rootPath, abs2).replace(/\\/g, '/').replace(/\.py$/i, '');
+                                modulePath = rel2.replace(/\//g, '.');
+                            } else {
+                                // Force prompt if we cannot derive a package-qualified module
+                                modulePath = '';
+                            }
+                        } else {
+                            modulePath = '';
+                        }
+                    }
 
                     // Resolve project/region/bucket
                     let projectId = (ws.get('agentConfigurator.projectId') as string) || '';
@@ -571,16 +1231,25 @@ export function activate(context: vscode.ExtensionContext) {
                         await ws.update('agentConfigurator.region', region);
                     }
                     let bucket = (ws.get('agentConfigurator.bucket') as string) || '';
-                    if (!bucket) {
-                        bucket = (await vscode.window.showInputBox({
-                            prompt: 'Enter GCS staging bucket (gs://bucket)',
+                    const bucketRegex = /^gs:\/\/[a-z0-9.\-_]{3,63}(\/.*)?$/;
+                    const promptForBucket = async (): Promise<string | undefined> => {
+                        return vscode.window.showInputBox({
+                            prompt: 'Enter GCS staging bucket (e.g., gs://my-staging-bucket)',
                             placeHolder: 'gs://my-staging-bucket',
                             ignoreFocusOut: true,
-                            validateInput: (v) => v.startsWith('gs://') ? undefined : 'Must start with gs://',
-                        })) || '';
-                        if (!bucket) { return; }
+                            validateInput: (v) => bucketRegex.test((v || '').trim()) ? undefined : 'Invalid bucket. Example: gs://my-staging-bucket'
+                        });
+                    };
+                    if (!bucket || !bucketRegex.test(bucket.trim())) {
+                        const entered = await promptForBucket();
+                        if (!entered || !bucketRegex.test(entered.trim())) {
+                            void vscode.window.showErrorMessage('Invalid staging bucket. Aborting deploy.');
+                            return;
+                        }
+                        bucket = entered.trim();
                         await ws.update('agentConfigurator.bucket', bucket);
                     }
+                    agentOutput.appendLine(`[Deploy] Using staging bucket: ${bucket}`);
 
                     if (!modulePath || !modulePath.trim()) {
                         modulePath = await vscode.window.showInputBox({
@@ -588,14 +1257,18 @@ export function activate(context: vscode.ExtensionContext) {
                             ignoreFocusOut: true,
                             validateInput: (v) => v.trim() ? undefined : 'Module path required',
                         }) || '';
-                        if (!modulePath) { return; }
                     }
                     if (!symbol || !symbol.trim()) {
                         symbol = await vscode.window.showInputBox({
                             prompt: 'Enter agent symbol (callable or object)',
                             value: 'agent',
                             ignoreFocusOut: true,
-                        }) || 'agent';
+                            validateInput: (v) => v.trim() ? undefined : 'Symbol required',
+                        }) || '';
+                    }
+                    if (!modulePath.trim() || !symbol.trim()) {
+                        void vscode.window.showErrorMessage('Module and symbol are required for deployment.');
+                        return;
                     }
 
                     const engineIds = (ws.get('agentConfigurator.engineIds') as Record<string, string>) || {};
@@ -619,8 +1292,8 @@ export function activate(context: vscode.ExtensionContext) {
                         PYTHONPATH: [rootPath, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter),
                     };
 
-                    agentOutput.appendLine(`[Deploy] Spawning python3 ${args.map(a => (a.includes(' ') ? `"${a}"` : a)).join(' ')}`);
-                    const child = spawn('python3', args, { cwd: rootPath, env });
+                    agentOutput.appendLine(`[Deploy] Spawning ${pythonPath} ${args.map(a => (a.includes(' ') ? `"${a}"` : a)).join(' ')}`);
+                    const child = spawn(pythonPath, args, { cwd: rootPath, env });
 
                     token.onCancellationRequested(() => {
                         try { child.kill(); } catch { /* noop */ }
@@ -628,20 +1301,25 @@ export function activate(context: vscode.ExtensionContext) {
 
                     let stderrBuf = '';
                     let engineId: string | undefined;
+                    let offeredInstall = false;
 
                     child.stdout.on('data', (data) => {
                         const text = data.toString();
-                        
                         agentOutput.appendLine(text.trim());
                         const m = text.match(/ENGINE_ID:\s*(.+)\s*$/m);
                         if (m) {
                             engineId = m[1].trim();
                         }
                     });
-                    child.stderr.on('data', (data) => {
+                    child.stderr.on('data', async (data) => {
                         const text = data.toString();
                         stderrBuf += text;
                         agentOutput.appendLine(text.trim());
+                        if (!offeredInstall && text.toLowerCase().includes('google-cloud-aiplatform') && text.toLowerCase().includes('not installed')) {
+                            offeredInstall = true;
+                            const choice = await vscode.window.showInformationMessage('Python dependency google-cloud-aiplatform is not installed.', 'Install now', 'Dismiss');
+                            if (choice === 'Install now') { await offerInstallPythonDeps(pythonPath, 'deploy'); }
+                        }
                     });
 
                     const exitCode: number = await new Promise((resolve) => child.on('close', resolve));
@@ -665,11 +1343,15 @@ export function activate(context: vscode.ExtensionContext) {
                             if (choice === 'Configure') {
                                 const newModule = await vscode.window.showInputBox({ prompt: 'Python module path (e.g. pkg.agent)', value: modulePath, ignoreFocusOut: true }) || modulePath;
                                 const newSymbol = await vscode.window.showInputBox({ prompt: 'Agent symbol', value: symbol, ignoreFocusOut: true }) || symbol;
-                                const msKey = 'agentConfigurator.moduleSymbols';
-                                const existing = (ws.get(msKey) as Record<string, { module: string; symbol: string }>) || {};
-                                existing[active.name] = { module: newModule, symbol: newSymbol };
-                                await ws.update(msKey, existing);
-                                void vscode.window.showInformationMessage('Module/symbol saved. Run Deploy again.');
+                                if (newModule.trim()) {
+                                    const msKey = 'agentConfigurator.moduleSymbols';
+                                    const existing = (ws.get(msKey) as Record<string, { module: string; symbol: string }>) || {};
+                                    existing[active.name] = { module: newModule, symbol: newSymbol.trim() || 'agent' };
+                                    await ws.update(msKey, existing);
+                                    void vscode.window.showInformationMessage('Module/symbol saved. Run Deploy again.');
+                                } else {
+                                    void vscode.window.showWarningMessage('Module cannot be empty. Not saved.');
+                                }
                             }
                         }
                         void vscode.window.showErrorMessage('Deployment failed. See "Agent Configurator" output for details.');
@@ -698,6 +1380,10 @@ export function activate(context: vscode.ExtensionContext) {
                 void vscode.window.showInformationMessage('Agent is not deployed.');
                 return;
             }
+            if (pythonInstallInProgress) {
+                void vscode.window.showInformationMessage('Python dependencies are currently installing… Wait for the "Agent Configurator: Python Setup" terminal to finish, then retry.');
+                return;
+            }
             const confirm = await vscode.window.showWarningMessage(`Delete Agent Engine?\n${engineId}`, { modal: true }, 'Yes');
             if (confirm !== 'Yes') { return; }
 
@@ -706,7 +1392,12 @@ export function activate(context: vscode.ExtensionContext) {
                 async (_p, token) => {
                     const projectId = (ws.get('agentConfigurator.projectId') as string) || '';
                     const region = (ws.get('agentConfigurator.region') as string) || 'us-central1';
-        void region;
+
+                    const pythonPath = await getPythonPath();
+                    agentOutput.appendLine(`[Stop] Python: ${pythonPath}`);
+                    const ready = await ensurePythonReady(pythonPath, 'stop');
+                    if (!ready) { agentOutput.appendLine('[Stop] Aborted due to missing Python environment/dependencies.'); return; }
+
                     const scriptPath = context.asAbsolutePath(path.join('src', 'python', 'delete_agent_engine.py'));
                     const args = [scriptPath, '--project', projectId, '--region', region, '--engine-id', engineId, '--force', 'true'];
 
@@ -715,13 +1406,23 @@ export function activate(context: vscode.ExtensionContext) {
                         PYTHONPATH: [rootPath, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter),
                     };
 
-                    agentOutput.appendLine(`[Stop] Spawning python3 ${args.join(' ')}`);
-                    const child = spawn('python3', args, { cwd: rootPath, env });
+                    agentOutput.appendLine(`[Stop] Spawning ${pythonPath} ${args.join(' ')}`);
+                    const child = spawn(pythonPath, args, { cwd: rootPath, env });
                     token.onCancellationRequested(() => { try { child.kill(); } catch { /* noop */ } });
 
                     let stderrBuf = '';
+                    let offeredInstall = false;
                     child.stdout.on('data', (d) => agentOutput.appendLine(d.toString().trim()));
-                    child.stderr.on('data', (d) => { stderrBuf += d.toString(); agentOutput.appendLine(d.toString().trim()); });
+                    child.stderr.on('data', async (d) => {
+                        const text = d.toString();
+                        stderrBuf += text;
+                        agentOutput.appendLine(text.trim());
+                        if (!offeredInstall && text.toLowerCase().includes('google-cloud-aiplatform') && text.toLowerCase().includes('not installed')) {
+                            offeredInstall = true;
+                            const choice = await vscode.window.showInformationMessage('Python dependency google-cloud-aiplatform is not installed.', 'Install now', 'Dismiss');
+                            if (choice === 'Install now') { await offerInstallPythonDeps(pythonPath, 'stop'); }
+                        }
+                    });
 
                     const code: number = await new Promise(resolve => child.on('close', resolve));
                     if (code === 0) {
@@ -745,6 +1446,92 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
     context.subscriptions.push(stopCmd);
+
+    // One-click: Create/Use workspace .venv and install dependencies
+    const setupWorkspaceVenvCmd = vscode.commands.registerCommand('agentConfigurator.setupWorkspaceVenv', async () => {
+        try {
+            const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+            if (!root) {
+                void vscode.window.showErrorMessage('Open a workspace/folder to create .venv first.');
+                return;
+            }
+
+            const venvPy = process.platform === 'win32'
+                ? path.join(root, '.venv', 'Scripts', 'python.exe')
+                : path.join(root, '.venv', 'bin', 'python');
+
+            // Ensure sentinel set BEFORE launching commands
+            pythonInstallInProgress = true;
+            await context.globalState.update(PY_INSTALL_KEY, true);
+
+            // Open or reuse a terminal named exactly SETUP_TERMINAL_NAME
+            let term = vscode.window.terminals.find(t => t.name === SETUP_TERMINAL_NAME);
+            if (!term) {
+                term = vscode.window.createTerminal({ name: SETUP_TERMINAL_NAME, cwd: root });
+            } else {
+                // Ensure working directory is the workspace root
+                if (process.platform === 'win32') {
+                    term.sendText(`cd /d "${root}"`);
+                } else {
+                    term.sendText(`cd "${root}"`);
+                }
+            }
+            pythonSetupTerminal = term;
+
+            // Update workspace setting to use this interpreter immediately
+            await vscode.workspace.getConfiguration('agentConfigurator')
+                .update('pythonPath', venvPy, vscode.ConfigurationTarget.Workspace);
+            try { agentOutput.appendLine(`[Python] Using workspace venv interpreter: ${venvPy}`); } catch { /* noop */ }
+
+            // Inform user and start setup
+            void vscode.window.showInformationMessage('Creating .venv and installing dependencies… Actions will be blocked until setup finishes.');
+
+            // Create venv if missing (cross-platform fallback chain)
+            const createVenvCmd = process.platform === 'win32'
+                ? 'py -3 -m venv .venv || python -m venv .venv'
+                : 'python3 -m venv .venv || python -m venv .venv';
+            term.sendText(createVenvCmd);
+
+            // Install/upgrade pip and required deps WITHOUT activating shell (invoke venv python directly)
+            const q = venvPy.includes(' ') ? `"${venvPy}"` : venvPy;
+            term.sendText(`${q} -m pip install --upgrade pip`);
+            term.sendText(`${q} -m pip install "google-cloud-aiplatform[agent_engines,adk]"`);
+            term.show();
+            // Sentinel is cleared and verification auto-runs in onDidCloseTerminal
+        } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            try { agentOutput.appendLine(`[Python] Setup error: ${msg}`); } catch { /* noop */ }
+            void vscode.window.showErrorMessage(`Failed to set up workspace venv: ${msg}`);
+        }
+    });
+    context.subscriptions.push(setupWorkspaceVenvCmd);
+    // Verify Python Dependencies command
+    const verifyPythonCmd = vscode.commands.registerCommand('agentConfigurator.verifyPython', async () => {
+        const pythonPath = await getPythonPath();
+
+        if (pythonInstallInProgress) {
+            void vscode.window.showInformationMessage('Python dependencies are currently installing… Wait for the "Agent Configurator: Python Setup" terminal to finish, then retry.');
+            return;
+        }
+
+        const ok = await ensurePythonReady(pythonPath, 'verify');
+        if (ok) {
+            void vscode.window.showInformationMessage(`Python deps OK (google-cloud-aiplatform[agent_engines,adk]). Interpreter: ${pythonPath}`);
+        } else {
+            // ensurePythonReady() already offered install; offer once more if not already installing
+            if (!pythonInstallInProgress) {
+                const choice = await vscode.window.showInformationMessage(
+                    'Python dependencies for Vertex AI Agent Engine are missing.',
+                    'Install now',
+                    'Cancel'
+                );
+                if (choice === 'Install now') {
+                    await offerInstallPythonDeps(pythonPath, 'verify');
+                }
+            }
+        }
+    });
+    context.subscriptions.push(verifyPythonCmd);
 
     const genCardCmd = vscode.commands.registerCommand('agentConfigurator.generateAgentCard', async () => {
         try {
@@ -786,21 +1573,43 @@ export function activate(context: vscode.ExtensionContext) {
             }
             const projectId = (ws.get('agentConfigurator.projectId') as string) || '';
             const region = (ws.get('agentConfigurator.region') as string) || 'us-central1';
-        void region;
             if (!projectId) {
                 void vscode.window.showWarningMessage('Set a GCP project before attaching an engine.');
                 return;
             }
+
+            if (pythonInstallInProgress) {
+                void vscode.window.showInformationMessage('Python dependencies are currently installing… Wait for the "Agent Configurator: Python Setup" terminal to finish, then retry.');
+                return;
+            }
+
+            const pythonPath = await getPythonPath();
+            agentOutput.appendLine(`[Memory] Python: ${pythonPath}`);
+            const ready = await ensurePythonReady(pythonPath, 'attachMemory');
+            if (!ready) {
+                agentOutput.appendLine(`[Memory] Skipped listing engines: Python dependencies not installed. Use 'Install now' to set up.`);
+                return;
+            }
+
             const scriptPath = context.asAbsolutePath(path.join('src', 'python', 'list_agent_engines.py'));
             const env: NodeJS.ProcessEnv = {
                 ...process.env,
                 PYTHONPATH: [rootPath, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter),
             };
-            const child = spawn('python3', [scriptPath, '--project', projectId, '--region', region], { cwd: rootPath, env });
+            const child = spawn(pythonPath, [scriptPath, '--project', projectId, '--region', region], { cwd: rootPath, env });
             let out = '';
             let err = '';
+            let offeredInstall = false;
             child.stdout.on('data', (d) => { out += d.toString(); });
-            child.stderr.on('data', (d) => { err += d.toString(); });
+            child.stderr.on('data', async (d) => {
+                const text = d.toString();
+                err += text;
+                if (!offeredInstall && text.toLowerCase().includes('google-cloud-aiplatform') && text.toLowerCase().includes('not installed')) {
+                    offeredInstall = true;
+                    const choice = await vscode.window.showInformationMessage('Python dependency google-cloud-aiplatform is not installed.', 'Install now', 'Dismiss');
+                    if (choice === 'Install now') { await offerInstallPythonDeps(pythonPath, 'attachMemory'); }
+                }
+            });
             child.on('close', async (code) => {
                 if (code !== 0) {
                     agentOutput.appendLine(`[Memory] list engines failed: ${err.trim()}`);
@@ -885,13 +1694,131 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(switchProjectCmd);
 
-    const loginCmd = vscode.commands.registerCommand('agentConfigurator.gcloudLogin', () => {
+    const loginCmd = vscode.commands.registerCommand('agentConfigurator.gcloudLogin', async () => {
         agentOutput.appendLine('[Auth] Opening gcloud ADC login in terminal...');
-        const term = vscode.window.createTerminal({ name: 'GCloud Auth' });
-        term.sendText('gcloud auth application-default login');
-        term.show();
+        loginTerminal = vscode.window.createTerminal({ name: 'GCloud Auth' });
+        // Show waiting spinner in Status Bar and start stat-based fallback polling
+        isWaitingForSignIn = true;
+        gcpStatus.text = '$(sync~spin) GCP: Waiting for sign-in…';
+        gcpStatus.tooltip = 'Completing gcloud ADC sign-in';
+        AuthRefreshCoordinator.startStatPoll();
+        // Start gcloud browser auth
+        loginTerminal.sendText('gcloud auth application-default login');
+        loginTerminal.show();
+
+        await vscode.window.withProgress(
+            { location: vscode.ProgressLocation.Notification, cancellable: true, title: 'Waiting for Google auth to complete…' },
+            async (_progress, token) => {
+                const started = Date.now();
+                await new Promise<void>((resolve) => {
+                    const timer = setInterval(async () => {
+                        if (token.isCancellationRequested) {
+                            clearInterval(timer);
+                            agentOutput.appendLine('[Auth] Login poll cancelled.');
+                            resolve();
+                            return;
+                        }
+                        try {
+                            const existingProject = (context.workspaceState.get('agentConfigurator.projectId') as string | undefined) || undefined;
+                            const res = await detectAuth(existingProject);
+                            if (res.mode !== 'None' && (res.account?.trim()?.length ?? 0) > 0) {
+                                clearInterval(timer);
+                                agentOutput.appendLine('[Auth] Poll detected ADC credentials.');
+                                await refreshAuthUI('poll-detected');
+                                resolve();
+                                return;
+                            } else {
+                                // If detectAuth is inconclusive, try the ADC token probe immediately for fast UI flip
+                                const probeOk = await probeAdcToken();
+                                if (probeOk) {
+                                    clearInterval(timer);
+                                    agentOutput.appendLine('[Auth] ADC token probe succeeded; treating as authenticated ADC');
+                                    isWaitingForSignIn = false;
+                                    await refreshAuthUI('token-probe-during-poll');
+                                    resolve();
+                                    return;
+                                }
+                            }
+                        } catch {
+                            // ignore and continue polling
+                        }
+                        if (Date.now() - started >= MAX_POLL_MS) {
+                            clearInterval(timer);
+                            agentOutput.appendLine('[Auth] Poll timed out waiting for ADC.');
+                            resolve();
+                        }
+                    }, POLL_INTERVAL_MS);
+                    token.onCancellationRequested(() => {
+                        clearInterval(timer);
+                        agentOutput.appendLine('[Auth] Login poll cancelled.');
+                        resolve();
+                    });
+                });
+                // Finalize: if polling/watchers didn't detect auth, try token probe before giving up
+                if (isWaitingForSignIn) {
+                    const probeOk = await probeAdcToken();
+                    if (probeOk) {
+                        agentOutput.appendLine('[Auth] ADC token probe succeeded; treating as authenticated ADC');
+                        isWaitingForSignIn = false;
+                        await refreshAuthUI('token-probe-post-timeout');
+                    } else {
+                        agentOutput.appendLine('[Auth] ADC not detected within timeout; use Refresh status');
+                        isWaitingForSignIn = false;
+                        await refreshAuthUI('manual');
+                    }
+                }
+            }
+        );
     });
     context.subscriptions.push(loginCmd);
+
+    // Terminal hooks for Python setup and gcloud login terminals
+    context.subscriptions.push(
+        vscode.window.onDidOpenTerminal((opened) => {
+            if (opened.name === SETUP_TERMINAL_NAME) {
+                pythonSetupTerminal = opened;
+                pythonInstallInProgress = true;
+                void context.globalState.update(PY_INSTALL_KEY, true);
+                try { agentOutput.appendLine('[Python] Setup terminal opened. Install sentinel set; actions will be blocked until it closes.'); } catch { /* noop */ }
+            }
+        })
+    );
+
+    context.subscriptions.push(
+        vscode.window.onDidCloseTerminal((closed) => {
+            if (loginTerminal && (closed === loginTerminal || closed.name === loginTerminal.name)) {
+                loginTerminal = undefined;
+                debounceKey('terminal-close', () => { void refreshAuthUI('terminal-closed'); }, 250);
+            }
+            if (closed.name === SETUP_TERMINAL_NAME || (pythonSetupTerminal && (closed === pythonSetupTerminal || closed.name === pythonSetupTerminal.name))) {
+                pythonSetupTerminal = undefined;
+                pythonInstallInProgress = false;
+                void context.globalState.update(PY_INSTALL_KEY, false);
+                try { agentOutput.appendLine('[Python] Dependency installation terminal closed. Verifying dependencies…'); } catch { /* noop */ }
+                // Auto re-check Python dependencies on close
+                void (async () => {
+                    try {
+                        const pythonPath = await getPythonPath();
+                        const res = await checkPythonDeps(pythonPath);
+                        if (res.ok) {
+                            const kind = pendingAction?.kind;
+                            vscode.window.showInformationMessage('Python dependencies ready.');
+                            if (kind) {
+                                agentOutput.appendLine(`[Python] Dependencies ready; resuming previous action: ${kind}`);
+                            } else {
+                                agentOutput.appendLine('Python deps OK (aiplatform[agent_engines,adk])');
+                            }
+                            await resumePendingAction();
+                        } else {
+                            vscode.window.showWarningMessage('Python dependencies still missing. Run "Verify Python Dependencies".');
+                        }
+                    } catch {
+                        // ignore errors in background check
+                    }
+                })();
+            }
+        })
+    );
 
     const signOutCmd = vscode.commands.registerCommand('agentConfigurator.signOut', async () => {
         agentOutput.appendLine('[Auth] Revoking ADC via gcloud...');
@@ -921,7 +1848,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(signOutCmd);
 
     const refreshAuthCmd = vscode.commands.registerCommand('agentConfigurator.refreshAuthStatus', async () => {
-        await refreshAuthAndStatus(false);
+        await refreshAuthUI('manual');
     });
     context.subscriptions.push(refreshAuthCmd);
 
@@ -1384,5 +2311,8 @@ ${agentToolName} = Agent(
 }
 
 
-// This method is called when your extension is deactivated
-export function deactivate() { }
+ // This method is called when your extension is deactivated
+ export function deactivate() {
+     try { AuthRefreshCoordinator.dispose(); } catch { /* noop */ }
+     try { adcWatcher?.close(); } catch { /* noop */ }
+ }

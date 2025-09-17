@@ -1,4 +1,5 @@
 Progress Tracker (Phase 1) — This section is auto-updated as features land.
+- [x] Python env preflight + guided install (aiplatform[agent_engines,adk]), interpreter setting, and module/symbol validation.
 - [x] Agent Config UI relocated to main editor (WebviewPanel)
 - [x] Activity Bar container and move Agent Definitions
 - [x] Sidebar Agent Config webview scaffold
@@ -11,6 +12,7 @@ Progress Tracker (Phase 1) — This section is auto-updated as features land.
 - [x] Python/SDK deployment
 - [x] ADC detection and project picker
   - New commands: Sign in (gcloud ADC), Sign out, Refresh GCP Auth Status; dynamic status bar with account/project; project picker persists to workspace state; Agent Config webview header shows Account/Project and updates live.
+  - [x] Auto-refresh after gcloud login (polling, terminal-close hook, ADC file watcher)
 - [x] Memory Bank UI (attach existing, open console)
 - [x] A2A generation and validation
 - [x] Restore context on activation (verify engine IDs)

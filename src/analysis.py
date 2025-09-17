@@ -2,6 +2,7 @@ import libcst as cst
 from libcst.metadata import MetadataWrapper, PositionProvider
 from pathlib import Path
 import json
+import sys
 
 
 class AgentExtractor(cst.CSTVisitor):
@@ -63,16 +64,36 @@ class AgentExtractor(cst.CSTVisitor):
 
 
 def extract_from_file(path: Path):
-    src = path.read_text()
-    wrapper = MetadataWrapper(cst.parse_module(src))
-    visitor = AgentExtractor(str(path))
-    wrapper.visit(visitor)
-    return visitor.agents, visitor.tools
+    try:
+        # Try UTF-8 first, then fallback to other encodings
+        try:
+            src = path.read_text(encoding='utf-8')
+        except UnicodeDecodeError:
+            try:
+                src = path.read_text(encoding='latin-1')
+            except UnicodeDecodeError:
+                # Skip files we can't decode
+                print(f"Warning: Skipping {path} due to encoding issues", file=sys.stderr)
+                return [], []
+        
+        wrapper = MetadataWrapper(cst.parse_module(src))
+        visitor = AgentExtractor(str(path))
+        wrapper.visit(visitor)
+        return visitor.agents, visitor.tools
+    except Exception as e:
+        print(f"Warning: Error processing {path}: {e}", file=sys.stderr)
+        return [], []
 
 
 def build_registry(base_path="."):
     agents, tools = [], []
     for pyfile in Path(base_path).rglob("*.py"):
+        # Skip virtual environment directories
+        if '.venv' in str(pyfile) or 'venv' in str(pyfile):
+            continue
+        # Skip hidden files and macOS metadata files
+        if pyfile.name.startswith('.'):
+            continue
         a, t = extract_from_file(pyfile)
         agents.extend(a)
         tools.extend(t)

@@ -31,3 +31,7 @@ debugagent.log
 
 # typescript
 *.tsbuildinfo
+node_modules
+node_modules
+node_modules
+travel_concierge/.venv
