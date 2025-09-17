@@ -23,18 +23,17 @@ def main():
     args = parse_args()
     try:
         import vertexai
-        from vertexai.preview.agent_engines import AgentEnginesClient
+        from vertexai.preview.reasoning_engines import ReasoningEngine
     except Exception:
         eprint("ERROR: google-cloud-aiplatform with agent_engines extras not installed. Install: pip install 'google-cloud-aiplatform[agent_engines,adk]'")
         return 2
 
     try:
         vertexai.init(project=args.project, location=args.region)
-        client = AgentEnginesClient()
         name = normalize_engine_name(args.project, args.region, args.engine_id)
         eprint(f"[delete] Deleting engine {name} (force={args.force}) ...")
-        op = client.delete(name=name, force=str(args.force).lower() == "true")
-        op.result()
+        # Use ReasoningEngine.delete() static method
+        ReasoningEngine.delete(name)
         print(f"DELETED: {name}")
         return 0
     except Exception as ex:

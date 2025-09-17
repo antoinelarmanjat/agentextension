@@ -35,3 +35,8 @@ node_modules
 node_modules
 node_modules
 travel_concierge/.venv
+travel_concierge/shared_libraries/
+travel_concierge/__pycache__/agent.cpython-312.pyc
+*.pyc
+travel_concierge/__pycache__/
+*.pyc

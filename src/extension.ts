@@ -988,9 +988,16 @@ async function ensurePythonReady(pythonPath: string, resumeKind?: PendingAction[
             }
 
             const scriptPath = context.asAbsolutePath(path.join('src', 'python', 'list_agent_engines.py'));
+            
+            // Ensure PYTHONPATH includes workspace root
+            const pythonPathDirs = rootPath ? [rootPath] : [];
+            if (process.env.PYTHONPATH) {
+                pythonPathDirs.push(process.env.PYTHONPATH);
+            }
+            
             const env: NodeJS.ProcessEnv = {
                 ...process.env,
-                PYTHONPATH: [rootPath, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter),
+                PYTHONPATH: pythonPathDirs.filter(Boolean).join(path.delimiter),
             };
             agentOutput.appendLine(`[Verify] Python: ${pythonPath}`);
             const child = spawn(pythonPath, [scriptPath, '--project', projectId, '--region', region], { cwd: rootPath, env });
@@ -1004,7 +1011,7 @@ async function ensurePythonReady(pythonPath: string, resumeKind?: PendingAction[
                 if (!offeredInstall && text.toLowerCase().includes('google-cloud-aiplatform') && text.toLowerCase().includes('not installed')) {
                     offeredInstall = true;
                     const choice = await vscode.window.showInformationMessage('Python dependency google-cloud-aiplatform is not installed.', 'Install now', 'Dismiss');
-                    if (choice === 'Install now') { await offerInstallPythonDeps(pythonPath); }
+                    if (choice === 'Install now') { await offerInstallPythonDeps(pythonPath, 'verify'); }
                 }
             });
             child.on('close', async (code) => {
@@ -1167,10 +1174,25 @@ async function ensurePythonReady(pythonPath: string, resumeKind?: PendingAction[
                     // Resolve module/symbol
                     const moduleSymbols = (ws.get('agentConfigurator.moduleSymbols') as Record<string, { module: string; symbol: string }>) || {};
                     let modulePath = moduleSymbols[active.name]?.module;
-                    let symbol = (moduleSymbols[active.name]?.symbol || 'agent').trim();
-
-                    const ensureModuleFromPath = () => {
-                        if (modulePath && modulePath.trim()) return;
+                    let symbol = moduleSymbols[active.name]?.symbol;
+                    
+                    // If not stored, derive from the active agent's path and the scanner data
+                    if (!modulePath || !symbol) {
+                        // Try to get agent info from scanner data
+                        const agentTreeProvider = agentTreeDataProvider;
+                        const scannedAgents = agentTreeProvider.getRootAgents();
+                        const matchingAgent = scannedAgents.find(a =>
+                            (a.args.name === active.name || a.id === active.name) &&
+                            a.file === active.path
+                        );
+                        
+                        if (matchingAgent) {
+                            // Use the id from scanner as the symbol (e.g., "root_agent")
+                            symbol = matchingAgent.id;
+                            agentOutput.appendLine(`[Deploy] Using scanned symbol: ${symbol}`);
+                        }
+                        
+                        // Derive module path from file path
                         const fp = active.path;
                         if (fp) {
                             const abs = path.isAbsolute(fp) ? fp : path.join(rootPath, fp);
@@ -1179,35 +1201,13 @@ async function ensurePythonReady(pythonPath: string, resumeKind?: PendingAction[
                                 rel = rel.slice(0, -3);
                             }
                             modulePath = rel.replace(/\//g, '.');
+                            agentOutput.appendLine(`[Deploy] Derived module path: ${modulePath}`);
                         }
-                    };
-                    ensureModuleFromPath();
-                    if ((modulePath || '').trim() === 'agent') {
-                        const fp2 = active.path;
-                        if (fp2) {
-                            const abs2 = path.isAbsolute(fp2) ? fp2 : path.join(rootPath, fp2);
-                            const dir2 = path.dirname(abs2);
-                            let pkgDir: string | undefined;
-                            let cur = dir2;
-                            while (cur.startsWith(rootPath)) {
-                                const initPath = path.join(cur, '__init__.py');
-                                try {
-                                    if (fs.existsSync(initPath)) { pkgDir = cur; break; }
-                                } catch { /* noop */ }
-                                const parent = path.dirname(cur);
-                                if (parent === cur) break;
-                                cur = parent;
-                            }
-                            if (pkgDir) {
-                                const rel2 = path.relative(rootPath, abs2).replace(/\\/g, '/').replace(/\.py$/i, '');
-                                modulePath = rel2.replace(/\//g, '.');
-                            } else {
-                                // Force prompt if we cannot derive a package-qualified module
-                                modulePath = '';
-                            }
-                        } else {
-                            modulePath = '';
-                        }
+                    }
+                    
+                    // Default symbol to 'agent' if still not found
+                    if (!symbol || !symbol.trim()) {
+                        symbol = 'agent';
                     }
 
                     // Resolve project/region/bucket
@@ -1287,11 +1287,59 @@ async function ensurePythonReady(pythonPath: string, resumeKind?: PendingAction[
                         args.push('--engine-id', prevEngine);
                     }
 
+                    // For module imports to work, we need the correct directory in PYTHONPATH
+                    // If module is "travel_concierge.agent", Python needs to find "travel_concierge" as a package
+                    const pythonPathDirs: string[] = [];
+                    
+                    agentOutput.appendLine(`[Deploy] Workspace root: ${rootPath}`);
+                    agentOutput.appendLine(`[Deploy] Module to import: ${modulePath}`);
+                    
+                    if (rootPath) {
+                        // Check if we need to adjust the PYTHONPATH for module imports
+                        if (modulePath && modulePath.includes('.')) {
+                            const packageName = modulePath.split('.')[0];
+                            agentOutput.appendLine(`[Deploy] Package name: ${packageName}`);
+                            
+                            // Check if the workspace root ends with the package name
+                            // e.g., workspace is /path/to/travel_concierge and module is travel_concierge.agent
+                            if (rootPath.endsWith(packageName) || rootPath.endsWith(path.sep + packageName)) {
+                                // We're inside the package directory, need parent in PYTHONPATH
+                                const parentDir = path.dirname(rootPath);
+                                pythonPathDirs.push(parentDir);
+                                agentOutput.appendLine(`[Deploy] Workspace IS the package directory '${packageName}'`);
+                                agentOutput.appendLine(`[Deploy] Using parent directory for imports: ${parentDir}`);
+                            } else {
+                                // Check if the package exists as a subdirectory
+                                const packagePath = path.join(rootPath, packageName);
+                                if (fs.existsSync(packagePath) && fs.statSync(packagePath).isDirectory()) {
+                                    // Package is a subdirectory, workspace root is correct
+                                    pythonPathDirs.push(rootPath);
+                                    agentOutput.appendLine(`[Deploy] Package '${packageName}' found as subdirectory in workspace`);
+                                    agentOutput.appendLine(`[Deploy] Using workspace root: ${rootPath}`);
+                                } else {
+                                    // Default: use workspace root
+                                    pythonPathDirs.push(rootPath);
+                                    agentOutput.appendLine(`[Deploy] Using workspace root (default): ${rootPath}`);
+                                }
+                            }
+                        } else {
+                            // No package structure detected, use workspace root
+                            pythonPathDirs.push(rootPath);
+                            agentOutput.appendLine(`[Deploy] No package structure detected, using workspace root: ${rootPath}`);
+                        }
+                    }
+                    
+                    // Preserve existing PYTHONPATH entries
+                    if (process.env.PYTHONPATH) {
+                        pythonPathDirs.push(process.env.PYTHONPATH);
+                    }
+                    
                     const env: NodeJS.ProcessEnv = {
                         ...process.env,
-                        PYTHONPATH: [rootPath, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter),
+                        PYTHONPATH: pythonPathDirs.filter(Boolean).join(path.delimiter),
                     };
 
+                    agentOutput.appendLine(`[Deploy] PYTHONPATH: ${env.PYTHONPATH}`);
                     agentOutput.appendLine(`[Deploy] Spawning ${pythonPath} ${args.map(a => (a.includes(' ') ? `"${a}"` : a)).join(' ')}`);
                     const child = spawn(pythonPath, args, { cwd: rootPath, env });
 
@@ -1401,9 +1449,15 @@ async function ensurePythonReady(pythonPath: string, resumeKind?: PendingAction[
                     const scriptPath = context.asAbsolutePath(path.join('src', 'python', 'delete_agent_engine.py'));
                     const args = [scriptPath, '--project', projectId, '--region', region, '--engine-id', engineId, '--force', 'true'];
 
+                    // Ensure PYTHONPATH includes workspace root
+                    const pythonPathDirs = rootPath ? [rootPath] : [];
+                    if (process.env.PYTHONPATH) {
+                        pythonPathDirs.push(process.env.PYTHONPATH);
+                    }
+                    
                     const env: NodeJS.ProcessEnv = {
                         ...process.env,
-                        PYTHONPATH: [rootPath, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter),
+                        PYTHONPATH: pythonPathDirs.filter(Boolean).join(path.delimiter),
                     };
 
                     agentOutput.appendLine(`[Stop] Spawning ${pythonPath} ${args.join(' ')}`);
@@ -1592,9 +1646,16 @@ async function ensurePythonReady(pythonPath: string, resumeKind?: PendingAction[
             }
 
             const scriptPath = context.asAbsolutePath(path.join('src', 'python', 'list_agent_engines.py'));
+            
+            // Ensure PYTHONPATH includes workspace root
+            const pythonPathDirs = rootPath ? [rootPath] : [];
+            if (process.env.PYTHONPATH) {
+                pythonPathDirs.push(process.env.PYTHONPATH);
+            }
+            
             const env: NodeJS.ProcessEnv = {
                 ...process.env,
-                PYTHONPATH: [rootPath, process.env.PYTHONPATH || ''].filter(Boolean).join(path.delimiter),
+                PYTHONPATH: pythonPathDirs.filter(Boolean).join(path.delimiter),
             };
             const child = spawn(pythonPath, [scriptPath, '--project', projectId, '--region', region], { cwd: rootPath, env });
             let out = '';

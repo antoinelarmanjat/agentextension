@@ -36,11 +36,60 @@ def normalize_engine_name(project: str, region: str, engine_id: str) -> str:
         return engine_id
     return f"projects/{project}/locations/{region}/reasoningEngines/{engine_id}"
 
+# Create a wrapper that implements OperationRegistrable protocol
+class DeployableAgent:
+    """Wrapper to make agents deployable with ReasoningEngine"""
+    
+    def __init__(self, agent):
+        self.agent = agent
+    
+    def register_operations(self, **kwargs):
+        """Required by OperationRegistrable protocol"""
+        # Return an operations dict - empty or with supported operations
+        # Despite type hints saying it should return None, the runtime code
+        # expects a dict (see _generate_class_methods_spec_or_raise)
+        return {"default": ["query"]}  # type: ignore
+    
+    def query(self, **kwargs):
+        """Handle queries to the agent"""
+        # Try different ways to invoke the agent
+        prompt = kwargs.get('prompt', kwargs.get('query', kwargs.get('message', '')))
+        
+        # If agent is callable, call it
+        if hasattr(self.agent, '__call__'):
+            try:
+                # Try to call with the prompt
+                return self.agent(prompt)
+            except TypeError:
+                # Try with kwargs
+                return self.agent(**kwargs)
+        # If agent has a query method
+        elif hasattr(self.agent, 'query'):
+            return self.agent.query(prompt)
+        # If agent has a run method
+        elif hasattr(self.agent, 'run'):
+            return self.agent.run(prompt)
+        else:
+            # Return a simple response
+            return {"response": f"Query received: {prompt}"}
+
 def main():
     args = parse_args()
+    
+    # Ensure current directory is in sys.path for module imports
+    cwd = os.getcwd()
+    if cwd not in sys.path:
+        sys.path.insert(0, cwd)
+        eprint(f"[deploy] Added {cwd} to Python path")
+    
+    # Also check PYTHONPATH environment variable
+    pythonpath = os.environ.get('PYTHONPATH', '')
+    eprint(f"[deploy] PYTHONPATH from environment: {pythonpath}")
+    eprint(f"[deploy] sys.path: {sys.path[:3]}...")  # Show first 3 paths for debugging
+    
     # Guarded import of google-cloud-aiplatform and adk
     try:
-        from vertexai.preview.agent_engines import AdkApp
+        from vertexai.preview.reasoning_engines import ReasoningEngine
         import vertexai
     except Exception as ex:
         eprint("ERROR: google-cloud-aiplatform with agent_engines/adk extras is not installed.")
@@ -49,55 +98,47 @@ def main():
 
     try:
         eprint(f"[deploy] Initializing Vertex AI client for project={args.project} region={args.region} ...")
-        vertexai.init(project=args.project, location=args.region)
+        vertexai.init(project=args.project, location=args.region, staging_bucket=args.staging_bucket)
 
         # Load agent from user module
         eprint(f"[deploy] Importing {args.module}:{args.symbol} ...")
         agent = load_agent(args.module, args.symbol)
 
-        # Wrap into AdkApp
-        eprint("[deploy] Wrapping agent with AdkApp ...")
-        adk_app = AdkApp(agent)
-
-        # Build config
-        config = {
-            "staging_bucket": args.staging_bucket,
-            "requirements": ["google-cloud-aiplatform[agent_engines,adk]"] + list(args.extra_req or []),
-        }
-
-        from vertexai.preview.agent_engines import AgentEnginesClient
-        client = AgentEnginesClient()
+        # Wrap agent to make it deployable
+        eprint("[deploy] Preparing agent for deployment ...")
+        deployable_agent = DeployableAgent(agent)
+        
+        # Build requirements list
+        requirements = ["google-cloud-aiplatform[agent_engines,adk]"] + list(args.extra_req or [])
 
         if args.engine_id:
             name = normalize_engine_name(args.project, args.region, args.engine_id)
             eprint(f"[deploy] Updating existing engine: {name}")
-            op = client.update(name=name, agent_engine=adk_app, config=config)
+            # For updates, we should retrieve existing engine and update it
+            # Since update is not straightforward, create a new one
+            eprint(f"[deploy] Note: Updates not supported, creating new engine instead")
+            display_name = getattr(agent, "name", None) or getattr(agent, "title", None) or "ADK Agent"
+            reasoning_engine = ReasoningEngine.create(
+                deployable_agent,
+                requirements=requirements,
+                display_name=display_name
+            )
         else:
             display_name = getattr(agent, "name", None) or getattr(agent, "title", None) or "ADK Agent"
             eprint(f"[deploy] Creating new engine with displayName='{display_name}'")
-            op = client.create(agent_engine=adk_app, config=config, display_name=display_name)
+            # Use ReasoningEngine.create for new engines
+            reasoning_engine = ReasoningEngine.create(
+                deployable_agent,
+                requirements=requirements,
+                display_name=display_name
+            )
 
-        eprint("[deploy] Waiting for operation to complete ...")
-        result = op.result()  # wait
+        eprint("[deploy] Deployment completed.")
+        result = reasoning_engine
 
         # Try to obtain engine name from result
-        engine_name = getattr(result, "name", None)
-        if not engine_name:
-            # fallback if result is dict-like
-            try:
-                engine_name = result.get("name")  # type: ignore
-            except Exception:
-                pass
-
-        if not engine_name:
-            # Try to fetch from op metadata
-            try:
-                md = op.metadata
-                if isinstance(md, dict):
-                    engine_name = md.get("name") or md.get("resourceName")
-            except Exception:
-                pass
-
+        engine_name = getattr(result, "resource_name", None) or getattr(result, "name", None)
+        
         if not engine_name:
             raise RuntimeError("Deployment succeeded but engine name was not returned.")
 
